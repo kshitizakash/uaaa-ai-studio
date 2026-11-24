@@ -6,376 +6,468 @@
 <title>UAAA AI Studio</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+:root {
+  --navy: #101a35;
+  --sidebar: #111d3b;
+  --blue: #3978f6;
+  --cyan: #36c5e8;
+  --bg: #f3f6fc;
+  --text: #17233f;
+  --muted: #71809c;
+  --white: #ffffff;
+  --border: #e6ebf4;
 }
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    background: #f1f4f9;
-    color: #172554;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
-
-.header {
-    background: #101d40;
-    color: white;
-    padding: 18px 22px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-size: 23px;
-    font-weight: bold;
-}
-
-.logo span {
-    color: #38bdf8;
-}
-
-.menu-btn {
-    display: none;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 26px;
-}
-
-.layout {
-    display: flex;
-    min-height: calc(100vh - 65px);
-}
-
+button { font: inherit; cursor: pointer; }
+.app { min-height: 100vh; display: flex; }
 .sidebar {
-    width: 250px;
-    background: #172554;
-    color: white;
-    padding: 20px 12px;
+  width: 255px;
+  background: var(--sidebar);
+  color: white;
+  padding: 22px 14px;
+  flex-shrink: 0;
+  transition: .25s;
 }
-
-.sidebar button {
-    display: block;
-    width: 100%;
-    padding: 13px;
-    margin-bottom: 7px;
-    border: none;
-    border-radius: 7px;
-    text-align: left;
-    background: transparent;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
+.brand {
+  font-size: 23px;
+  font-weight: 800;
+  padding: 7px 10px 25px;
 }
-
-.sidebar button:hover,
-.sidebar button.active {
-    background: #2563eb;
+.brand span { color: var(--cyan); }
+.brand small {
+  display: block;
+  color: #9eaccb;
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-top: 6px;
+  font-weight: 500;
 }
-
-.main {
-    flex: 1;
-    padding: 25px;
-    min-width: 0;
+.nav-label {
+  color: #8291b2;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  padding: 14px 11px 9px;
 }
-
-.welcome {
-    background: linear-gradient(120deg, #1e3a8a, #2563eb);
-    color: white;
-    padding: 30px;
-    border-radius: 14px;
-    margin-bottom: 25px;
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 11px;
+  margin: 3px 0;
+  color: #c5cee1;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  text-align: left;
+  font-size: 13px;
 }
-
-.welcome h1 {
-    font-size: 27px;
-    margin-bottom: 10px;
+.nav-btn:hover, .nav-btn.active {
+  background: #263d70;
+  color: white;
 }
-
-.welcome p {
-    margin-bottom: 18px;
-    color: #dbeafe;
+.nav-icon { width: 22px; font-size: 17px; text-align: center; }
+.sidebar-bottom {
+  margin-top: 25px;
+  padding: 15px 10px;
+  border-top: 1px solid #34415f;
+  color: #9eaccb;
+  font-size: 11px;
+  line-height: 1.7;
 }
-
+.main-area { flex: 1; min-width: 0; }
+.topbar {
+  min-height: 72px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 28px;
+  gap: 15px;
+}
+.top-left, .top-right { display: flex; align-items: center; gap: 14px; }
+.menu-toggle {
+  border: 0;
+  background: #edf2fc;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 19px;
+}
+.search {
+  width: min(330px, 38vw);
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #f8faff;
+  outline: none;
+}
+.profile {
+  background: #e8efff;
+  color: #2457bd;
+  border-radius: 50%;
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+}
+.top-name { font-size: 12px; font-weight: bold; }
+.top-role { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.content { padding: 27px; max-width: 1500px; margin: auto; }
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 22px;
+}
+.page-heading h1 { font-size: 25px; }
+.page-heading p { color: var(--muted); font-size: 13px; margin-top: 7px; }
 .primary-btn {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 7px;
-    background: #38bdf8;
-    color: #082f49;
-    font-weight: bold;
-    cursor: pointer;
+  border: 0;
+  background: var(--blue);
+  color: white;
+  padding: 12px 17px;
+  border-radius: 9px;
+  font-weight: bold;
+  box-shadow: 0 5px 14px #3978f633;
 }
-
+.primary-btn:hover { background: #245fd5; }
+.hero {
+  background: linear-gradient(115deg, #142c60, #2865d9);
+  color: white;
+  padding: 28px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 23px;
+  overflow: hidden;
+}
+.hero h2 { font-size: 23px; margin-bottom: 10px; }
+.hero p { color: #d8e5ff; font-size: 13px; line-height: 1.6; }
+.hero-art { font-size: 65px; opacity: .9; }
 .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 28px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 27px;
 }
-
-.stat-card {
-    background: white;
-    padding: 22px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px #0000000c;
+.stat {
+  background: white;
+  padding: 19px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
-
-.stat-card h3 {
-    font-size: 14px;
-    color: #64748b;
-    margin-bottom: 12px;
+.stat-top { display: flex; justify-content: space-between; align-items: center; }
+.stat-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  background: #edf3ff;
+  font-size: 19px;
 }
-
-.stat-card p {
-    font-size: 28px;
-    font-weight: bold;
+.stat h3 { color: var(--muted); font-size: 12px; font-weight: 500; margin-top: 15px; }
+.stat strong { display: block; font-size: 27px; margin-top: 7px; }
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 25px 0 14px;
 }
-
-.section-title {
-    margin: 25px 0 15px;
-}
-
+.section-head h2 { font-size: 18px; }
+.section-head span { color: var(--blue); font-size: 12px; }
 .categories {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
 }
-
 .category {
-    background: white;
-    padding: 22px 15px;
-    border-radius: 12px;
-    text-align: center;
-    cursor: pointer;
-    border: 1px solid #e2e8f0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 19px;
+  text-align: left;
+  transition: .2s;
+  color: var(--text);
 }
-
 .category:hover {
-    border-color: #2563eb;
-    transform: translateY(-3px);
+  border-color: var(--blue);
+  transform: translateY(-3px);
+  box-shadow: 0 7px 20px #17233f0c;
 }
-
-.category .icon {
-    font-size: 32px;
-    margin-bottom: 10px;
+.category-icon {
+  width: 43px; height: 43px;
+  display: grid; place-items: center;
+  border-radius: 11px;
+  background: #edf3ff;
+  font-size: 22px;
+  margin-bottom: 13px;
 }
-
-.category h3 {
-    font-size: 15px;
+.category h3 { font-size: 14px; margin-bottom: 7px; }
+.category p { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.category .arrow { display: block; text-align: right; color: var(--blue); }
+.panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
 }
-
-.category p {
-    font-size: 12px;
-    color: #64748b;
-    margin-top: 7px;
+.empty {
+  text-align: center;
+  padding: 35px 15px;
+  color: var(--muted);
+  font-size: 13px;
 }
-
-.content-box {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    min-height: 200px;
-}
-
-.content-box p {
-    margin-top: 12px;
-    color: #64748b;
-}
-
+.empty-icon { font-size: 35px; margin-bottom: 10px; }
+.page-panel h2 { font-size: 22px; margin-bottom: 12px; }
+.page-panel p { color: var(--muted); font-size: 13px; line-height: 1.7; }
+.page-panel .primary-btn { margin-top: 20px; }
 .footer {
-    text-align: center;
-    padding: 20px;
-    color: #64748b;
-    font-size: 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 25px 10px;
 }
+.hidden { display: none !important; }
 
-@media(max-width: 800px) {
-    .menu-btn {
-        display: block;
-    }
-
-    .layout {
-        display: block;
-    }
-
-    .sidebar {
-        display: none;
-        width: 100%;
-    }
-
-    .sidebar.show {
-        display: block;
-    }
-
-    .main {
-        padding: 15px;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-    }
-
-    .categories {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .welcome h1 {
-        font-size: 22px;
-    }
+@media(max-width: 1050px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .categories { grid-template-columns: repeat(2, 1fr); }
 }
-
-@media(max-width: 380px) {
-    .categories {
-        grid-template-columns: 1fr;
-    }
+@media(max-width: 720px) {
+  .sidebar {
+    position: fixed;
+    z-index: 10;
+    top: 0; bottom: 0; left: 0;
+    transform: translateX(-100%);
+    overflow-y: auto;
+    width: 265px;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .topbar { padding: 11px 14px; }
+  .top-name, .top-role { display: none; }
+  .search { width: min(190px, 42vw); }
+  .content { padding: 17px 14px; }
+  .hero { padding: 22px; }
+  .hero h2 { font-size: 19px; }
+  .hero-art { font-size: 45px; }
+  .page-heading { align-items: flex-start; flex-direction: column; }
+}
+@media(max-width: 430px) {
+  .stats { grid-template-columns: repeat(2, 1fr); gap: 9px; }
+  .stat { padding: 13px; }
+  .stat strong { font-size: 22px; }
+  .categories { grid-template-columns: repeat(2, 1fr); gap: 9px; }
+  .category { padding: 13px; }
+  .category h3 { font-size: 12px; }
+  .category p { font-size: 10px; }
+  .hero-art { display: none; }
 }
 </style>
 </head>
 
 <body>
+<div class="app">
 
-<header class="header">
-    <div class="logo">UAAA <span>AI Studio</span></div>
-    <button class="menu-btn" onclick="toggleMenu()">☰</button>
-</header>
+<aside class="sidebar" id="sidebar">
+  <div class="brand">UAAA <span>AI STUDIO</span>
+    <small>VIDEO CREATION PLATFORM</small>
+  </div>
 
-<div class="layout">
+  <div class="nav-label">WORKSPACE</div>
+  <button class="nav-btn active" data-page="Dashboard"><span class="nav-icon">⌂</span>Dashboard</button>
+  <button class="nav-btn" data-page="Create New Video"><span class="nav-icon">＋</span>Create New Video</button>
 
-<nav class="sidebar" id="sidebar">
-    <button class="active" onclick="showPage('Dashboard',this)">🏠 Dashboard</button>
-    <button onclick="showPage('Create New Video',this)">🎬 Create New Video</button>
-    <button onclick="showPage('AI News Creator',this)">📰 AI News Creator</button>
-    <button onclick="showPage('Job Alert Creator',this)">💼 Job Alert Creator</button>
-    <button onclick="showPage('Educational Creator',this)">📚 Educational Videos</button>
-    <button onclick="showPage('Motivational Creator',this)">🔥 Motivational Videos</button>
-    <button onclick="showPage('Stories & Documentary',this)">📖 Stories & Documentary</button>
-    <button onclick="showPage('YouTube Shorts',this)">📱 YouTube Shorts</button>
-    <button onclick="showPage('My Projects',this)">📂 My Projects</button>
-    <button onclick="showPage('Media Library',this)">🖼️ Media Library</button>
-    <button onclick="showPage('Video Templates',this)">🎨 Video Templates</button>
-    <button onclick="showPage('Voice Studio',this)">🎙️ Voice Studio</button>
-    <button onclick="showPage('Thumbnail Studio',this)">🖌️ Thumbnail Studio</button>
-    <button onclick="showPage('YouTube Integration',this)">▶️ YouTube Integration</button>
-    <button onclick="showPage('Settings',this)">⚙️ Settings</button>
-</nav>
+  <div class="nav-label">VIDEO CREATORS</div>
+  <button class="nav-btn" data-page="AI News Creator"><span class="nav-icon">📰</span>AI News Creator</button>
+  <button class="nav-btn" data-page="Job Alert Creator"><span class="nav-icon">💼</span>Job Alert Creator</button>
+  <button class="nav-btn" data-page="Educational Videos"><span class="nav-icon">📚</span>Educational Videos</button>
+  <button class="nav-btn" data-page="Motivational Videos"><span class="nav-icon">🔥</span>Motivational Videos</button>
+  <button class="nav-btn" data-page="Stories & Documentary"><span class="nav-icon">📖</span>Stories & Documentary</button>
+  <button class="nav-btn" data-page="YouTube Shorts"><span class="nav-icon">📱</span>YouTube Shorts</button>
 
-<main class="main" id="main">
+  <div class="nav-label">MY CONTENT</div>
+  <button class="nav-btn" data-page="My Projects"><span class="nav-icon">📁</span>My Projects</button>
+  <button class="nav-btn" data-page="Media Library"><span class="nav-icon">🖼️</span>Media Library</button>
+  <button class="nav-btn" data-page="Video Templates"><span class="nav-icon">🎨</span>Video Templates</button>
 
-<section class="welcome">
-    <h1>Welcome to UAAA AI Studio!</h1>
-    <p>Your all-in-one video creation workspace.</p>
-    <button class="primary-btn" onclick="showPage('Create New Video')">
-        + Create New Video
-    </button>
-</section>
+  <div class="nav-label">TOOLS</div>
+  <button class="nav-btn" data-page="Voice Studio"><span class="nav-icon">🎙️</span>Voice Studio</button>
+  <button class="nav-btn" data-page="Thumbnail Studio"><span class="nav-icon">🖌️</span>Thumbnail Studio</button>
+  <button class="nav-btn" data-page="YouTube Integration"><span class="nav-icon">▶️</span>YouTube Integration</button>
+  <button class="nav-btn" data-page="Settings"><span class="nav-icon">⚙️</span>Settings</button>
 
-<section class="stats">
-    <div class="stat-card">
-        <h3>Total Videos Created</h3>
-        <p>0</p>
+  <div class="sidebar-bottom">
+    UAAA AI Studio<br>
+    Version 2.0<br>
+    Your creative workspace
+  </div>
+</aside>
+
+<div class="main-area">
+  <header class="topbar">
+    <div class="top-left">
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+      <input class="search" id="search" type="search" placeholder="Search tools...">
     </div>
-    <div class="stat-card">
-        <h3>Draft Projects</h3>
-        <p>0</p>
+    <div class="top-right">
+      <div class="profile">U</div>
+      <div>
+        <div class="top-name">UAAA Studio</div>
+        <div class="top-role">Workspace</div>
+      </div>
     </div>
-    <div class="stat-card">
-        <h3>Completed Videos</h3>
-        <p>0</p>
+  </header>
+
+  <main class="content" id="content">
+    <div id="dashboardPage">
+      <div class="page-heading">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Welcome back! Manage your video creation workspace.</p>
+        </div>
+        <button class="primary-btn" data-open="Create New Video">＋ Create New Video</button>
+      </div>
+
+      <section class="hero">
+        <div>
+          <h2>Welcome to UAAA AI Studio!</h2>
+          <p>One workspace for your YouTube videos, Shorts and social media content.<br>
+          Turn your ideas into creative projects.</p>
+          <br>
+          <button class="primary-btn" data-open="Create New Video">Start Creating →</button>
+        </div>
+        <div class="hero-art">🎬</div>
+      </section>
+
+      <section class="stats">
+        <div class="stat">
+          <div class="stat-top"><span>Video Projects</span><span class="stat-icon">🎬</span></div>
+          <h3>Total Videos Created</h3><strong>0</strong>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span>Work in Progress</span><span class="stat-icon">📝</span></div>
+          <h3>Draft Projects</h3><strong>0</strong>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span>Ready to Share</span><span class="stat-icon">✅</span></div>
+          <h3>Completed Videos</h3><strong>0</strong>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span>Creative Tools</span><span class="stat-icon">✨</span></div>
+          <h3>Video Categories</h3><strong>6</strong>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <h2>Choose Your Video Category</h2>
+        <span>Explore all tools</span>
+      </div>
+
+      <section class="categories" id="categories">
+        <button class="category" data-open="AI News Creator">
+          <div class="category-icon">📰</div><h3>AI News Creator</h3>
+          <p>Create news-style video projects.</p><span class="arrow">Open →</span>
+        </button>
+        <button class="category" data-open="Job Alert Creator">
+          <div class="category-icon">💼</div><h3>Job Alert Creator</h3>
+          <p>Prepare government and private job videos.</p><span class="arrow">Open →</span>
+        </button>
+        <button class="category" data-open="Educational Videos">
+          <div class="category-icon">📚</div><h3>Educational Videos</h3>
+          <p>Create learning and explainer projects.</p><span class="arrow">Open →</span>
+        </button>
+        <button class="category" data-open="Motivational Videos">
+          <div class="category-icon">🔥</div><h3>Motivational Videos</h3>
+          <p>Build inspirational video projects.</p><span class="arrow">Open →</span>
+        </button>
+        <button class="category" data-open="Stories & Documentary">
+          <div class="category-icon">📖</div><h3>Stories & Documentary</h3>
+          <p>Plan stories and documentary videos.</p><span class="arrow">Open →</span>
+        </button>
+        <button class="category" data-open="YouTube Shorts">
+          <div class="category-icon">📱</div><h3>YouTube Shorts</h3>
+          <p>Plan vertical Shorts and Reels.</p><span class="arrow">Open →</span>
+        </button>
+      </section>
+
+      <div class="section-head"><h2>Recent Projects</h2></div>
+      <section class="panel">
+        <div class="empty">
+          <div class="empty-icon">📂</div>
+          <strong>No projects yet</strong>
+          <p style="margin-top:8px">Your video projects will appear here when project saving is added.</p>
+        </div>
+      </section>
     </div>
-</section>
 
-<h2 class="section-title">Create Videos</h2>
-
-<section class="categories">
-    <div class="category" onclick="showPage('AI News Creator')">
-        <div class="icon">📰</div>
-        <h3>News Videos</h3>
-        <p>Create news content</p>
+    <div id="otherPage" class="panel page-panel hidden">
+      <h2 id="otherTitle">Create New Video</h2>
+      <p id="otherDescription">This workspace section is planned for the next development stage.</p>
+      <button class="primary-btn" id="backHome">← Back to Dashboard</button>
     </div>
+  </main>
 
-    <div class="category" onclick="showPage('Job Alert Creator')">
-        <div class="icon">💼</div>
-        <h3>Job Alerts</h3>
-        <p>Government & private jobs</p>
-    </div>
-
-    <div class="category" onclick="showPage('Educational Creator')">
-        <div class="icon">📚</div>
-        <h3>Education</h3>
-        <p>Learning videos</p>
-    </div>
-
-    <div class="category" onclick="showPage('Motivational Creator')">
-        <div class="icon">🔥</div>
-        <h3>Motivational</h3>
-        <p>Inspirational content</p>
-    </div>
-
-    <div class="category" onclick="showPage('Stories & Documentary')">
-        <div class="icon">📖</div>
-        <h3>Stories</h3>
-        <p>Stories & documentaries</p>
-    </div>
-
-    <div class="category" onclick="showPage('YouTube Shorts')">
-        <div class="icon">📱</div>
-        <h3>Shorts & Reels</h3>
-        <p>Vertical short videos</p>
-    </div>
-</section>
-
-<h2 class="section-title">Recent Projects</h2>
-
-<div class="content-box">
-    <h3>Your Recent Projects</h3>
-    <p>No projects available yet. Start creating your first video!</p>
+  <footer class="footer">© 2026 UAAA AI Studio · Version 2.0</footer>
 </div>
-
-</main>
 </div>
-
-<footer class="footer">
-    © 2026 UAAA AI Studio | Version 1.0
-</footer>
 
 <script>
-function toggleMenu() {
-    document.getElementById("sidebar").classList.toggle("show");
+const sidebar = document.getElementById("sidebar");
+const dashboardPage = document.getElementById("dashboardPage");
+const otherPage = document.getElementById("otherPage");
+const otherTitle = document.getElementById("otherTitle");
+const otherDescription = document.getElementById("otherDescription");
+
+function openPage(page) {
+  if (page === "Dashboard") {
+    dashboardPage.classList.remove("hidden");
+    otherPage.classList.add("hidden");
+  } else {
+    dashboardPage.classList.add("hidden");
+    otherPage.classList.remove("hidden");
+    otherTitle.textContent = page;
+    otherDescription.textContent =
+      "Welcome to " + page + ". This section will be developed in the upcoming stages of UAAA AI Studio.";
+  }
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.page === page);
+  });
+
+  sidebar.classList.remove("open");
+  window.scrollTo(0, 0);
 }
 
-function showPage(page, button) {
-    const main = document.getElementById("main");
+document.querySelectorAll("[data-page]").forEach(btn => {
+  btn.addEventListener("click", () => openPage(btn.dataset.page));
+});
 
-    if (button) {
-        document.querySelectorAll(".sidebar button").forEach(btn => {
-            btn.classList.remove("active");
-        });
-        button.classList.add("active");
-    }
+document.querySelectorAll("[data-open]").forEach(btn => {
+  btn.addEventListener("click", () => openPage(btn.dataset.open));
+});
 
-    if (page === "Dashboard") {
-        location.reload();
-        return;
-    }
+document.getElementById("menuToggle").addEventListener("click", () => {
+  sidebar.classList.toggle("open");
+});
 
-    main.innerHTML = `
-        <div class="content-box">
-            <h1>${page}</h1>
-            <p>Welcome to the ${page} section of UAAA AI Studio.</p>
-            <p>This feature will be developed in the next stages.</p>
-            <br>
-            <button class="primary-btn" onclick="location.reload()">
-                Back to Dashboard
-            </button>
-        </div>
-    `;
+document.getElementById("backHome").addEventListener("click", () => openPage("Dashboard"));
 
-    document.getElementById("sidebar").classList.remove("show");
-}
+document.getElementById("search").addEventListener("input", function() {
+  const term = this.value.toLowerCase();
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.toggle("hidden", !btn.textContent.toLowerCase().includes(term));
+  });
+});
 </script>
-
 </body>
 </html>
