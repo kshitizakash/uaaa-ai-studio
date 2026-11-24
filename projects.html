@@ -1,1 +1,90 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Projects - UAAA AI Studio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f5fa;color:#172033}
+header{background:#101b35;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
+header a{color:white;text-decoration:none}
+.container{max-width:950px;margin:25px auto;padding:15px}
+.card{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:15px}
+button{border:0;border-radius:7px;padding:10px 15px;cursor:pointer;font-weight:bold;margin:5px 5px 0 0}
+.primary{background:#3659d9;color:white}
+.danger{background:#ffe8e8;color:#b42318}
+.muted{color:#65718a}
+</style>
+</head>
+<body>
+<header>
+<h2>UAAA AI Studio</h2>
+<a href="index.html">← Dashboard</a>
+</header>
+<div class="container">
+<h2>📁 My Projects</h2>
+<p class="muted">Your saved video projects are listed here.</p>
+<div id="projectList"></div>
+</div>
+<script>
+function loadProjects(){
+const projects=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
+const list=document.getElementById("projectList");if(projects.length===0){
+list.innerHTML='<div class="card">No saved projects yet. Go to Create New Video and save your first project.</div>';
+return;
+}
 
+list.innerHTML="";
+projects.forEach((p,index)=>{
+const card=document.createElement("div");
+card.className="card";
+
+const title=document.createElement("h3");
+title.textContent=p.title||"Untitled Project";
+
+const details=document.createElement("p");
+details.textContent="Category: "+(p.category||"-")+" | Language: "+(p.language||"-")+" | Duration: "+(p.duration||"-");
+
+const status=document.createElement("p");
+status.className="muted";
+status.textContent="Status: "+(p.status||"Draft");
+
+const view=document.createElement("button");
+view.className="primary";
+view.textContent="View Details";
+view.onclick=()=>showDetails(p);
+
+const remove=document.createElement("button");
+remove.className="danger";
+remove.textContent="Delete";
+remove.onclick=()=>{
+if(confirm("Delete this project?")){
+const all=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
+all.splice(index,1);
+localStorage.setItem("uaaaProjects",JSON.stringify(all));
+loadProjects();
+}
+};
+
+card.append(title,details,status,view,remove);
+list.appendChild(card);
+});
+}
+
+function showDetails(p){
+alert(
+"Project: "+p.title+
+"\nCategory: "+p.category+
+"\nLanguage: "+p.language+
+"\nFormat: "+p.format+
+"\nDuration: "+p.duration+
+"\nVoice: "+p.voice+
+"\nTopic: "+p.topic
+);
+}
+
+loadProjects();
+</script>
+
+</body>
+</html>
