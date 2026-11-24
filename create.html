@@ -1,1 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create New Video - UAAA AI Studio</title>
 
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f5fa;color:#172033}
+header{background:#101b35;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
+header a{color:white;text-decoration:none}
+.container{max-width:950px;margin:25px auto;padding:15px}
+.card{background:white;padding:24px;border-radius:14px;box-shadow:0 3px 15px #0001;margin-bottom:20px}
+h2{margin-top:0}
+label{display:block;margin:17px 0 7px;font-weight:bold}
+input,select,textarea{width:100%;padding:13px;border:1px solid #d9deea;border-radius:8px;font-size:15px;background:white}
+textarea{min-height:110px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+button{border:0;border-radius:8px;padding:14px 20px;font-size:15px;font-weight:bold;cursor:pointer}
+.primary{background:#3659d9;color:white}
+.secondary{background:#e9edfa;color:#24365f}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.note{color:#65718a;font-size:13px}
+#output{white-space:pre-wrap;line-height:1.7;background:#f5f7fc;padding:18px;border-radius:9px;margin-top:15px;display:none}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:17px}}
+</style>
+</head>
+
+<body>
+<header>
+<h2>UAAA AI Studio</h2>
+<a href="index.html">← Dashboard</a>
+</header>
+
+<div class="container">
+<div class="card">
+<h2>＋ Create New Video</h2>
+<p class="note">Create your next YouTube video or social media project.</p>
+
+<label>1. Select Video Category</label>
+<select id="category">
+<option>AI News Creator</option>
+<option>Job Alert Creator</option>
+<option>Educational Videos</option>
+<option>Motivational Videos</option>
+<option>Stories & Documentary</option>
+<option>YouTube Shorts</option>
+<option>Cartoon Videos</option>
+<option>Facts & Information</option>
+<option>Product Promotion</option>
+<option>Family & Entertainment</option>
+</select>
+
+<label>2. Video Title</label>
+<input id="title" placeholder="Enter your video title">
+
+<div class="grid">
+<div>
+<label>3. Select Language</label>
+<select id="language">
+<option>Hindi</option>
+<option>English</option>
+<option>Bhojpuri</option>
+<option>Bengali</option>
+<option>Marathi</option>
+<option>Tamil</option>
+<option>Telugu</option>
+<option>Punjabi</option>
+</select>
+</div>
+
+<div>
+<label>4. Video Format</label>
+<select id="format">
+<option>YouTube Landscape (16:9)</option>
+<option>YouTube Shorts / Reels (9:16)</option>
+<option>Square Video (1:1)</option>
+</select>
+</div>
+</div>
+
+<div class="grid">
+<div>
+<label>5. Video Duration</label>
+<select id="duration">
+<option>30 Seconds</option>
+<option>1 Minute</option>
+<option>3 Minutes</option>
+<option>5 Minutes</option>
+<option>10 Minutes</option>
+<option>15 Minutes</option>
+<option>20 Minutes</option>
+</select>
+</div>
+
+<div>
+<label>6. Voice Style</label>
+<select id="voice">
+<option>Male Professional</option>
+<option>Female Professional</option>
+<option>News Anchor</option>
+<option>Storytelling</option>
+<option>Motivational Speaker</option>
+</select>
+</div>
+</div>
+
+<label>7. Describe Your Video Topic</label>
+<textarea id="topic" placeholder="Write what your video should be about..."></textarea>
+
+<div class="actions">
+<button class="primary" onclick="generateScript()">✦ Generate Script</button>
+<button class="secondary" onclick="saveDraft()">Save Draft</button>
+</div>
+</div>
+
+<div class="card">
+<h2>📝 Script Workspace</h2>
+<p class="note">Your project preview will appear here.</p>
+<div id="output"></div>
+</div>
+</div>
+
+<script>
+function getProject(){
+return {
+category:document.getElementById("category").value,
+title:document.getElementById("title").value,
+language:document.getElementById("language").value,
+format:document.getElementById("format").value,
+duration:document.getElementById("duration").value,
+voice:document.getElementById("voice").value,
+topic:document.getElementById("topic").value
+};
+}
+
+function generateScript(){
+const p=getProject();
+if(!p.title.trim()||!p.topic.trim()){
+alert("Please enter Video Title and Topic first.");
+return;
+}
+const output=document.getElementById("output");
+output.style.display="block";
+output.textContent=
+"VIDEO PROJECT PREVIEW\n\n"+
+"Title: "+p.title+"\n"+
+"Category: "+p.category+"\n"+
+"Language: "+p.language+"\n"+
+"Format: "+p.format+"\n"+
+"Duration: "+p.duration+"\n"+
+"Voice: "+p.voice+"\n\n"+
+"VIDEO TOPIC:\n"+p.topic+
+"\n\nYour project details are ready. Actual AI script generation will be connected in a future step.";
+output.scrollIntoView({behavior:"smooth"});
+}
+
+function saveDraft(){
+const p=getProject();
+if(!p.title.trim()){
+alert("Please enter a Video Title.");
+return;
+}
+let projects=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
+projects.push({...p,id:Date.now(),status:"Draft"});
+localStorage.setItem("uaaaProjects",JSON.stringify(projects));
+alert("Your project has been saved as a Draft on this device.");
+}
+</script>
+</body>
+</html>
