@@ -1,1 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAAA AI Studio</title>
 
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f1f4f9;
+    color: #172554;
+}
+
+.header {
+    background: #101d40;
+    color: white;
+    padding: 18px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #38bdf8;
+}
+
+.menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 26px;
+}
+
+.layout {
+    display: flex;
+    min-height: calc(100vh - 65px);
+}
+
+.sidebar {
+    width: 250px;
+    background: #172554;
+    color: white;
+    padding: 20px 12px;
+}
+
+.sidebar button {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 7px;
+    border: none;
+    border-radius: 7px;
+    text-align: left;
+    background: transparent;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.sidebar button:hover,
+.sidebar button.active {
+    background: #2563eb;
+}
+
+.main {
+    flex: 1;
+    padding: 25px;
+    min-width: 0;
+}
+
+.welcome {
+    background: linear-gradient(120deg, #1e3a8a, #2563eb);
+    color: white;
+    padding: 30px;
+    border-radius: 14px;
+    margin-bottom: 25px;
+}
+
+.welcome h1 {
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.welcome p {
+    margin-bottom: 18px;
+    color: #dbeafe;
+}
+
+.primary-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 7px;
+    background: #38bdf8;
+    color: #082f49;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0000000c;
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.stat-card p {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.section-title {
+    margin: 25px 0 15px;
+}
+
+.categories {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.category {
+    background: white;
+    padding: 22px 15px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+}
+
+.category:hover {
+    border-color: #2563eb;
+    transform: translateY(-3px);
+}
+
+.category .icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.category h3 {
+    font-size: 15px;
+}
+
+.category p {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 7px;
+}
+
+.content-box {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    min-height: 200px;
+}
+
+.content-box p {
+    margin-top: 12px;
+    color: #64748b;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+@media(max-width: 800px) {
+    .menu-btn {
+        display: block;
+    }
+
+    .layout {
+        display: block;
+    }
+
+    .sidebar {
+        display: none;
+        width: 100%;
+    }
+
+    .sidebar.show {
+        display: block;
+    }
+
+    .main {
+        padding: 15px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .categories {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .welcome h1 {
+        font-size: 22px;
+    }
+}
+
+@media(max-width: 380px) {
+    .categories {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">UAAA <span>AI Studio</span></div>
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+</header>
+
+<div class="layout">
+
+<nav class="sidebar" id="sidebar">
+    <button class="active" onclick="showPage('Dashboard',this)">🏠 Dashboard</button>
+    <button onclick="showPage('Create New Video',this)">🎬 Create New Video</button>
+    <button onclick="showPage('AI News Creator',this)">📰 AI News Creator</button>
+    <button onclick="showPage('Job Alert Creator',this)">💼 Job Alert Creator</button>
+    <button onclick="showPage('Educational Creator',this)">📚 Educational Videos</button>
+    <button onclick="showPage('Motivational Creator',this)">🔥 Motivational Videos</button>
+    <button onclick="showPage('Stories & Documentary',this)">📖 Stories & Documentary</button>
+    <button onclick="showPage('YouTube Shorts',this)">📱 YouTube Shorts</button>
+    <button onclick="showPage('My Projects',this)">📂 My Projects</button>
+    <button onclick="showPage('Media Library',this)">🖼️ Media Library</button>
+    <button onclick="showPage('Video Templates',this)">🎨 Video Templates</button>
+    <button onclick="showPage('Voice Studio',this)">🎙️ Voice Studio</button>
+    <button onclick="showPage('Thumbnail Studio',this)">🖌️ Thumbnail Studio</button>
+    <button onclick="showPage('YouTube Integration',this)">▶️ YouTube Integration</button>
+    <button onclick="showPage('Settings',this)">⚙️ Settings</button>
+</nav>
+
+<main class="main" id="main">
+
+<section class="welcome">
+    <h1>Welcome to UAAA AI Studio!</h1>
+    <p>Your all-in-one video creation workspace.</p>
+    <button class="primary-btn" onclick="showPage('Create New Video')">
+        + Create New Video
+    </button>
+</section>
+
+<section class="stats">
+    <div class="stat-card">
+        <h3>Total Videos Created</h3>
+        <p>0</p>
+    </div>
+    <div class="stat-card">
+        <h3>Draft Projects</h3>
+        <p>0</p>
+    </div>
+    <div class="stat-card">
+        <h3>Completed Videos</h3>
+        <p>0</p>
+    </div>
+</section>
+
+<h2 class="section-title">Create Videos</h2>
+
+<section class="categories">
+    <div class="category" onclick="showPage('AI News Creator')">
+        <div class="icon">📰</div>
+        <h3>News Videos</h3>
+        <p>Create news content</p>
+    </div>
+
+    <div class="category" onclick="showPage('Job Alert Creator')">
+        <div class="icon">💼</div>
+        <h3>Job Alerts</h3>
+        <p>Government & private jobs</p>
+    </div>
+
+    <div class="category" onclick="showPage('Educational Creator')">
+        <div class="icon">📚</div>
+        <h3>Education</h3>
+        <p>Learning videos</p>
+    </div>
+
+    <div class="category" onclick="showPage('Motivational Creator')">
+        <div class="icon">🔥</div>
+        <h3>Motivational</h3>
+        <p>Inspirational content</p>
+    </div>
+
+    <div class="category" onclick="showPage('Stories & Documentary')">
+        <div class="icon">📖</div>
+        <h3>Stories</h3>
+        <p>Stories & documentaries</p>
+    </div>
+
+    <div class="category" onclick="showPage('YouTube Shorts')">
+        <div class="icon">📱</div>
+        <h3>Shorts & Reels</h3>
+        <p>Vertical short videos</p>
+    </div>
+</section>
+
+<h2 class="section-title">Recent Projects</h2>
+
+<div class="content-box">
+    <h3>Your Recent Projects</h3>
+    <p>No projects available yet. Start creating your first video!</p>
+</div>
+
+</main>
+</div>
+
+<footer class="footer">
+    © 2026 UAAA AI Studio | Version 1.0
+</footer>
+
+<script>
+function toggleMenu() {
+    document.getElementById("sidebar").classList.toggle("show");
+}
+
+function showPage(page, button) {
+    const main = document.getElementById("main");
+
+    if (button) {
+        document.querySelectorAll(".sidebar button").forEach(btn => {
+            btn.classList.remove("active");
+        });
+        button.classList.add("active");
+    }
+
+    if (page === "Dashboard") {
+        location.reload();
+        return;
+    }
+
+    main.innerHTML = `
+        <div class="content-box">
+            <h1>${page}</h1>
+            <p>Welcome to the ${page} section of UAAA AI Studio.</p>
+            <p>This feature will be developed in the next stages.</p>
+            <br>
+            <button class="primary-btn" onclick="location.reload()">
+                Back to Dashboard
+            </button>
+        </div>
+    `;
+
+    document.getElementById("sidebar").classList.remove("show");
+}
+</script>
+
+</body>
+</html>
