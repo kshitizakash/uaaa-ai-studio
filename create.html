@@ -3,42 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create New Video - UAAA AI Studio</title>
+<title>UAAA AI Studio - Create Video</title>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f5fa;color:#172033}
+body{margin:0;font-family:Arial;background:#f3f5fa;color:#172033}
 header{background:#101b35;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
 header a{color:white;text-decoration:none}
 .container{max-width:950px;margin:25px auto;padding:15px}
-.card{background:white;padding:24px;border-radius:14px;box-shadow:0 3px 15px #0001;margin-bottom:20px}
+.card{background:white;padding:22px;border-radius:14px;margin-bottom:20px;box-shadow:0 3px 15px #0001}
 h2{margin-top:0}
-label{display:block;margin:17px 0 7px;font-weight:bold}
-input,select,textarea{width:100%;padding:13px;border:1px solid #d9deea;border-radius:8px;font-size:15px;background:white}
-textarea{min-height:110px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-button{border:0;border-radius:8px;padding:14px 20px;font-size:15px;font-weight:bold;cursor:pointer}
+label{display:block;margin:16px 0 7px;font-weight:bold}
+input,select,textarea{width:100%;padding:13px;border:1px solid #d9deea;border-radius:8px;font-size:15px}
+textarea{min-height:100px}
+button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:bold;cursor:pointer;margin:5px 3px}
 .primary{background:#3659d9;color:white}
 .secondary{background:#e9edfa;color:#24365f}
-.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.green{background:#16864a;color:white}
+.red{background:#c83c3c;color:white}
 .note{color:#65718a;font-size:13px}
-#output{white-space:pre-wrap;line-height:1.7;background:#f5f7fc;padding:18px;border-radius:9px;margin-top:15px;display:none}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:17px}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+#status{padding:12px;background:#fff4d7;border-radius:8px;margin-top:12px}
+#approval{display:none;background:#e8f8ed;padding:15px;border-radius:9px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:16px}}
 </style>
 </head>
 
 <body>
+
 <header>
-<h2>UAAA AI Studio</h2>
+<h2>🚀 UAAA AI Studio</h2>
 <a href="index.html">← Dashboard</a>
 </header>
 
 <div class="container">
-<div class="card">
-<h2>＋ Create New Video</h2>
-<p class="note">Create your next YouTube video or social media project.</p>
 
-<label>1. Select Video Category</label>
+<div class="card">
+<h2>🎬 Create New Video</h2>
+<p class="note">Audio First Video Creation Workflow</p>
+
+<label>1. Video Category</label>
 <select id="category">
 <option>AI News Creator</option>
 <option>Job Alert Creator</option>
@@ -53,11 +57,14 @@ button{border:0;border-radius:8px;padding:14px 20px;font-size:15px;font-weight:b
 </select>
 
 <label>2. Video Title</label>
-<input id="title" placeholder="Enter your video title">
+<input id="title" placeholder="Enter video title">
+
+<label>3. Customer / Company Name</label>
+<input id="customer" placeholder="Enter customer or company name">
 
 <div class="grid">
 <div>
-<label>3. Select Language</label>
+<label>4. Language</label>
 <select id="language">
 <option>Hindi</option>
 <option>English</option>
@@ -71,7 +78,7 @@ button{border:0;border-radius:8px;padding:14px 20px;font-size:15px;font-weight:b
 </div>
 
 <div>
-<label>4. Video Format</label>
+<label>5. Video Format</label>
 <select id="format">
 <option>YouTube Landscape (16:9)</option>
 <option>YouTube Shorts / Reels (9:16)</option>
@@ -82,7 +89,7 @@ button{border:0;border-radius:8px;padding:14px 20px;font-size:15px;font-weight:b
 
 <div class="grid">
 <div>
-<label>5. Video Duration</label>
+<label>6. Video Duration</label>
 <select id="duration">
 <option>30 Seconds</option>
 <option>1 Minute</option>
@@ -95,7 +102,7 @@ button{border:0;border-radius:8px;padding:14px 20px;font-size:15px;font-weight:b
 </div>
 
 <div>
-<label>6. Voice Style</label>
+<label>7. Voice Style</label>
 <select id="voice">
 <option>Male Professional</option>
 <option>Female Professional</option>
@@ -106,67 +113,212 @@ button{border:0;border-radius:8px;padding:14px 20px;font-size:15px;font-weight:b
 </div>
 </div>
 
-<label>7. Describe Your Video Topic</label>
-<textarea id="topic" placeholder="Write what your video should be about..."></textarea>
+<label>8. Complete Customer Brief</label>
+<textarea id="topic" placeholder="Company details, product, services, offers, price, mobile number, address and all important information..."></textarea>
 
-<div class="actions">
-<button class="primary" onclick="generateScript()">✦ Generate Script</button>
+<button class="primary" onclick="generateScript()">✦ Prepare Script</button>
 <button class="secondary" onclick="saveDraft()">Save Draft</button>
-</div>
+
 </div>
 
 <div class="card">
-<h2>📝 Script Workspace</h2>
-<p class="note">Your project preview will appear here.</p>
-<div id="output"></div>
+<h2>📝 Step 2: Script Workspace</h2>
+<p class="note">यहाँ तैयार Script को ध्यान से जाँचें और जरूरत के अनुसार Edit करें।</p>
+
+<label>Complete Video Script</label>
+<textarea id="script" style="min-height:250px" placeholder="Your complete script will appear here. You can also write or edit it manually."></textarea>
+
+<button class="primary" onclick="speakScript()">🔊 Listen to Script</button>
+<button class="secondary" onclick="stopAudio()">⏹ Stop Audio</button>
+
+<div id="status">Status: Script Not Approved</div>
 </div>
+
+<div class="card">
+<h2>✅ Step 3: Customer Approval</h2>
+
+<p>ग्राहक से पूरा Script और Audio सुनवाने के बाद ही Approval लें।</p>
+
+<button class="green" onclick="approveScript()">Approve Script & Audio</button>
+<button class="red" onclick="requestChanges()">Request Changes</button>
+
+<div id="approval">
+<h3>🔒 Script & Audio Approved</h3>
+<p>यह Version लॉक कर दिया गया है। अब बदलाव करने के लिए नया Version बनाना होगा।</p>
+<button class="secondary" onclick="newVersion()">Create New Version</button>
+</div>
+
+</div>
+
+<div class="card">
+<h2>🎥 Step 4: Video Creation</h2>
+<p class="note">Video generation तभी शुरू होगी जब Script और Audio Approved होंगे।</p>
+<button class="primary" onclick="startVideo()">Continue to Visual Generation</button>
+<p id="videoStatus" class="note"></p>
+</div>
+
 </div>
 
 <script>
-function getProject(){
-return {
-category:document.getElementById("category").value,
-title:document.getElementById("title").value,
-language:document.getElementById("language").value,
-format:document.getElementById("format").value,
-duration:document.getElementById("duration").value,
-voice:document.getElementById("voice").value,
-topic:document.getElementById("topic").value
-};
-}
+
+let approved = false;
 
 function generateScript(){
-const p=getProject();
-if(!p.title.trim()||!p.topic.trim()){
-alert("Please enter Video Title and Topic first.");
+
+if(approved){
+alert("पहले नया Version बनाइए।");
 return;
 }
-const output=document.getElementById("output");
-output.style.display="block";
-output.textContent=
-"VIDEO PROJECT PREVIEW\n\n"+
-"Title: "+p.title+"\n"+
-"Category: "+p.category+"\n"+
-"Language: "+p.language+"\n"+
-"Format: "+p.format+"\n"+
-"Duration: "+p.duration+"\n"+
-"Voice: "+p.voice+"\n\n"+
-"VIDEO TOPIC:\n"+p.topic+
-"\n\nYour project details are ready. Actual AI script generation will be connected in a future step.";
-output.scrollIntoView({behavior:"smooth"});
+
+let title=document.getElementById("title").value;
+let customer=document.getElementById("customer").value;
+let topic=document.getElementById("topic").value;
+
+if(!title.trim() || !topic.trim()){
+alert("Please enter Video Title and Customer Brief.");
+return;
+}
+
+let script =
+"नमस्कार!\n\n"+
+"आज हम आपके लिए लेकर आए हैं "+title+"।\n\n"+
+"कंपनी / ग्राहक का नाम: "+customer+"\n\n"+
+"हमारी जानकारी:\n"+
+topic+"\n\n"+
+"अधिक जानकारी के लिए आज ही संपर्क करें।\n\n"+
+"धन्यवाद!";
+
+document.getElementById("script").value=script;
+
+document.getElementById("status").innerText=
+"Status: Script Prepared - Please Review and Listen";
+
+}
+
+function speakScript(){
+
+let text=document.getElementById("script").value;
+
+if(!text.trim()){
+alert("पहले Script तैयार करें।");
+return;
+}
+
+if(!window.speechSynthesis){
+alert("आपका Browser Audio Preview Support नहीं करता।");
+return;
+}
+
+speechSynthesis.cancel();
+
+let speech=new SpeechSynthesisUtterance(text);
+speech.lang="hi-IN";
+
+speechSynthesis.speak(speech);
+
+}
+
+function stopAudio(){
+speechSynthesis.cancel();
+}
+
+function approveScript(){
+
+let script=document.getElementById("script").value;
+
+if(!script.trim()){
+alert("पहले Script तैयार करें।");
+return;
+}
+
+if(!confirm("क्या ग्राहक ने पूरा Script और Audio सुनकर Approval दे दिया है?")){
+return;
+}
+
+approved=true;
+
+document.getElementById("script").readOnly=true;
+
+document.getElementById("approval").style.display="block";
+
+document.getElementById("status").innerText=
+"Status: APPROVED AND LOCKED";
+
+localStorage.setItem("uaaaApprovedScript",JSON.stringify({
+script:script,
+approved:true,
+date:new Date().toISOString()
+}));
+
+alert("Script और Audio Version Approved और Locked हो गया है।");
+
+}
+
+function requestChanges(){
+
+if(approved){
+alert("नया Version बनाने के बाद ही बदलाव कर सकते हैं।");
+return;
+}
+
+document.getElementById("status").innerText=
+"Status: Changes Requested - Edit Your Script";
+
+alert("Script में बदलाव करें और दोबारा Audio सुनें।");
+
+}
+
+function newVersion(){
+
+approved=false;
+
+document.getElementById("script").readOnly=false;
+
+document.getElementById("approval").style.display="none";
+
+document.getElementById("status").innerText=
+"Status: New Version - Approval Pending";
+
+localStorage.removeItem("uaaaApprovedScript");
+
+}
+
+function startVideo(){
+
+if(!approved){
+alert("पहले Script और Audio Approval जरूरी है।");
+return;
+}
+
+document.getElementById("videoStatus").innerText=
+"Approval successful! Visual Generation Module will be connected in the next development stage.";
+
 }
 
 function saveDraft(){
-const p=getProject();
-if(!p.title.trim()){
-alert("Please enter a Video Title.");
+
+let project={
+id:Date.now(),
+title:document.getElementById("title").value,
+category:document.getElementById("category").value,
+language:document.getElementById("language").value,
+format:document.getElementById("format").value,
+duration:document.getElementById("duration").value,
+customer:document.getElementById("customer").value,
+topic:document.getElementById("topic").value,
+script:document.getElementById("script").value,
+status:approved?"Approved":"Draft"
+};
+
+if(!project.title.trim()){
+alert("Please enter Video Title.");
 return;
 }
+
 let projects=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
-projects.push({...p,id:Date.now(),status:"Draft"});
+
+projects.push(project);
+
 localStorage.setItem("uaaaProjects",JSON.stringify(projects));
-alert("Your project has been saved as a Draft on this device.");
-}
-</script>
-</body>
-</html>
+
+alert("Project saved successfully!");
