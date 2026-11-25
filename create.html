@@ -7,49 +7,108 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f5fa;color:#202638}
-header{background:#14213d;color:white;padding:18px}
-header h2{margin:0}
-.container{max-width:900px;margin:20px auto;padding:15px}
-.card{background:white;padding:20px;margin-bottom:18px;border-radius:12px;box-shadow:0 2px 9px #00000012}
-h3{color:#174ea6;margin-top:0}
-label{display:block;font-weight:bold;margin:13px 0 6px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #ccd2df;border-radius:7px;font-size:15px}
-textarea{min-height:130px;resize:vertical}
-button{border:0;border-radius:7px;padding:12px 17px;margin:8px 5px 0 0;cursor:pointer;background:#1769d2;color:white;font-weight:bold}
-.secondary{background:#596579}
-.green{background:#16834a}
-.orange{background:#e58b18}
-button:disabled{background:#999;cursor:not-allowed}
-.note{background:#fff6df;border-left:4px solid #e5a323;padding:12px;border-radius:5px;line-height:1.5;margin-top:12px}
-.status{padding:12px;border-radius:7px;background:#eaf4ff;margin-top:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.voice-box{border:1px solid #d9e0ec;border-radius:9px;padding:15px;margin-top:12px}
-.voice-box h4{margin-top:0}
-.back{display:inline-block;color:white;text-decoration:none;margin-top:10px}
-.profile-item{background:#f3f6fb;border:1px solid #dce2eb;padding:12px;border-radius:8px;margin-top:10px}
-@media(max-width:600px){
-.grid{grid-template-columns:1fr}
-.container{padding:10px}
-.card{padding:15px}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f3f6fb;
+ color:#172033;
 }
+header{
+ background:#142b55;
+ color:white;
+ padding:20px;
+ text-align:center;
+}
+.container{
+ max-width:900px;
+ margin:20px auto;
+ padding:15px;
+}
+.card{
+ background:white;
+ padding:20px;
+ margin-bottom:18px;
+ border-radius:12px;
+ box-shadow:0 3px 12px #00000010;
+}
+h2{color:#17478b;font-size:20px}
+h3{color:#17478b}
+label{
+ display:block;
+ margin-top:13px;
+ font-weight:bold;
+}
+input,select,textarea{
+ width:100%;
+ padding:12px;
+ margin-top:6px;
+ border:1px solid #ccd5e2;
+ border-radius:7px;
+ font-size:15px;
+ background:white;
+}
+textarea{
+ min-height:150px;
+ resize:vertical;
+}
+button{
+ border:0;
+ border-radius:7px;
+ padding:12px 16px;
+ margin:8px 5px 0 0;
+ background:#1769d2;
+ color:white;
+ font-weight:bold;
+ cursor:pointer;
+}
+button.secondary{background:#52647e}
+button.success{background:#16834a}
+button.danger{background:#c62828}
+button:disabled{
+ background:#999;
+ cursor:not-allowed;
+}
+.note{
+ background:#edf5ff;
+ padding:12px;
+ border-radius:8px;
+ line-height:1.6;
+ margin-top:12px;
+}
+.profile{
+ border:1px solid #d6dfeb;
+ padding:13px;
+ border-radius:9px;
+ margin-top:12px;
+}
+.profile strong{color:#17478b}
+.status{
+ font-weight:bold;
+ margin-top:12px;
+}
+.locked{
+ background:#fff3cd;
+ padding:12px;
+ border-radius:8px;
+}
+.small{font-size:13px;color:#64748b}
+a{color:#1769d2}
+hr{border:0;border-top:1px solid #e1e7ef;margin:20px 0}
 </style>
 </head>
 
 <body>
 
 <header>
-<h2>🎬 UAAA AI Studio</h2>
-<p>Create New Video - Audio First Workflow</p>
-<a class="back" href="index.html">← Back to Dashboard</a>
+<h1>🎬 UAAA AI Studio</h1>
+<p>Create New Video - Audio First Workflow 2.2</p>
 </header>
 
 <div class="container">
 
-<!-- STEP 1 -->
-
 <div class="card">
-<h3>Step 1: Customer Brief</h3>
+<a href="index.html">← Back to Dashboard</a>
+<h2>Step 1: Customer Brief</h2>
 
 <label>Video Category</label>
 <select id="category">
@@ -69,8 +128,6 @@ button:disabled{background:#999;cursor:not-allowed}
 <label>Customer / Company Name</label>
 <input id="customer" placeholder="Enter customer or company name">
 
-<div class="grid">
-<div>
 <label>Language</label>
 <select id="language">
 <option value="hi-IN">Hindi</option>
@@ -82,17 +139,13 @@ button:disabled{background:#999;cursor:not-allowed}
 <option value="te-IN">Telugu</option>
 <option value="pa-IN">Punjabi</option>
 </select>
-</div>
 
-<div>
 <label>Video Format</label>
 <select id="format">
 <option>16:9 Landscape</option>
 <option>9:16 Vertical</option>
 <option>1:1 Square</option>
 </select>
-</div>
-</div>
 
 <label>Video Duration</label>
 <select id="duration">
@@ -105,19 +158,17 @@ button:disabled{background:#999;cursor:not-allowed}
 </select>
 
 <label>Complete Customer Brief</label>
-<textarea id="brief" placeholder="Enter complete customer details, product information, offer, mobile number, address and video requirements..."></textarea>
+<textarea id="brief" placeholder="Enter complete customer requirements, company details, phone number, address, offer, price etc."></textarea>
 
 <button onclick="prepareScript()">Prepare Script</button>
 </div>
 
 
-<!-- STEP 2 -->
-
 <div class="card">
-<h3>Step 2: Script Workspace</h3>
+<h2>Step 2: Script Workspace</h2>
 
 <label>Video Script</label>
-<textarea id="script" placeholder="Your complete video script will appear here..."></textarea>
+<textarea id="script" placeholder="Your complete video script will appear here. You can also edit it manually."></textarea>
 
 <div class="note">
 पहले पूरी स्क्रिप्ट तैयार करें। Company Name, Mobile Number, Address, Price और Offer की जानकारी ध्यान से जाँचें।
@@ -125,66 +176,58 @@ button:disabled{background:#999;cursor:not-allowed}
 </div>
 
 
-<!-- STEP 3 -->
-
 <div class="card">
-<h3>🎙️ Step 3: AI Voice Studio 2.1</h3>
+<h2>🎙️ Step 3: AI Voice Studio 2.2</h2>
 
-<div class="voice-box">
-<h4>Voice Engine Selection</h4>
+<h3>Voice Engine Selection</h3>
 
-<label>Select Voice Engine</label>
 <select id="engine" onchange="changeEngine()">
 <option value="browser">Browser Voice</option>
 <option value="ai">AI Voice Studio</option>
 </select>
-</div>
 
 
-<!-- BROWSER VOICE -->
-
-<div id="browserPanel" class="voice-box">
-
-<h4>🌐 Browser Voice Studio</h4>
+<div id="browserPanel">
+<hr>
+<h3>🌐 Browser Voice Studio</h3>
 
 <label>Voice Gender Preference</label>
 <select id="gender">
-<option value="any">Any Voice</option>
-<option value="male">Male Voice</option>
-<option value="female">Female Voice</option>
+<option value="Any">Any Voice</option>
+<option value="Male">Male Voice</option>
+<option value="Female">Female Voice</option>
 </select>
 
 <label>Available Browser Voices</label>
 <select id="browserVoice"></select>
 
 <label>Voice Speed: <span id="speedValue">1.0</span></label>
-<input type="range" id="speed" min="0.7" max="1.5" step="0.1" value="1"
-oninput="document.getElementById('speedValue').textContent=this.value">
+<input id="speed" type="range" min="0.7" max="1.5" step="0.1" value="1"
+oninput="speedValue.textContent=this.value">
 
 <label>Voice Pitch: <span id="pitchValue">1.0</span></label>
-<input type="range" id="pitch" min="0.5" max="1.5" step="0.1" value="1"
-oninput="document.getElementById('pitchValue').textContent=this.value">
+<input id="pitch" type="range" min="0.5" max="1.5" step="0.1" value="1"
+oninput="pitchValue.textContent=this.value">
 
-<button onclick="listenScript()">▶ Listen Full Script</button>
-<button class="secondary" onclick="listenSelected()">▶ Listen Selected Part</button>
-<button class="orange" onclick="stopAudio()">■ Stop Audio</button>
+<button onclick="speakFull()">▶ Listen Full Script</button>
+<button class="secondary" onclick="speakSelected()">▶ Listen Selected Part</button>
+<button class="danger" onclick="stopAudio()">■ Stop Audio</button>
 
 <div class="note">
-Browser Voice आपके मोबाइल या कंप्यूटर में उपलब्ध आवाज़ का इस्तेमाल करती है। Male/Female चयन तभी काम करेगा जब डिवाइस में संबंधित आवाज़ उपलब्ध हो।
+Browser Voice आपके मोबाइल या कंप्यूटर में उपलब्ध आवाज़ का इस्तेमाल करती है।
+Male/Female आवाज़ तभी मिलेगी जब डिवाइस में संबंधित आवाज़ उपलब्ध हो।
 </div>
 </div>
 
 
-<!-- AI VOICE -->
-
-<div id="aiPanel" class="voice-box" style="display:none">
-
-<h4>🤖 AI Voice Selection</h4>
+<div id="aiPanel" style="display:none">
+<hr>
+<h3>🤖 AI Voice Selection</h3>
 
 <label>AI Voice Gender</label>
 <select id="aiGender">
-<option value="male">Male Voice</option>
-<option value="female">Female Voice</option>
+<option>Male</option>
+<option>Female</option>
 </select>
 
 <label>AI Voice Style</label>
@@ -199,14 +242,14 @@ Browser Voice आपके मोबाइल या कंप्यूटर �
 
 <label>AI Voice Language</label>
 <select id="aiLanguage">
-<option>Hindi</option>
-<option>English</option>
-<option>Bhojpuri</option>
-<option>Bengali</option>
-<option>Marathi</option>
-<option>Tamil</option>
-<option>Telugu</option>
-<option>Punjabi</option>
+<option value="hi-IN">Hindi</option>
+<option value="en-IN">English</option>
+<option value="bho-IN">Bhojpuri</option>
+<option value="bn-IN">Bengali</option>
+<option value="mr-IN">Marathi</option>
+<option value="ta-IN">Tamil</option>
+<option value="te-IN">Telugu</option>
+<option value="pa-IN">Punjabi</option>
 </select>
 
 <label>AI Voice Quality</label>
@@ -216,14 +259,35 @@ Browser Voice आपके मोबाइल या कंप्यूटर �
 <option>Premium</option>
 </select>
 
+<div class="note">
+AI Voice API अभी कनेक्ट नहीं है। वास्तविक AI Voice Generate करने की सुविधा भविष्य में सुरक्षित API Connection के माध्यम से जोड़ी जाएगी।
+</div>
+<button disabled>▶ Generate AI Voice - Coming Soon</button>
+</div>
 
-<!-- VOICE PROFILE MANAGEMENT -->
+</div>
 
-<div class="voice-box">
-<h4>🎚️ Voice Profile Management</h4>
+
+<div class="card">
+<h3>🎚️ Voice Profile Management 2.2</h3>
+
+<div class="note">
+अपनी पसंद की Voice Settings को Profile के रूप में सेव करें। अगली बार एक क्लिक में वही Settings इस्तेमाल कर सकेंगे।
+</div>
+
+<label>Choose Saved Voice Profile</label>
+<select id="profileSelect" onchange="applySelectedProfile()">
+<option value="">Select a Saved Profile</option>
+</select>
+
+<button onclick="applySelectedProfile()">Apply Selected Profile</button>
+
+<hr>
+
+<h3>Save New Voice Profile</h3>
 
 <label>Voice Profile Name</label>
-<input id="profileName" placeholder="Example: Hindi Male Professional">
+<input id="profileName" placeholder="Example: UAAA Hindi Male Voice">
 
 <label>Voice Gender</label>
 <select id="profileGender">
@@ -233,14 +297,14 @@ Browser Voice आपके मोबाइल या कंप्यूटर �
 
 <label>Voice Language</label>
 <select id="profileLanguage">
-<option>Hindi</option>
-<option>English</option>
-<option>Bhojpuri</option>
-<option>Bengali</option>
-<option>Marathi</option>
-<option>Tamil</option>
-<option>Telugu</option>
-<option>Punjabi</option>
+<option value="hi-IN">Hindi</option>
+<option value="en-IN">English</option>
+<option value="bho-IN">Bhojpuri</option>
+<option value="bn-IN">Bengali</option>
+<option value="mr-IN">Marathi</option>
+<option value="ta-IN">Tamil</option>
+<option value="te-IN">Telugu</option>
+<option value="pa-IN">Punjabi</option>
 </select>
 
 <label>Voice Style</label>
@@ -267,47 +331,32 @@ Browser Voice आपके मोबाइल या कंप्यूटर �
 <option>Provider 2 - Future Integration</option>
 </select>
 
-<button onclick="saveVoiceProfile()">Save Voice Profile</button>
+<button class="success" onclick="saveVoiceProfile()">Save Voice Profile</button>
 
-<h4>Saved Voice Profiles</h4>
-<div id="profileList" class="status">
-No Voice Profiles Saved
+<hr>
+
+<h3>Saved Voice Profiles</h3>
+<div id="savedProfiles">No Voice Profiles Saved</div>
 </div>
 
-</div>
-
-<div class="note">
-<strong>AI Voice API Connection Pending</strong><br>
-यहाँ भविष्य में वास्तविक Male और Female AI Voices जोड़ी जाएँगी। अभी यह Voice Profile Management और Interface है।
-</div>
-
-<button class="secondary" disabled>▶ Generate AI Voice - Coming Soon</button>
-
-</div>
-</div>
-
-
-<!-- STEP 4 -->
 
 <div class="card">
-<h3>Step 4: Customer Approval & Audio Lock</h3>
+<h2>Step 4: Customer Approval & Audio Lock</h2>
 
 <p>स्क्रिप्ट और आवाज़ की जाँच के बाद ग्राहक की मंजूरी लें।</p>
 
-<button class="green" onclick="approveAudio()">Approve Script & Audio</button>
-<button class="orange" onclick="requestChanges()">Request Changes</button>
-<button class="secondary" onclick="newVersion()">Create New Version</button>
-
-<div id="approvalStatus" class="status">
+<div id="lockMessage" class="note">
 Status: Waiting for Approval
 </div>
+
+<button class="success" onclick="approveProject()">Approve Script & Audio</button>
+<button class="secondary" onclick="requestChanges()">Request Changes</button>
+<button class="secondary" onclick="newVersion()">Create New Version</button>
 </div>
 
 
-<!-- STEP 5 -->
-
 <div class="card">
-<h3>Step 5: Visual Generation</h3>
+<h2>Step 5: Visual Generation</h2>
 
 <p>Audio Approval के बाद वीडियो के Visuals तैयार किए जाएँगे।</p>
 
@@ -319,17 +368,11 @@ Visual Generation और MP4 Export की सुविधा अगले व�
 </div>
 
 
-<!-- STEP 6 -->
-
 <div class="card">
-<h3>Step 6: Save Project</h3>
-
-<button class="green" onclick="saveDraft()">Save Draft</button>
-<a href="projects.html">
-<button class="secondary">My Projects</button>
-</a>
-
-<div id="saveStatus" class="status"></div>
+<h2>Step 6: Save Project</h2>
+<button class="success" onclick="saveDraft()">Save Draft</button>
+<a href="projects.html"><button class="secondary">My Projects</button></a>
+<p class="small">Projects और Voice Profiles फिलहाल इसी ब्राउज़र में सेव होते हैं।</p>
 </div>
 
 </div>
@@ -339,355 +382,386 @@ Visual Generation और MP4 Export की सुविधा अगले व�
 
 const $ = id => document.getElementById(id);
 
-let voices = [];
 let approved = false;
+let selectedProfileId = "";
 
+function getProfiles(){
+ try{
+  return JSON.parse(localStorage.getItem("uaaaVoiceProfiles") || "[]");
+ }catch(e){
+  return [];
+ }
+}
 
-// BROWSER VOICES
+function storeProfiles(profiles){
+ localStorage.setItem("uaaaVoiceProfiles",JSON.stringify(profiles));
+}
 
-function loadVoices(){
+function prepareScript(){
 
- if(!window.speechSynthesis){
-  $('browserVoice').innerHTML='<option>Browser voice not supported</option>';
+ const title=$("title").value.trim();
+ const customer=$("customer").value.trim();
+ const brief=$("brief").value.trim();
+
+ if(!title || !brief){
+  alert("कृपया Video Title और Customer Brief भरें।");
   return;
  }
 
- voices=window.speechSynthesis.getVoices();
+ $("script").value =
+ "नमस्कार!\n\n"+
+ (customer ? customer+" की ओर से आपके लिए खास जानकारी।\n\n":"")+
+ "आज हम बात करेंगे "+title+" के बारे में।\n\n"+
+ brief+
+ "\n\nअधिक जानकारी के लिए हमसे संपर्क करें।\n\nधन्यवाद!";
 
- const selectedLanguage=$('language').value.split('-')[0];
+ approved=false;
+ $("lockMessage").textContent="Status: Waiting for Approval";
+}
 
- let filtered=voices.filter(v =>
-  v.lang.toLowerCase().startsWith(selectedLanguage.toLowerCase())
- );
+function changeEngine(){
 
- if(filtered.length===0) filtered=voices;
+ const engine=$("engine").value;
 
- $('browserVoice').innerHTML='';
+ $("browserPanel").style.display=engine==="browser"?"block":"none";
+ $("aiPanel").style.display=engine==="ai"?"block":"none";
 
- filtered.forEach(v=>{
-  const option=document.createElement('option');
-  option.value=voices.indexOf(v);
-  option.textContent=v.name+' ('+v.lang+')';
-  $('browserVoice').appendChild(option);
+}
+
+function loadBrowserVoices(){
+
+ if(!("speechSynthesis" in window)){
+  $("browserVoice").innerHTML="<option>Browser voice not supported</option>";
+  return;
+ }
+
+ const voices=speechSynthesis.getVoices();
+
+ $("browserVoice").innerHTML="";
+
+ if(!voices.length){
+  $("browserVoice").innerHTML="<option>No browser voices available</option>";
+  return;
+ }
+
+ voices.forEach((voice,index)=>{
+  const option=document.createElement("option");
+  option.value=index;
+  option.textContent=voice.name+" ("+voice.lang+")";
+  $("browserVoice").appendChild(option);
  });
 
 }
 
-if(window.speechSynthesis){
- loadVoices();
- window.speechSynthesis.onvoiceschanged=loadVoices;
+if("speechSynthesis" in window){
+ speechSynthesis.onvoiceschanged=loadBrowserVoices;
 }
-
-$('language').addEventListener('change',loadVoices);
-
-
-// ENGINE SELECTION
-
-function changeEngine(){
-
- const isAI=$('engine').value==='ai';
-
- $('browserPanel').style.display=isAI?'none':'block';
- $('aiPanel').style.display=isAI?'block':'none';
-
- stopAudio();
-}
-
-
-// SCRIPT PREPARATION
-
-function prepareScript(){
-
- const title=$('title').value.trim();
- const customer=$('customer').value.trim();
- const brief=$('brief').value.trim();
-
- if(!title || !brief){
-  alert('Please enter Video Title and Customer Brief.');
-  return;
- }
-
- $('script').value=
- 'नमस्कार! आज हम आपके लिए लेकर आए हैं '+title+'।\n\n'+
- 'यह जानकारी प्रस्तुत की जा रही है '+customer+' की ओर से।\n\n'+
- brief+
- '\n\nअधिक जानकारी के लिए हमसे संपर्क करें। धन्यवाद!';
-
- approved=false;
- $('approvalStatus').innerText='Status: Script Prepared - Approval Pending';
-}
-
-
-// AUDIO PLAYBACK
+loadBrowserVoices();
 
 function speakText(text){
 
  if(!text.trim()){
-  alert('Please prepare or enter a script first.');
+  alert("पहले Script तैयार करें।");
   return;
  }
 
- if(!window.speechSynthesis){
-  alert('Speech synthesis is not supported.');
+ if(!("speechSynthesis" in window)){
+  alert("आपके Browser में Speech सुविधा उपलब्ध नहीं है।");
   return;
  }
 
  stopAudio();
 
  const utterance=new SpeechSynthesisUtterance(text);
+ const voices=speechSynthesis.getVoices();
+ const selected=voices[Number($("browserVoice").value)];
 
- utterance.lang=$('language').value;
- utterance.rate=parseFloat($('speed').value);
- utterance.pitch=parseFloat($('pitch').value);
-
- const index=parseInt($('browserVoice').value);
-
- if(!isNaN(index) && voices[index]){
-  utterance.voice=voices[index];
+ if(selected){
+  utterance.voice=selected;
  }
 
- window.speechSynthesis.speak(utterance);
+ utterance.rate=Number($("speed").value);
+ utterance.pitch=Number($("pitch").value);
+
+ speechSynthesis.speak(utterance);
 }
 
-
-function listenScript(){
-
- if($('engine').value==='ai'){
-  alert('AI Voice API is not connected yet.');
-  return;
- }
-
- speakText($('script').value);
+function speakFull(){
+ speakText($("script").value);
 }
 
+function speakSelected(){
 
-function listenSelected(){
+ const textarea=$("script");
+ const selected=textarea.value.substring(textarea.selectionStart,textarea.selectionEnd);
 
- if($('engine').value==='ai'){
-  alert('AI Voice API is not connected yet.');
-  return;
- }
-
- const box=$('script');
-
- const selected=box.value.substring(
-  box.selectionStart,
-  box.selectionEnd
- );
-
- if(!selected.trim()){
-  alert('Please select a portion of the script first.');
+ if(!selected){
+  alert("पहले Script में कोई हिस्सा Select करें।");
   return;
  }
 
  speakText(selected);
 }
 
-
 function stopAudio(){
-
- if(window.speechSynthesis){
-  window.speechSynthesis.cancel();
+ if("speechSynthesis" in window){
+  speechSynthesis.cancel();
  }
 }
 
-
-// VOICE PROFILE MANAGEMENT
-
-function getProfiles(){
-
- return JSON.parse(localStorage.getItem('uaaaVoiceProfiles') || '[]');
-
-}
-
-
 function saveVoiceProfile(){
 
- const name=$('profileName').value.trim();
+ const name=$("profileName").value.trim();
 
  if(!name){
-  alert('Please enter Voice Profile Name.');
+  alert("Voice Profile Name लिखिए।");
   return;
  }
 
  const profiles=getProfiles();
 
  const profile={
-  id:Date.now(),
+  id:"vp_"+Date.now(),
   name:name,
-  gender:$('profileGender').value,
-  language:$('profileLanguage').value,
-  style:$('profileStyle').value,
-  quality:$('profileQuality').value,
-  provider:$('profileProvider').value,
-  date:new Date().toLocaleString()
+  gender:$("profileGender").value,
+  language:$("profileLanguage").value,
+  style:$("profileStyle").value,
+  quality:$("profileQuality").value,
+  provider:$("profileProvider").value,
+  createdAt:new Date().toISOString()
  };
 
  profiles.push(profile);
+ storeProfiles(profiles);
 
- localStorage.setItem('uaaaVoiceProfiles',JSON.stringify(profiles));
-
- $('profileName').value='';
+ $("profileName").value="";
+ selectedProfileId=profile.id;
 
  renderProfiles();
+ $("profileSelect").value=profile.id;
+ applyProfile(profile);
 
- alert('Voice Profile Saved Successfully!');
+ alert("Voice Profile सफलतापूर्वक सेव हो गया!");
 }
-
 
 function renderProfiles(){
 
  const profiles=getProfiles();
 
- const list=$('profileList');
+ const select=$("profileSelect");
+ select.innerHTML='<option value="">Select a Saved Profile</option>';
 
- if(profiles.length===0){
-  list.innerHTML='No Voice Profiles Saved';
+ profiles.forEach(profile=>{
+  const option=document.createElement("option");
+  option.value=profile.id;
+  option.textContent=profile.name;
+  select.appendChild(option);
+ });
+
+ const box=$("savedProfiles");
+
+ if(!profiles.length){
+  box.textContent="No Voice Profiles Saved";
   return;
  }
 
- list.innerHTML='';
+ box.innerHTML="";
 
  profiles.forEach(profile=>{
 
-  const item=document.createElement('div');
-  item.className='profile-item';
+  const div=document.createElement("div");
+  div.className="profile";
 
-  const heading=document.createElement('strong');
+  const heading=document.createElement("strong");
   heading.textContent=profile.name;
 
-  const details=document.createElement('p');
-
+  const details=document.createElement("p");
   details.textContent=
-   'Gender: '+profile.gender+
-   ' | Language: '+profile.language+
-   ' | Style: '+profile.style+
-   ' | Quality: '+profile.quality+
-   ' | Provider: '+profile.provider;
+   "Gender: "+profile.gender+
+   " | Language: "+profile.language+
+   " | Style: "+profile.style+
+   " | Quality: "+profile.quality+
+   " | Provider: "+profile.provider;
 
-  const remove=document.createElement('button');
-  remove.className='orange';
-  remove.textContent='Delete Profile';
+  const useButton=document.createElement("button");
+  useButton.textContent="Use This Profile";
+  useButton.onclick=()=>{
+   $("profileSelect").value=profile.id;
+   applyProfile(profile);
+  };
 
-  remove.onclick=()=>deleteProfile(profile.id);
+  const deleteButton=document.createElement("button");
+  deleteButton.textContent="Delete";
+  deleteButton.className="danger";
+  deleteButton.onclick=()=>deleteProfile(profile.id);
 
-  item.appendChild(heading);
-  item.appendChild(details);
-  item.appendChild(remove);
+  div.appendChild(heading);
+  div.appendChild(details);
+  div.appendChild(useButton);
+  div.appendChild(deleteButton);
 
-  list.appendChild(item);
+  box.appendChild(div);
 
  });
 
 }
 
+function applySelectedProfile(){
+
+ const id=$("profileSelect").value;
+
+ if(!id){
+  alert("कृपया Saved Voice Profile चुनें।");
+  return;
+ }
+
+ const profile=getProfiles().find(p=>p.id===id);
+
+ if(profile){
+  applyProfile(profile);
+ }
+
+}
+
+function applyProfile(profile){
+
+ selectedProfileId=profile.id;
+
+ $("engine").value="ai";
+ changeEngine();
+
+ $("aiGender").value=profile.gender;
+ $("aiLanguage").value=profile.language;
+ $("aiStyle").value=profile.style;
+ $("aiQuality").value=profile.quality;
+
+ $("profileGender").value=profile.gender;
+ $("profileLanguage").value=profile.language;
+ $("profileStyle").value=profile.style;
+ $("profileQuality").value=profile.quality;
+ $("profileProvider").value=profile.provider;
+
+ $("lockMessage").textContent=
+ "Selected Voice Profile: "+profile.name;
+
+}
 
 function deleteProfile(id){
 
- if(!confirm('Delete this Voice Profile?')) return;
+ if(!confirm("क्या आप यह Voice Profile Delete करना चाहते हैं?")){
+  return;
+ }
 
  const profiles=getProfiles().filter(p=>p.id!==id);
+ storeProfiles(profiles);
 
- localStorage.setItem('uaaaVoiceProfiles',JSON.stringify(profiles));
+ if(selectedProfileId===id){
+  selectedProfileId="";
+ }
 
  renderProfiles();
+
 }
 
+function approveProject(){
 
-// APPROVAL
+ if(!$("script").value.trim()){
+  alert("पहले Video Script तैयार करें।");
+  return;
+ }
 
-function approveAudio(){
-
- if(!$('script').value.trim()){
-  alert('Please prepare the script first.');
+ if($("engine").value==="ai" && !selectedProfileId){
+  alert("कृपया पहले Saved Voice Profile चुनें या नया Profile सेव करें।");
   return;
  }
 
  approved=true;
 
- $('script').readOnly=true;
+ $("lockMessage").textContent=
+ "Status: Approved & Locked 🔒";
 
- $('approvalStatus').innerText='Status: Approved & Locked';
+ $("script").readOnly=true;
 
- alert('Script Approved and Locked Successfully!');
+ $("engine").disabled=true;
+ $("profileSelect").disabled=true;
+ $("aiGender").disabled=true;
+ $("aiLanguage").disabled=true;
+ $("aiStyle").disabled=true;
+ $("aiQuality").disabled=true;
+
+ alert("Script और Voice Settings लॉक कर दी गई हैं।");
 }
-
 
 function requestChanges(){
 
  approved=false;
 
- $('script').readOnly=false;
+ $("script").readOnly=false;
+ $("engine").disabled=false;
+ $("profileSelect").disabled=false;
+ $("aiGender").disabled=false;
+ $("aiLanguage").disabled=false;
+ $("aiStyle").disabled=false;
+ $("aiQuality").disabled=false;
 
- $('approvalStatus').innerText='Status: Changes Requested - Editing Allowed';
+ $("lockMessage").textContent="Status: Changes Requested";
 
- alert('You can now edit the script.');
 }
-
 
 function newVersion(){
 
- approved=false;
+ requestChanges();
 
- $('script').readOnly=false;
+ $("lockMessage").textContent=
+ "Status: New Version Created - Waiting for Approval";
 
- $('approvalStatus').innerText='Status: New Version - Approval Pending';
-
- alert('New version started.');
 }
-
-
-// VISUAL GENERATION
 
 function continueVisuals(){
 
  if(!approved){
-  alert('Please approve and lock the audio first.');
+  alert("पहले Customer Approval और Audio Lock पूरा करें।");
   return;
  }
 
- alert('Visual Generation Module will be connected in the next development phase.');
+ alert("Visual Generation Module अगले विकास चरण में जोड़ा जाएगा।");
 }
-
-
-// SAVE PROJECT
 
 function saveDraft(){
 
+ const projects=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
+
+ const profile=getProfiles().find(p=>p.id===selectedProfileId);
+
  const project={
-  id:Date.now(),
-  title:$('title').value || 'Untitled Project',
-  category:$('category').value,
-  customer:$('customer').value,
-  language:$('language').options[$('language').selectedIndex].text,
-  duration:$('duration').value,
-  format:$('format').value,
-  brief:$('brief').value,
-  script:$('script').value,
-  voiceEngine:$('engine').value,
-  gender:$('engine').value==='ai'?$ ('aiGender').value:$('gender').value,
-  voiceStyle:$('engine').value==='ai'?$ ('aiStyle').value:'',
-  voice:$('browserVoice').selectedOptions[0]?.text || '',
-  speed:$('speed').value,
-  pitch:$('pitch').value,
-  approved:approved,
-  status:approved?'Approved':'Draft',
-  date:new Date().toLocaleString()
+  id:"project_"+Date.now(),
+  title:$("title").value || "Untitled Project",
+  category:$("category").value,
+  customer:$("customer").value,
+  language:$("language").selectedOptions[0].text,
+  format:$("format").value,
+  duration:$("duration").value,
+  brief:$("brief").value,
+  script:$("script").value,
+  voiceEngine:$("engine").value,
+  voiceProfileId:profile?profile.id:"",
+  voiceProfileName:profile?profile.name:"",
+  voiceGender:$("engine").value==="ai"?$("aiGender").value:$("gender").value,
+  voiceStyle:$("engine").value==="ai"?$("aiStyle").value:"Browser Voice",
+  voiceLanguage:$("engine").value==="ai"?$("aiLanguage").value:$("language").value,
+  voiceQuality:$("engine").value==="ai"?$("aiQuality").value:"",
+  status:approved?"Approved":"Draft",
+  createdAt:new Date().toISOString()
  };
 
- const projects=JSON.parse(localStorage.getItem('uaaaProjects') || '[]');
-
  projects.unshift(project);
+ localStorage.setItem("uaaaProjects",JSON.stringify(projects));
 
- localStorage.setItem('uaaaProjects',JSON.stringify(projects));
-
- $('saveStatus').innerText='Project saved successfully!';
+ alert("Project सफलतापूर्वक Save हो गया!");
 }
 
-
-// INITIALIZE
-
 renderProfiles();
+changeEngine();
 
 </script>
 
