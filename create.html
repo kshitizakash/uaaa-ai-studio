@@ -25,6 +25,7 @@ button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:b
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
 #status{padding:12px;background:#fff4d7;border-radius:8px;margin-top:12px}
 #approval{display:none;background:#e8f8ed;padding:15px;border-radius:9px}
+.range-value{font-weight:bold;color:#3659d9}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:16px}}
 </style>
 </head>
@@ -65,15 +66,15 @@ button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:b
 <div class="grid">
 <div>
 <label>4. Language</label>
-<select id="language">
-<option>Hindi</option>
-<option>English</option>
-<option>Bhojpuri</option>
-<option>Bengali</option>
-<option>Marathi</option>
-<option>Tamil</option>
-<option>Telugu</option>
-<option>Punjabi</option>
+<select id="language" onchange="loadVoices()">
+<option value="hi-IN">Hindi</option>
+<option value="en-IN">English (India)</option>
+<option value="bho-IN">Bhojpuri (if supported)</option>
+<option value="bn-IN">Bengali</option>
+<option value="mr-IN">Marathi</option>
+<option value="ta-IN">Tamil</option>
+<option value="te-IN">Telugu</option>
+<option value="pa-IN">Punjabi</option>
 </select>
 </div>
 
@@ -103,12 +104,12 @@ button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:b
 
 <div>
 <label>7. Voice Style</label>
-<select id="voice">
-<option>Male Professional</option>
-<option>Female Professional</option>
+<select id="voiceStyle">
+<option>Professional</option>
 <option>News Anchor</option>
 <option>Storytelling</option>
 <option>Motivational Speaker</option>
+<option>Friendly</option>
 </select>
 </div>
 </div>
@@ -123,19 +124,50 @@ button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:b
 
 <div class="card">
 <h2>📝 Step 2: Script Workspace</h2>
-<p class="note">यहाँ तैयार Script को ध्यान से जाँचें और जरूरत के अनुसार Edit करें।</p>
+<p class="note">Review and edit your complete video script.</p>
 
 <label>Complete Video Script</label>
-<textarea id="script" style="min-height:250px" placeholder="Your complete script will appear here. You can also write or edit it manually."></textarea>
+<textarea id="script" style="min-height:250px" placeholder="Your complete script will appear here."></textarea>
 
-<button class="primary" onclick="speakScript()">🔊 Listen to Script</button>
-<button class="secondary" onclick="stopAudio()">⏹ Stop Audio</button>
-
-<div id="status">Status: Script Not Approved</div>
 </div>
 
 <div class="card">
-<h2>✅ Step 3: Customer Approval</h2>
+<h2>🎙️ Step 3: AI Voice Studio</h2>
+<p class="note">Choose your preferred voice and listen to your script.</p>
+
+<label>Voice Type</label>
+<select id="gender" onchange="loadVoices()">
+<option value="any">Any Available Voice</option>
+<option value="female">Female Voice</option>
+<option value="male">Male Voice</option>
+</select>
+
+<label>Available Browser Voices</label>
+<select id="voiceSelect">
+<option value="">Loading available voices...</option>
+</select>
+
+<p class="note">Voice options depend on the voices installed or supported by your browser/device.</p>
+
+<label>Voice Speed: <span id="speedValue" class="range-value">1.0</span></label>
+<input type="range" id="speed" min="0.7" max="1.5" step="0.1" value="1"
+oninput="speedValue.innerText=this.value">
+
+<label>Voice Pitch: <span id="pitchValue" class="range-value">1.0</span></label>
+<input type="range" id="pitch" min="0.5" max="1.5" step="0.1" value="1"
+oninput="pitchValue.innerText=this.value">
+
+<button class="primary" onclick="speakScript(false)">🔊 Listen to Full Script</button>
+<button class="secondary" onclick="speakScript(true)">▶ Listen to Selected Part</button>
+<button class="red" onclick="stopAudio()">⏹ Stop Audio</button>
+
+<p class="note">Selected Part के लिए Script में किसी हिस्से को select करके बटन दबाएँ। अगर कोई हिस्सा select नहीं है, तो पूरा Script सुनाया जाएगा।</p>
+
+<div id="voiceStatus" class="note">Voice Studio Ready.</div>
+</div>
+
+<div class="card">
+<h2>✅ Step 4: Customer Approval</h2>
 
 <p>ग्राहक से पूरा Script और Audio सुनवाने के बाद ही Approval लें।</p>
 
@@ -144,14 +176,15 @@ button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:b
 
 <div id="approval">
 <h3>🔒 Script & Audio Approved</h3>
-<p>यह Version लॉक कर दिया गया है। अब बदलाव करने के लिए नया Version बनाना होगा।</p>
+<p>यह Version लॉक कर दिया गया है। बदलाव के लिए नया Version बनाना होगा।</p>
 <button class="secondary" onclick="newVersion()">Create New Version</button>
 </div>
 
+<div id="status">Status: Script Not Approved</div>
 </div>
 
 <div class="card">
-<h2>🎥 Step 4: Video Creation</h2>
+<h2>🎥 Step 5: Video Creation</h2>
 <p class="note">Video generation तभी शुरू होगी जब Script और Audio Approved होंगे।</p>
 <button class="primary" onclick="startVideo()">Continue to Visual Generation</button>
 <p id="videoStatus" class="note"></p>
@@ -162,6 +195,7 @@ button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:b
 <script>
 
 let approved = false;
+let availableVoices = [];
 
 function generateScript(){
 
@@ -195,31 +229,125 @@ document.getElementById("status").innerText=
 
 }
 
-function speakScript(){
+function loadVoices(){
 
-let text=document.getElementById("script").value;
-
-if(!text.trim()){
-alert("पहले Script तैयार करें।");
+if(!window.speechSynthesis){
+document.getElementById("voiceStatus").innerText=
+"Speech feature is not supported by this browser.";
 return;
 }
 
+availableVoices=speechSynthesis.getVoices();
+
+let language=document.getElementById("language").value;
+let gender=document.getElementById("gender").value;
+let select=document.getElementById("voiceSelect");
+
+select.innerHTML="";
+
+let matching=availableVoices.filter(v=>{
+return v.lang.toLowerCase().startsWith(language.substring(0,2).toLowerCase());
+});
+
+if(gender!=="any"){
+let filtered=matching.filter(v=>{
+let name=v.name.toLowerCase();
+if(gender==="female"){
+return /female|woman|girl|zira|samantha|heera|lekha|priya/.test(name);
+}
+return /male|man|boy|david|daniel|ravi|mohan/.test(name);
+});
+
+if(filtered.length>0){
+matching=filtered;
+}
+}
+
+if(matching.length===0){
+matching=availableVoices;
+}
+
+if(matching.length===0){
+select.innerHTML="<option>No browser voices found</option>";
+document.getElementById("voiceStatus").innerText=
+"No voices found. Check your device's speech settings.";
+return;
+}
+
+matching.forEach((voice,index)=>{
+let option=document.createElement("option");
+option.value=voice.name;
+option.textContent=voice.name+" ("+voice.lang+")";
+select.appendChild(option);
+});
+
+document.getElementById("voiceStatus").innerText=
+matching.length+" voice option(s) available.";
+
+}
+
+function speakScript(selectedOnly){
+
 if(!window.speechSynthesis){
-alert("आपका Browser Audio Preview Support नहीं करता।");
+alert("Your browser does not support speech.");
+return;
+}
+
+let scriptBox=document.getElementById("script");
+let text=scriptBox.value;
+
+if(selectedOnly && scriptBox.selectionStart!==scriptBox.selectionEnd){
+text=scriptBox.value.substring(
+scriptBox.selectionStart,
+scriptBox.selectionEnd
+);
+}
+
+if(!text.trim()){
+alert("पहले Script तैयार करें या उसमें कुछ लिखें।");
 return;
 }
 
 speechSynthesis.cancel();
 
 let speech=new SpeechSynthesisUtterance(text);
-speech.lang="hi-IN";
+
+speech.lang=document.getElementById("language").value;
+speech.rate=parseFloat(document.getElementById("speed").value);
+speech.pitch=parseFloat(document.getElementById("pitch").value);
+
+let selectedName=document.getElementById("voiceSelect").value;
+let selectedVoice=availableVoices.find(v=>v.name===selectedName);
+
+if(selectedVoice){
+speech.voice=selectedVoice;
+speech.lang=selectedVoice.lang;
+}
+
+speech.onstart=function(){
+document.getElementById("voiceStatus").innerText=
+"Audio is playing...";
+};
+
+speech.onend=function(){
+document.getElementById("voiceStatus").innerText=
+"Audio preview completed.";
+};
+
+speech.onerror=function(){
+document.getElementById("voiceStatus").innerText=
+"Audio playback error. Please try another voice.";
+};
 
 speechSynthesis.speak(speech);
 
 }
 
 function stopAudio(){
+if(window.speechSynthesis){
 speechSynthesis.cancel();
+document.getElementById("voiceStatus").innerText="Audio stopped.";
+}
 }
 
 function approveScript(){
@@ -238,6 +366,11 @@ return;
 approved=true;
 
 document.getElementById("script").readOnly=true;
+document.getElementById("gender").disabled=true;
+document.getElementById("voiceSelect").disabled=true;
+document.getElementById("speed").disabled=true;
+document.getElementById("pitch").disabled=true;
+document.getElementById("language").disabled=true;
 
 document.getElementById("approval").style.display="block";
 
@@ -247,6 +380,10 @@ document.getElementById("status").innerText=
 localStorage.setItem("uaaaApprovedScript",JSON.stringify({
 script:script,
 approved:true,
+voice:document.getElementById("voiceSelect").value,
+speed:document.getElementById("speed").value,
+pitch:document.getElementById("pitch").value,
+language:document.getElementById("language").value,
 date:new Date().toISOString()
 }));
 
@@ -273,6 +410,11 @@ function newVersion(){
 approved=false;
 
 document.getElementById("script").readOnly=false;
+document.getElementById("gender").disabled=false;
+document.getElementById("voiceSelect").disabled=false;
+document.getElementById("speed").disabled=false;
+document.getElementById("pitch").disabled=false;
+document.getElementById("language").disabled=false;
 
 document.getElementById("approval").style.display="none";
 
@@ -307,6 +449,10 @@ duration:document.getElementById("duration").value,
 customer:document.getElementById("customer").value,
 topic:document.getElementById("topic").value,
 script:document.getElementById("script").value,
+voice:document.getElementById("voiceSelect").value,
+voiceStyle:document.getElementById("voiceStyle").value,
+speed:document.getElementById("speed").value,
+pitch:document.getElementById("pitch").value,
 status:approved?"Approved":"Draft"
 };
 
@@ -325,7 +471,12 @@ alert("Project saved successfully!");
 
 }
 
+if(window.speechSynthesis){
+loadVoices();
+speechSynthesis.onvoiceschanged=loadVoices;
+}
+
 </script>
 
 </body>
-</html>
+  </html>
