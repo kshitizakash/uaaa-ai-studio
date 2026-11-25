@@ -7,94 +7,31 @@
 
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:#f3f5fa;
- color:#202638;
-}
-header{
- background:#14213d;
- color:white;
- padding:18px;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f5fa;color:#202638}
+header{background:#14213d;color:white;padding:18px}
 header h2{margin:0}
-.container{
- max-width:900px;
- margin:20px auto;
- padding:15px;
-}
-.card{
- background:white;
- padding:20px;
- margin-bottom:18px;
- border-radius:12px;
- box-shadow:0 2px 9px #00000012;
-}
+.container{max-width:900px;margin:20px auto;padding:15px}
+.card{background:white;padding:20px;margin-bottom:18px;border-radius:12px;box-shadow:0 2px 9px #00000012}
 h3{color:#174ea6;margin-top:0}
-label{
- display:block;
- font-weight:bold;
- margin:13px 0 6px;
-}
-input,select,textarea{
- width:100%;
- padding:12px;
- border:1px solid #ccd2df;
- border-radius:7px;
- font-size:15px;
-}
+label{display:block;font-weight:bold;margin:13px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccd2df;border-radius:7px;font-size:15px}
 textarea{min-height:130px;resize:vertical}
-button{
- border:0;
- border-radius:7px;
- padding:12px 17px;
- margin:8px 5px 0 0;
- cursor:pointer;
- background:#1769d2;
- color:white;
- font-weight:bold;
-}
-button.secondary{background:#596579}
-button.green{background:#16834a}
-button.orange{background:#e58b18}
+button{border:0;border-radius:7px;padding:12px 17px;margin:8px 5px 0 0;cursor:pointer;background:#1769d2;color:white;font-weight:bold}
+.secondary{background:#596579}
+.green{background:#16834a}
+.orange{background:#e58b18}
 button:disabled{background:#999;cursor:not-allowed}
-.note{
- background:#fff6df;
- border-left:4px solid #e5a323;
- padding:12px;
- border-radius:5px;
- line-height:1.5;
- margin-top:12px;
-}
-.status{
- padding:12px;
- border-radius:7px;
- background:#eaf4ff;
- margin-top:12px;
-}
-.grid{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
-}
-.voice-box{
- border:1px solid #d9e0ec;
- border-radius:9px;
- padding:15px;
- margin-top:12px;
-}
+.note{background:#fff6df;border-left:4px solid #e5a323;padding:12px;border-radius:5px;line-height:1.5;margin-top:12px}
+.status{padding:12px;border-radius:7px;background:#eaf4ff;margin-top:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.voice-box{border:1px solid #d9e0ec;border-radius:9px;padding:15px;margin-top:12px}
 .voice-box h4{margin-top:0}
-.back{
- display:inline-block;
- color:white;
- text-decoration:none;
- margin-top:10px;
-}
+.back{display:inline-block;color:white;text-decoration:none;margin-top:10px}
+.profile-item{background:#f3f6fb;border:1px solid #dce2eb;padding:12px;border-radius:8px;margin-top:10px}
 @media(max-width:600px){
- .grid{grid-template-columns:1fr}
- .container{padding:10px}
- .card{padding:15px}
+.grid{grid-template-columns:1fr}
+.container{padding:10px}
+.card{padding:15px}
 }
 </style>
 </head>
@@ -108,6 +45,8 @@ button:disabled{background:#999;cursor:not-allowed}
 </header>
 
 <div class="container">
+
+<!-- STEP 1 -->
 
 <div class="card">
 <h3>Step 1: Customer Brief</h3>
@@ -166,17 +105,19 @@ button:disabled{background:#999;cursor:not-allowed}
 </select>
 
 <label>Complete Customer Brief</label>
-<textarea id="brief" placeholder="Customer ki poori details, product information, offer, mobile number, address aur video mein kya batana hai..."></textarea>
+<textarea id="brief" placeholder="Enter complete customer details, product information, offer, mobile number, address and video requirements..."></textarea>
 
 <button onclick="prepareScript()">Prepare Script</button>
 </div>
 
 
+<!-- STEP 2 -->
+
 <div class="card">
 <h3>Step 2: Script Workspace</h3>
 
 <label>Video Script</label>
-<textarea id="script" placeholder="Yahan video ki complete script taiyar hogi. Aap ise edit bhi kar sakte hain."></textarea>
+<textarea id="script" placeholder="Your complete video script will appear here..."></textarea>
 
 <div class="note">
 पहले पूरी स्क्रिप्ट तैयार करें। Company Name, Mobile Number, Address, Price और Offer की जानकारी ध्यान से जाँचें।
@@ -184,21 +125,26 @@ button:disabled{background:#999;cursor:not-allowed}
 </div>
 
 
+<!-- STEP 3 -->
+
 <div class="card">
-<h3>🎙️ Step 3: AI Voice Studio 2.0</h3>
+<h3>🎙️ Step 3: AI Voice Studio 2.1</h3>
 
 <div class="voice-box">
 <h4>Voice Engine Selection</h4>
 
 <label>Select Voice Engine</label>
 <select id="engine" onchange="changeEngine()">
-<option value="browser">Browser Voice - Device Available Voices</option>
-<option value="ai">AI Voice - Future API Integration</option>
+<option value="browser">Browser Voice</option>
+<option value="ai">AI Voice Studio</option>
 </select>
 </div>
 
 
+<!-- BROWSER VOICE -->
+
 <div id="browserPanel" class="voice-box">
+
 <h4>🌐 Browser Voice Studio</h4>
 
 <label>Voice Gender Preference</label>
@@ -209,17 +155,15 @@ button:disabled{background:#999;cursor:not-allowed}
 </select>
 
 <label>Available Browser Voices</label>
-<select id="browserVoice">
-<option value="">Loading voices...</option>
-</select>
+<select id="browserVoice"></select>
 
 <label>Voice Speed: <span id="speedValue">1.0</span></label>
 <input type="range" id="speed" min="0.7" max="1.5" step="0.1" value="1"
-oninput="speedValue.innerText=this.value">
+oninput="document.getElementById('speedValue').textContent=this.value">
 
 <label>Voice Pitch: <span id="pitchValue">1.0</span></label>
 <input type="range" id="pitch" min="0.5" max="1.5" step="0.1" value="1"
-oninput="pitchValue.innerText=this.value">
+oninput="document.getElementById('pitchValue').textContent=this.value">
 
 <button onclick="listenScript()">▶ Listen Full Script</button>
 <button class="secondary" onclick="listenSelected()">▶ Listen Selected Part</button>
@@ -231,8 +175,11 @@ Browser Voice आपके मोबाइल या कंप्यूटर �
 </div>
 
 
+<!-- AI VOICE -->
+
 <div id="aiPanel" class="voice-box" style="display:none">
-<h4>🤖 AI Voice Studio</h4>
+
+<h4>🤖 AI Voice Selection</h4>
 
 <label>AI Voice Gender</label>
 <select id="aiGender">
@@ -265,20 +212,82 @@ Browser Voice आपके मोबाइल या कंप्यूटर �
 <label>AI Voice Quality</label>
 <select id="aiQuality">
 <option>Standard</option>
-<option>HD Voice</option>
-<option>Premium Voice</option>
+<option>HD</option>
+<option>Premium</option>
 </select>
+
+
+<!-- VOICE PROFILE MANAGEMENT -->
+
+<div class="voice-box">
+<h4>🎚️ Voice Profile Management</h4>
+
+<label>Voice Profile Name</label>
+<input id="profileName" placeholder="Example: Hindi Male Professional">
+
+<label>Voice Gender</label>
+<select id="profileGender">
+<option>Male</option>
+<option>Female</option>
+</select>
+
+<label>Voice Language</label>
+<select id="profileLanguage">
+<option>Hindi</option>
+<option>English</option>
+<option>Bhojpuri</option>
+<option>Bengali</option>
+<option>Marathi</option>
+<option>Tamil</option>
+<option>Telugu</option>
+<option>Punjabi</option>
+</select>
+
+<label>Voice Style</label>
+<select id="profileStyle">
+<option>Professional</option>
+<option>News Anchor</option>
+<option>Storytelling</option>
+<option>Motivational Speaker</option>
+<option>Friendly</option>
+<option>Advertisement Voice</option>
+</select>
+
+<label>Voice Quality</label>
+<select id="profileQuality">
+<option>Standard</option>
+<option>HD</option>
+<option>Premium</option>
+</select>
+
+<label>AI Voice Provider</label>
+<select id="profileProvider">
+<option>Not Connected</option>
+<option>Provider 1 - Future Integration</option>
+<option>Provider 2 - Future Integration</option>
+</select>
+
+<button onclick="saveVoiceProfile()">Save Voice Profile</button>
+
+<h4>Saved Voice Profiles</h4>
+<div id="profileList" class="status">
+No Voice Profiles Saved
+</div>
+
+</div>
 
 <div class="note">
 <strong>AI Voice API Connection Pending</strong><br>
-यहाँ वास्तविक Male और Female AI Voices जोड़ी जाएँगी। अभी यह चयन इंटरफेस का हिस्सा है। वास्तविक AI Audio बनाने के लिए आगे सुरक्षित API और Backend जोड़ना होगा।
+यहाँ भविष्य में वास्तविक Male और Female AI Voices जोड़ी जाएँगी। अभी यह Voice Profile Management और Interface है।
 </div>
 
 <button class="secondary" disabled>▶ Generate AI Voice - Coming Soon</button>
-</div>
 
 </div>
+</div>
 
+
+<!-- STEP 4 -->
 
 <div class="card">
 <h3>Step 4: Customer Approval & Audio Lock</h3>
@@ -295,6 +304,8 @@ Status: Waiting for Approval
 </div>
 
 
+<!-- STEP 5 -->
+
 <div class="card">
 <h3>Step 5: Visual Generation</h3>
 
@@ -303,10 +314,12 @@ Status: Waiting for Approval
 <button onclick="continueVisuals()">Continue to Visual Generation</button>
 
 <div class="note">
-Visual Generation और MP4 Export की वास्तविक सुविधा अगले विकास चरण में जोड़ी जाएगी।
+Visual Generation और MP4 Export की सुविधा अगले विकास चरण में जोड़ी जाएगी।
 </div>
 </div>
 
+
+<!-- STEP 6 -->
 
 <div class="card">
 <h3>Step 6: Save Project</h3>
@@ -315,6 +328,7 @@ Visual Generation और MP4 Export की वास्तविक सुवि
 <a href="projects.html">
 <button class="secondary">My Projects</button>
 </a>
+
 <div id="saveStatus" class="status"></div>
 </div>
 
@@ -323,39 +337,40 @@ Visual Generation और MP4 Export की वास्तविक सुवि
 
 <script>
 
-let voices=[];
-let approved=false;
+const $ = id => document.getElementById(id);
+
+let voices = [];
+let approved = false;
+
+
+// BROWSER VOICES
 
 function loadVoices(){
 
  if(!window.speechSynthesis){
-  browserVoice.innerHTML='<option>Browser voice not supported</option>';
+  $('browserVoice').innerHTML='<option>Browser voice not supported</option>';
   return;
  }
 
  voices=window.speechSynthesis.getVoices();
 
- browserVoice.innerHTML='';
+ const selectedLanguage=$('language').value.split('-')[0];
 
- if(voices.length===0){
-  browserVoice.innerHTML='<option value="">No voices available</option>';
-  return;
- }
-
- let selectedLanguage=language.value.split('-')[0];
-
- let filtered=voices.filter(v=>
+ let filtered=voices.filter(v =>
   v.lang.toLowerCase().startsWith(selectedLanguage.toLowerCase())
  );
 
  if(filtered.length===0) filtered=voices;
 
- filtered.forEach((v)=>{
-  let option=document.createElement('option');
+ $('browserVoice').innerHTML='';
+
+ filtered.forEach(v=>{
+  const option=document.createElement('option');
   option.value=voices.indexOf(v);
   option.textContent=v.name+' ('+v.lang+')';
-  browserVoice.appendChild(option);
+  $('browserVoice').appendChild(option);
  });
+
 }
 
 if(window.speechSynthesis){
@@ -363,52 +378,47 @@ if(window.speechSynthesis){
  window.speechSynthesis.onvoiceschanged=loadVoices;
 }
 
-language.addEventListener('change',loadVoices);
+$('language').addEventListener('change',loadVoices);
 
+
+// ENGINE SELECTION
 
 function changeEngine(){
 
- let engineValue=engine.value;
+ const isAI=$('engine').value==='ai';
 
- browserPanel.style.display=
- engineValue==='browser'?'block':'none';
-
- aiPanel.style.display=
- engineValue==='ai'?'block':'none';
+ $('browserPanel').style.display=isAI?'none':'block';
+ $('aiPanel').style.display=isAI?'block':'none';
 
  stopAudio();
 }
 
 
+// SCRIPT PREPARATION
+
 function prepareScript(){
 
- let titleValue=title.value.trim();
- let customerValue=customer.value.trim();
- let briefValue=brief.value.trim();
+ const title=$('title').value.trim();
+ const customer=$('customer').value.trim();
+ const brief=$('brief').value.trim();
 
- if(!titleValue || !briefValue){
+ if(!title || !brief){
   alert('Please enter Video Title and Customer Brief.');
   return;
  }
 
- let generated=
- 'नमस्कार! आज हम आपके लिए लेकर आए हैं '+titleValue+'।\n\n'+
- 'यह जानकारी प्रस्तुत की जा रही है '+customerValue+' की ओर से।\n\n'+
- briefValue+
+ $('script').value=
+ 'नमस्कार! आज हम आपके लिए लेकर आए हैं '+title+'।\n\n'+
+ 'यह जानकारी प्रस्तुत की जा रही है '+customer+' की ओर से।\n\n'+
+ brief+
  '\n\nअधिक जानकारी के लिए हमसे संपर्क करें। धन्यवाद!';
 
- script.value=generated;
-
  approved=false;
- approvalStatus.innerText='Status: Script Prepared - Approval Pending';
+ $('approvalStatus').innerText='Status: Script Prepared - Approval Pending';
 }
 
 
-function getLanguage(){
-
- return language.value;
-}
-
+// AUDIO PLAYBACK
 
 function speakText(text){
 
@@ -418,22 +428,22 @@ function speakText(text){
  }
 
  if(!window.speechSynthesis){
-  alert('Speech synthesis is not supported in this browser.');
+  alert('Speech synthesis is not supported.');
   return;
  }
 
  stopAudio();
 
- let utterance=new SpeechSynthesisUtterance(text);
+ const utterance=new SpeechSynthesisUtterance(text);
 
- utterance.lang=getLanguage();
- utterance.rate=parseFloat(speed.value);
- utterance.pitch=parseFloat(pitch.value);
+ utterance.lang=$('language').value;
+ utterance.rate=parseFloat($('speed').value);
+ utterance.pitch=parseFloat($('pitch').value);
 
- let selectedIndex=parseInt(browserVoice.value);
+ const index=parseInt($('browserVoice').value);
 
- if(!isNaN(selectedIndex) && voices[selectedIndex]){
-  utterance.voice=voices[selectedIndex];
+ if(!isNaN(index) && voices[index]){
+  utterance.voice=voices[index];
  }
 
  window.speechSynthesis.speak(utterance);
@@ -442,25 +452,28 @@ function speakText(text){
 
 function listenScript(){
 
- if(engine.value!=='browser'){
-  alert('AI Voice API connection is not available yet.');
+ if($('engine').value==='ai'){
+  alert('AI Voice API is not connected yet.');
   return;
  }
 
- speakText(script.value);
+ speakText($('script').value);
 }
 
 
 function listenSelected(){
 
- if(engine.value!=='browser'){
-  alert('AI Voice API connection is not available yet.');
+ if($('engine').value==='ai'){
+  alert('AI Voice API is not connected yet.');
   return;
  }
 
- let start=script.selectionStart;
- let end=script.selectionEnd;
- let selected=script.value.substring(start,end);
+ const box=$('script');
+
+ const selected=box.value.substring(
+  box.selectionStart,
+  box.selectionEnd
+ );
 
  if(!selected.trim()){
   alert('Please select a portion of the script first.');
@@ -479,31 +492,134 @@ function stopAudio(){
 }
 
 
+// VOICE PROFILE MANAGEMENT
+
+function getProfiles(){
+
+ return JSON.parse(localStorage.getItem('uaaaVoiceProfiles') || '[]');
+
+}
+
+
+function saveVoiceProfile(){
+
+ const name=$('profileName').value.trim();
+
+ if(!name){
+  alert('Please enter Voice Profile Name.');
+  return;
+ }
+
+ const profiles=getProfiles();
+
+ const profile={
+  id:Date.now(),
+  name:name,
+  gender:$('profileGender').value,
+  language:$('profileLanguage').value,
+  style:$('profileStyle').value,
+  quality:$('profileQuality').value,
+  provider:$('profileProvider').value,
+  date:new Date().toLocaleString()
+ };
+
+ profiles.push(profile);
+
+ localStorage.setItem('uaaaVoiceProfiles',JSON.stringify(profiles));
+
+ $('profileName').value='';
+
+ renderProfiles();
+
+ alert('Voice Profile Saved Successfully!');
+}
+
+
+function renderProfiles(){
+
+ const profiles=getProfiles();
+
+ const list=$('profileList');
+
+ if(profiles.length===0){
+  list.innerHTML='No Voice Profiles Saved';
+  return;
+ }
+
+ list.innerHTML='';
+
+ profiles.forEach(profile=>{
+
+  const item=document.createElement('div');
+  item.className='profile-item';
+
+  const heading=document.createElement('strong');
+  heading.textContent=profile.name;
+
+  const details=document.createElement('p');
+
+  details.textContent=
+   'Gender: '+profile.gender+
+   ' | Language: '+profile.language+
+   ' | Style: '+profile.style+
+   ' | Quality: '+profile.quality+
+   ' | Provider: '+profile.provider;
+
+  const remove=document.createElement('button');
+  remove.className='orange';
+  remove.textContent='Delete Profile';
+
+  remove.onclick=()=>deleteProfile(profile.id);
+
+  item.appendChild(heading);
+  item.appendChild(details);
+  item.appendChild(remove);
+
+  list.appendChild(item);
+
+ });
+
+}
+
+
+function deleteProfile(id){
+
+ if(!confirm('Delete this Voice Profile?')) return;
+
+ const profiles=getProfiles().filter(p=>p.id!==id);
+
+ localStorage.setItem('uaaaVoiceProfiles',JSON.stringify(profiles));
+
+ renderProfiles();
+}
+
+
+// APPROVAL
+
 function approveAudio(){
 
- if(!script.value.trim()){
+ if(!$('script').value.trim()){
   alert('Please prepare the script first.');
   return;
  }
 
  approved=true;
 
- script.readOnly=true;
+ $('script').readOnly=true;
 
- approvalStatus.innerText=
- 'Status: Approved & Locked';
+ $('approvalStatus').innerText='Status: Approved & Locked';
 
- alert('Script and Audio Approved. Script is now locked.');
+ alert('Script Approved and Locked Successfully!');
 }
 
 
 function requestChanges(){
 
  approved=false;
- script.readOnly=false;
 
- approvalStatus.innerText=
- 'Status: Changes Requested - Editing Allowed';
+ $('script').readOnly=false;
+
+ $('approvalStatus').innerText='Status: Changes Requested - Editing Allowed';
 
  alert('You can now edit the script.');
 }
@@ -512,19 +628,21 @@ function requestChanges(){
 function newVersion(){
 
  approved=false;
- script.readOnly=false;
 
- approvalStatus.innerText=
- 'Status: New Version - Approval Pending';
+ $('script').readOnly=false;
 
- alert('New version started. You can edit the script.');
+ $('approvalStatus').innerText='Status: New Version - Approval Pending';
+
+ alert('New version started.');
 }
 
+
+// VISUAL GENERATION
 
 function continueVisuals(){
 
  if(!approved){
-  alert('Please approve and lock the audio before visual generation.');
+  alert('Please approve and lock the audio first.');
   return;
  }
 
@@ -532,37 +650,44 @@ function continueVisuals(){
 }
 
 
+// SAVE PROJECT
+
 function saveDraft(){
 
- let project={
+ const project={
   id:Date.now(),
-  title:title.value || 'Untitled Project',
-  category:category.value,
-  customer:customer.value,
-  language:language.options[language.selectedIndex].text,
-  duration:duration.value,
-  format:format.value,
-  brief:brief.value,
-  script:script.value,
-  voiceEngine:engine.value,
-  gender:engine.value==='ai'?aiGender.value:gender.value,
-  voiceStyle:aiStyle.value,
-  voice:browserVoice.options[browserVoice.selectedIndex]?.text || '',
-  speed:speed.value,
-  pitch:pitch.value,
+  title:$('title').value || 'Untitled Project',
+  category:$('category').value,
+  customer:$('customer').value,
+  language:$('language').options[$('language').selectedIndex].text,
+  duration:$('duration').value,
+  format:$('format').value,
+  brief:$('brief').value,
+  script:$('script').value,
+  voiceEngine:$('engine').value,
+  gender:$('engine').value==='ai'?$ ('aiGender').value:$('gender').value,
+  voiceStyle:$('engine').value==='ai'?$ ('aiStyle').value:'',
+  voice:$('browserVoice').selectedOptions[0]?.text || '',
+  speed:$('speed').value,
+  pitch:$('pitch').value,
   approved:approved,
   status:approved?'Approved':'Draft',
   date:new Date().toLocaleString()
  };
 
- let projects=JSON.parse(localStorage.getItem('uaaaProjects') || '[]');
+ const projects=JSON.parse(localStorage.getItem('uaaaProjects') || '[]');
 
  projects.unshift(project);
 
  localStorage.setItem('uaaaProjects',JSON.stringify(projects));
 
- saveStatus.innerText='Project saved successfully!';
+ $('saveStatus').innerText='Project saved successfully!';
 }
+
+
+// INITIALIZE
+
+renderProfiles();
 
 </script>
 
