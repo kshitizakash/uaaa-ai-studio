@@ -7,44 +7,114 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f3f5fa;color:#172033}
-header{background:#101b35;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
-header a{color:white;text-decoration:none}
-.container{max-width:950px;margin:25px auto;padding:15px}
-.card{background:white;padding:22px;border-radius:14px;margin-bottom:20px;box-shadow:0 3px 15px #0001}
-h2{margin-top:0}
-label{display:block;margin:16px 0 7px;font-weight:bold}
-input,select,textarea{width:100%;padding:13px;border:1px solid #d9deea;border-radius:8px;font-size:15px}
-textarea{min-height:100px}
-button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:bold;cursor:pointer;margin:5px 3px}
-.primary{background:#3659d9;color:white}
-.secondary{background:#e9edfa;color:#24365f}
-.green{background:#16864a;color:white}
-.red{background:#c83c3c;color:white}
-.note{color:#65718a;font-size:13px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-#status{padding:12px;background:#fff4d7;border-radius:8px;margin-top:12px}
-#approval{display:none;background:#e8f8ed;padding:15px;border-radius:9px}
-.range-value{font-weight:bold;color:#3659d9}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.card{padding:16px}}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f3f5fa;
+ color:#202638;
+}
+header{
+ background:#14213d;
+ color:white;
+ padding:18px;
+}
+header h2{margin:0}
+.container{
+ max-width:900px;
+ margin:20px auto;
+ padding:15px;
+}
+.card{
+ background:white;
+ padding:20px;
+ margin-bottom:18px;
+ border-radius:12px;
+ box-shadow:0 2px 9px #00000012;
+}
+h3{color:#174ea6;margin-top:0}
+label{
+ display:block;
+ font-weight:bold;
+ margin:13px 0 6px;
+}
+input,select,textarea{
+ width:100%;
+ padding:12px;
+ border:1px solid #ccd2df;
+ border-radius:7px;
+ font-size:15px;
+}
+textarea{min-height:130px;resize:vertical}
+button{
+ border:0;
+ border-radius:7px;
+ padding:12px 17px;
+ margin:8px 5px 0 0;
+ cursor:pointer;
+ background:#1769d2;
+ color:white;
+ font-weight:bold;
+}
+button.secondary{background:#596579}
+button.green{background:#16834a}
+button.orange{background:#e58b18}
+button:disabled{background:#999;cursor:not-allowed}
+.note{
+ background:#fff6df;
+ border-left:4px solid #e5a323;
+ padding:12px;
+ border-radius:5px;
+ line-height:1.5;
+ margin-top:12px;
+}
+.status{
+ padding:12px;
+ border-radius:7px;
+ background:#eaf4ff;
+ margin-top:12px;
+}
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+.voice-box{
+ border:1px solid #d9e0ec;
+ border-radius:9px;
+ padding:15px;
+ margin-top:12px;
+}
+.voice-box h4{margin-top:0}
+.back{
+ display:inline-block;
+ color:white;
+ text-decoration:none;
+ margin-top:10px;
+}
+@media(max-width:600px){
+ .grid{grid-template-columns:1fr}
+ .container{padding:10px}
+ .card{padding:15px}
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h2>🚀 UAAA AI Studio</h2>
-<a href="index.html">← Dashboard</a>
+<h2>🎬 UAAA AI Studio</h2>
+<p>Create New Video - Audio First Workflow</p>
+<a class="back" href="index.html">← Back to Dashboard</a>
 </header>
 
 <div class="container">
 
 <div class="card">
-<h2>🎬 Create New Video</h2>
-<p class="note">Audio First Video Creation Workflow</p>
+<h3>Step 1: Customer Brief</h3>
 
-<label>1. Video Category</label>
+<label>Video Category</label>
 <select id="category">
+<option>Product Promotion</option>
 <option>AI News Creator</option>
 <option>Job Alert Creator</option>
 <option>Educational Videos</option>
@@ -52,24 +122,21 @@ button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:b
 <option>Stories & Documentary</option>
 <option>YouTube Shorts</option>
 <option>Cartoon Videos</option>
-<option>Facts & Information</option>
-<option>Product Promotion</option>
-<option>Family & Entertainment</option>
 </select>
 
-<label>2. Video Title</label>
+<label>Video Title</label>
 <input id="title" placeholder="Enter video title">
 
-<label>3. Customer / Company Name</label>
+<label>Customer / Company Name</label>
 <input id="customer" placeholder="Enter customer or company name">
 
 <div class="grid">
 <div>
-<label>4. Language</label>
-<select id="language" onchange="loadVoices()">
+<label>Language</label>
+<select id="language">
 <option value="hi-IN">Hindi</option>
-<option value="en-IN">English (India)</option>
-<option value="bho-IN">Bhojpuri (if supported)</option>
+<option value="en-IN">English</option>
+<option value="bho-IN">Bhojpuri</option>
 <option value="bn-IN">Bengali</option>
 <option value="mr-IN">Marathi</option>
 <option value="ta-IN">Tamil</option>
@@ -79,404 +146,425 @@ button{border:0;border-radius:8px;padding:13px 18px;font-size:15px;font-weight:b
 </div>
 
 <div>
-<label>5. Video Format</label>
+<label>Video Format</label>
 <select id="format">
-<option>YouTube Landscape (16:9)</option>
-<option>YouTube Shorts / Reels (9:16)</option>
-<option>Square Video (1:1)</option>
+<option>16:9 Landscape</option>
+<option>9:16 Vertical</option>
+<option>1:1 Square</option>
 </select>
 </div>
 </div>
 
-<div class="grid">
-<div>
-<label>6. Video Duration</label>
+<label>Video Duration</label>
 <select id="duration">
 <option>30 Seconds</option>
 <option>1 Minute</option>
+<option>2 Minutes</option>
 <option>3 Minutes</option>
 <option>5 Minutes</option>
 <option>10 Minutes</option>
-<option>15 Minutes</option>
-<option>20 Minutes</option>
+</select>
+
+<label>Complete Customer Brief</label>
+<textarea id="brief" placeholder="Customer ki poori details, product information, offer, mobile number, address aur video mein kya batana hai..."></textarea>
+
+<button onclick="prepareScript()">Prepare Script</button>
+</div>
+
+
+<div class="card">
+<h3>Step 2: Script Workspace</h3>
+
+<label>Video Script</label>
+<textarea id="script" placeholder="Yahan video ki complete script taiyar hogi. Aap ise edit bhi kar sakte hain."></textarea>
+
+<div class="note">
+पहले पूरी स्क्रिप्ट तैयार करें। Company Name, Mobile Number, Address, Price और Offer की जानकारी ध्यान से जाँचें।
+</div>
+</div>
+
+
+<div class="card">
+<h3>🎙️ Step 3: AI Voice Studio 2.0</h3>
+
+<div class="voice-box">
+<h4>Voice Engine Selection</h4>
+
+<label>Select Voice Engine</label>
+<select id="engine" onchange="changeEngine()">
+<option value="browser">Browser Voice - Device Available Voices</option>
+<option value="ai">AI Voice - Future API Integration</option>
 </select>
 </div>
 
-<div>
-<label>7. Voice Style</label>
-<select id="voiceStyle">
+
+<div id="browserPanel" class="voice-box">
+<h4>🌐 Browser Voice Studio</h4>
+
+<label>Voice Gender Preference</label>
+<select id="gender">
+<option value="any">Any Voice</option>
+<option value="male">Male Voice</option>
+<option value="female">Female Voice</option>
+</select>
+
+<label>Available Browser Voices</label>
+<select id="browserVoice">
+<option value="">Loading voices...</option>
+</select>
+
+<label>Voice Speed: <span id="speedValue">1.0</span></label>
+<input type="range" id="speed" min="0.7" max="1.5" step="0.1" value="1"
+oninput="speedValue.innerText=this.value">
+
+<label>Voice Pitch: <span id="pitchValue">1.0</span></label>
+<input type="range" id="pitch" min="0.5" max="1.5" step="0.1" value="1"
+oninput="pitchValue.innerText=this.value">
+
+<button onclick="listenScript()">▶ Listen Full Script</button>
+<button class="secondary" onclick="listenSelected()">▶ Listen Selected Part</button>
+<button class="orange" onclick="stopAudio()">■ Stop Audio</button>
+
+<div class="note">
+Browser Voice आपके मोबाइल या कंप्यूटर में उपलब्ध आवाज़ का इस्तेमाल करती है। Male/Female चयन तभी काम करेगा जब डिवाइस में संबंधित आवाज़ उपलब्ध हो।
+</div>
+</div>
+
+
+<div id="aiPanel" class="voice-box" style="display:none">
+<h4>🤖 AI Voice Studio</h4>
+
+<label>AI Voice Gender</label>
+<select id="aiGender">
+<option value="male">Male Voice</option>
+<option value="female">Female Voice</option>
+</select>
+
+<label>AI Voice Style</label>
+<select id="aiStyle">
 <option>Professional</option>
 <option>News Anchor</option>
 <option>Storytelling</option>
 <option>Motivational Speaker</option>
 <option>Friendly</option>
-</select>
-</div>
-</div>
-
-<label>8. Complete Customer Brief</label>
-<textarea id="topic" placeholder="Company details, product, services, offers, price, mobile number, address and all important information..."></textarea>
-
-<button class="primary" onclick="generateScript()">✦ Prepare Script</button>
-<button class="secondary" onclick="saveDraft()">Save Draft</button>
-
-</div>
-
-<div class="card">
-<h2>📝 Step 2: Script Workspace</h2>
-<p class="note">Review and edit your complete video script.</p>
-
-<label>Complete Video Script</label>
-<textarea id="script" style="min-height:250px" placeholder="Your complete script will appear here."></textarea>
-
-</div>
-
-<div class="card">
-<h2>🎙️ Step 3: AI Voice Studio</h2>
-<p class="note">Choose your preferred voice and listen to your script.</p>
-
-<label>Voice Type</label>
-<select id="gender" onchange="loadVoices()">
-<option value="any">Any Available Voice</option>
-<option value="female">Female Voice</option>
-<option value="male">Male Voice</option>
+<option>Advertisement Voice</option>
 </select>
 
-<label>Available Browser Voices</label>
-<select id="voiceSelect">
-<option value="">Loading available voices...</option>
+<label>AI Voice Language</label>
+<select id="aiLanguage">
+<option>Hindi</option>
+<option>English</option>
+<option>Bhojpuri</option>
+<option>Bengali</option>
+<option>Marathi</option>
+<option>Tamil</option>
+<option>Telugu</option>
+<option>Punjabi</option>
 </select>
 
-<p class="note">Voice options depend on the voices installed or supported by your browser/device.</p>
+<label>AI Voice Quality</label>
+<select id="aiQuality">
+<option>Standard</option>
+<option>HD Voice</option>
+<option>Premium Voice</option>
+</select>
 
-<label>Voice Speed: <span id="speedValue" class="range-value">1.0</span></label>
-<input type="range" id="speed" min="0.7" max="1.5" step="0.1" value="1"
-oninput="speedValue.innerText=this.value">
-
-<label>Voice Pitch: <span id="pitchValue" class="range-value">1.0</span></label>
-<input type="range" id="pitch" min="0.5" max="1.5" step="0.1" value="1"
-oninput="pitchValue.innerText=this.value">
-
-<button class="primary" onclick="speakScript(false)">🔊 Listen to Full Script</button>
-<button class="secondary" onclick="speakScript(true)">▶ Listen to Selected Part</button>
-<button class="red" onclick="stopAudio()">⏹ Stop Audio</button>
-
-<p class="note">Selected Part के लिए Script में किसी हिस्से को select करके बटन दबाएँ। अगर कोई हिस्सा select नहीं है, तो पूरा Script सुनाया जाएगा।</p>
-
-<div id="voiceStatus" class="note">Voice Studio Ready.</div>
+<div class="note">
+<strong>AI Voice API Connection Pending</strong><br>
+यहाँ वास्तविक Male और Female AI Voices जोड़ी जाएँगी। अभी यह चयन इंटरफेस का हिस्सा है। वास्तविक AI Audio बनाने के लिए आगे सुरक्षित API और Backend जोड़ना होगा।
 </div>
 
+<button class="secondary" disabled>▶ Generate AI Voice - Coming Soon</button>
+</div>
+
+</div>
+
+
 <div class="card">
-<h2>✅ Step 4: Customer Approval</h2>
+<h3>Step 4: Customer Approval & Audio Lock</h3>
 
-<p>ग्राहक से पूरा Script और Audio सुनवाने के बाद ही Approval लें।</p>
+<p>स्क्रिप्ट और आवाज़ की जाँच के बाद ग्राहक की मंजूरी लें।</p>
 
-<button class="green" onclick="approveScript()">Approve Script & Audio</button>
-<button class="red" onclick="requestChanges()">Request Changes</button>
-
-<div id="approval">
-<h3>🔒 Script & Audio Approved</h3>
-<p>यह Version लॉक कर दिया गया है। बदलाव के लिए नया Version बनाना होगा।</p>
+<button class="green" onclick="approveAudio()">Approve Script & Audio</button>
+<button class="orange" onclick="requestChanges()">Request Changes</button>
 <button class="secondary" onclick="newVersion()">Create New Version</button>
+
+<div id="approvalStatus" class="status">
+Status: Waiting for Approval
+</div>
 </div>
 
-<div id="status">Status: Script Not Approved</div>
-</div>
 
 <div class="card">
-<h2>🎥 Step 5: Video Creation</h2>
-<p class="note">Video generation तभी शुरू होगी जब Script और Audio Approved होंगे।</p>
-<button class="primary" onclick="startVideo()">Continue to Visual Generation</button>
-<p id="videoStatus" class="note"></p>
+<h3>Step 5: Visual Generation</h3>
+
+<p>Audio Approval के बाद वीडियो के Visuals तैयार किए जाएँगे।</p>
+
+<button onclick="continueVisuals()">Continue to Visual Generation</button>
+
+<div class="note">
+Visual Generation और MP4 Export की वास्तविक सुविधा अगले विकास चरण में जोड़ी जाएगी।
+</div>
+</div>
+
+
+<div class="card">
+<h3>Step 6: Save Project</h3>
+
+<button class="green" onclick="saveDraft()">Save Draft</button>
+<a href="projects.html">
+<button class="secondary">My Projects</button>
+</a>
+<div id="saveStatus" class="status"></div>
 </div>
 
 </div>
+
 
 <script>
 
-let approved = false;
-let availableVoices = [];
-
-function generateScript(){
-
-if(approved){
-alert("पहले नया Version बनाइए।");
-return;
-}
-
-let title=document.getElementById("title").value;
-let customer=document.getElementById("customer").value;
-let topic=document.getElementById("topic").value;
-
-if(!title.trim() || !topic.trim()){
-alert("Please enter Video Title and Customer Brief.");
-return;
-}
-
-let script =
-"नमस्कार!\n\n"+
-"आज हम आपके लिए लेकर आए हैं "+title+"।\n\n"+
-"कंपनी / ग्राहक का नाम: "+customer+"\n\n"+
-"हमारी जानकारी:\n"+
-topic+"\n\n"+
-"अधिक जानकारी के लिए आज ही संपर्क करें।\n\n"+
-"धन्यवाद!";
-
-document.getElementById("script").value=script;
-
-document.getElementById("status").innerText=
-"Status: Script Prepared - Please Review and Listen";
-
-}
+let voices=[];
+let approved=false;
 
 function loadVoices(){
 
-if(!window.speechSynthesis){
-document.getElementById("voiceStatus").innerText=
-"Speech feature is not supported by this browser.";
-return;
+ if(!window.speechSynthesis){
+  browserVoice.innerHTML='<option>Browser voice not supported</option>';
+  return;
+ }
+
+ voices=window.speechSynthesis.getVoices();
+
+ browserVoice.innerHTML='';
+
+ if(voices.length===0){
+  browserVoice.innerHTML='<option value="">No voices available</option>';
+  return;
+ }
+
+ let selectedLanguage=language.value.split('-')[0];
+
+ let filtered=voices.filter(v=>
+  v.lang.toLowerCase().startsWith(selectedLanguage.toLowerCase())
+ );
+
+ if(filtered.length===0) filtered=voices;
+
+ filtered.forEach((v)=>{
+  let option=document.createElement('option');
+  option.value=voices.indexOf(v);
+  option.textContent=v.name+' ('+v.lang+')';
+  browserVoice.appendChild(option);
+ });
 }
 
-availableVoices=speechSynthesis.getVoices();
-
-let language=document.getElementById("language").value;
-let gender=document.getElementById("gender").value;
-let select=document.getElementById("voiceSelect");
-
-select.innerHTML="";
-
-let matching=availableVoices.filter(v=>{
-return v.lang.toLowerCase().startsWith(language.substring(0,2).toLowerCase());
-});
-
-if(gender!=="any"){
-let filtered=matching.filter(v=>{
-let name=v.name.toLowerCase();
-if(gender==="female"){
-return /female|woman|girl|zira|samantha|heera|lekha|priya/.test(name);
-}
-return /male|man|boy|david|daniel|ravi|mohan/.test(name);
-});
-
-if(filtered.length>0){
-matching=filtered;
-}
+if(window.speechSynthesis){
+ loadVoices();
+ window.speechSynthesis.onvoiceschanged=loadVoices;
 }
 
-if(matching.length===0){
-matching=availableVoices;
+language.addEventListener('change',loadVoices);
+
+
+function changeEngine(){
+
+ let engineValue=engine.value;
+
+ browserPanel.style.display=
+ engineValue==='browser'?'block':'none';
+
+ aiPanel.style.display=
+ engineValue==='ai'?'block':'none';
+
+ stopAudio();
 }
 
-if(matching.length===0){
-select.innerHTML="<option>No browser voices found</option>";
-document.getElementById("voiceStatus").innerText=
-"No voices found. Check your device's speech settings.";
-return;
+
+function prepareScript(){
+
+ let titleValue=title.value.trim();
+ let customerValue=customer.value.trim();
+ let briefValue=brief.value.trim();
+
+ if(!titleValue || !briefValue){
+  alert('Please enter Video Title and Customer Brief.');
+  return;
+ }
+
+ let generated=
+ 'नमस्कार! आज हम आपके लिए लेकर आए हैं '+titleValue+'।\n\n'+
+ 'यह जानकारी प्रस्तुत की जा रही है '+customerValue+' की ओर से।\n\n'+
+ briefValue+
+ '\n\nअधिक जानकारी के लिए हमसे संपर्क करें। धन्यवाद!';
+
+ script.value=generated;
+
+ approved=false;
+ approvalStatus.innerText='Status: Script Prepared - Approval Pending';
 }
 
-matching.forEach((voice,index)=>{
-let option=document.createElement("option");
-option.value=voice.name;
-option.textContent=voice.name+" ("+voice.lang+")";
-select.appendChild(option);
-});
 
-document.getElementById("voiceStatus").innerText=
-matching.length+" voice option(s) available.";
+function getLanguage(){
 
+ return language.value;
 }
 
-function speakScript(selectedOnly){
 
-if(!window.speechSynthesis){
-alert("Your browser does not support speech.");
-return;
+function speakText(text){
+
+ if(!text.trim()){
+  alert('Please prepare or enter a script first.');
+  return;
+ }
+
+ if(!window.speechSynthesis){
+  alert('Speech synthesis is not supported in this browser.');
+  return;
+ }
+
+ stopAudio();
+
+ let utterance=new SpeechSynthesisUtterance(text);
+
+ utterance.lang=getLanguage();
+ utterance.rate=parseFloat(speed.value);
+ utterance.pitch=parseFloat(pitch.value);
+
+ let selectedIndex=parseInt(browserVoice.value);
+
+ if(!isNaN(selectedIndex) && voices[selectedIndex]){
+  utterance.voice=voices[selectedIndex];
+ }
+
+ window.speechSynthesis.speak(utterance);
 }
 
-let scriptBox=document.getElementById("script");
-let text=scriptBox.value;
 
-if(selectedOnly && scriptBox.selectionStart!==scriptBox.selectionEnd){
-text=scriptBox.value.substring(
-scriptBox.selectionStart,
-scriptBox.selectionEnd
-);
+function listenScript(){
+
+ if(engine.value!=='browser'){
+  alert('AI Voice API connection is not available yet.');
+  return;
+ }
+
+ speakText(script.value);
 }
 
-if(!text.trim()){
-alert("पहले Script तैयार करें या उसमें कुछ लिखें।");
-return;
+
+function listenSelected(){
+
+ if(engine.value!=='browser'){
+  alert('AI Voice API connection is not available yet.');
+  return;
+ }
+
+ let start=script.selectionStart;
+ let end=script.selectionEnd;
+ let selected=script.value.substring(start,end);
+
+ if(!selected.trim()){
+  alert('Please select a portion of the script first.');
+  return;
+ }
+
+ speakText(selected);
 }
 
-speechSynthesis.cancel();
-
-let speech=new SpeechSynthesisUtterance(text);
-
-speech.lang=document.getElementById("language").value;
-speech.rate=parseFloat(document.getElementById("speed").value);
-speech.pitch=parseFloat(document.getElementById("pitch").value);
-
-let selectedName=document.getElementById("voiceSelect").value;
-let selectedVoice=availableVoices.find(v=>v.name===selectedName);
-
-if(selectedVoice){
-speech.voice=selectedVoice;
-speech.lang=selectedVoice.lang;
-}
-
-speech.onstart=function(){
-document.getElementById("voiceStatus").innerText=
-"Audio is playing...";
-};
-
-speech.onend=function(){
-document.getElementById("voiceStatus").innerText=
-"Audio preview completed.";
-};
-
-speech.onerror=function(){
-document.getElementById("voiceStatus").innerText=
-"Audio playback error. Please try another voice.";
-};
-
-speechSynthesis.speak(speech);
-
-}
 
 function stopAudio(){
-if(window.speechSynthesis){
-speechSynthesis.cancel();
-document.getElementById("voiceStatus").innerText="Audio stopped.";
-}
-}
 
-function approveScript(){
-
-let script=document.getElementById("script").value;
-
-if(!script.trim()){
-alert("पहले Script तैयार करें।");
-return;
+ if(window.speechSynthesis){
+  window.speechSynthesis.cancel();
+ }
 }
 
-if(!confirm("क्या ग्राहक ने पूरा Script और Audio सुनकर Approval दे दिया है?")){
-return;
+
+function approveAudio(){
+
+ if(!script.value.trim()){
+  alert('Please prepare the script first.');
+  return;
+ }
+
+ approved=true;
+
+ script.readOnly=true;
+
+ approvalStatus.innerText=
+ 'Status: Approved & Locked';
+
+ alert('Script and Audio Approved. Script is now locked.');
 }
 
-approved=true;
-
-document.getElementById("script").readOnly=true;
-document.getElementById("gender").disabled=true;
-document.getElementById("voiceSelect").disabled=true;
-document.getElementById("speed").disabled=true;
-document.getElementById("pitch").disabled=true;
-document.getElementById("language").disabled=true;
-
-document.getElementById("approval").style.display="block";
-
-document.getElementById("status").innerText=
-"Status: APPROVED AND LOCKED";
-
-localStorage.setItem("uaaaApprovedScript",JSON.stringify({
-script:script,
-approved:true,
-voice:document.getElementById("voiceSelect").value,
-speed:document.getElementById("speed").value,
-pitch:document.getElementById("pitch").value,
-language:document.getElementById("language").value,
-date:new Date().toISOString()
-}));
-
-alert("Script और Audio Version Approved और Locked हो गया है।");
-
-}
 
 function requestChanges(){
 
-if(approved){
-alert("नया Version बनाने के बाद ही बदलाव कर सकते हैं।");
-return;
+ approved=false;
+ script.readOnly=false;
+
+ approvalStatus.innerText=
+ 'Status: Changes Requested - Editing Allowed';
+
+ alert('You can now edit the script.');
 }
 
-document.getElementById("status").innerText=
-"Status: Changes Requested - Edit Your Script";
-
-alert("Script में बदलाव करें और दोबारा Audio सुनें।");
-
-}
 
 function newVersion(){
 
-approved=false;
+ approved=false;
+ script.readOnly=false;
 
-document.getElementById("script").readOnly=false;
-document.getElementById("gender").disabled=false;
-document.getElementById("voiceSelect").disabled=false;
-document.getElementById("speed").disabled=false;
-document.getElementById("pitch").disabled=false;
-document.getElementById("language").disabled=false;
+ approvalStatus.innerText=
+ 'Status: New Version - Approval Pending';
 
-document.getElementById("approval").style.display="none";
-
-document.getElementById("status").innerText=
-"Status: New Version - Approval Pending";
-
-localStorage.removeItem("uaaaApprovedScript");
-
+ alert('New version started. You can edit the script.');
 }
 
-function startVideo(){
 
-if(!approved){
-alert("पहले Script और Audio Approval जरूरी है।");
-return;
+function continueVisuals(){
+
+ if(!approved){
+  alert('Please approve and lock the audio before visual generation.');
+  return;
+ }
+
+ alert('Visual Generation Module will be connected in the next development phase.');
 }
 
-document.getElementById("videoStatus").innerText=
-"Approval successful! Visual Generation Module will be connected in the next development stage.";
-
-}
 
 function saveDraft(){
 
-let project={
-id:Date.now(),
-title:document.getElementById("title").value,
-category:document.getElementById("category").value,
-language:document.getElementById("language").value,
-format:document.getElementById("format").value,
-duration:document.getElementById("duration").value,
-customer:document.getElementById("customer").value,
-topic:document.getElementById("topic").value,
-script:document.getElementById("script").value,
-voice:document.getElementById("voiceSelect").value,
-voiceStyle:document.getElementById("voiceStyle").value,
-speed:document.getElementById("speed").value,
-pitch:document.getElementById("pitch").value,
-status:approved?"Approved":"Draft"
-};
+ let project={
+  id:Date.now(),
+  title:title.value || 'Untitled Project',
+  category:category.value,
+  customer:customer.value,
+  language:language.options[language.selectedIndex].text,
+  duration:duration.value,
+  format:format.value,
+  brief:brief.value,
+  script:script.value,
+  voiceEngine:engine.value,
+  gender:engine.value==='ai'?aiGender.value:gender.value,
+  voiceStyle:aiStyle.value,
+  voice:browserVoice.options[browserVoice.selectedIndex]?.text || '',
+  speed:speed.value,
+  pitch:pitch.value,
+  approved:approved,
+  status:approved?'Approved':'Draft',
+  date:new Date().toLocaleString()
+ };
 
-if(!project.title.trim()){
-alert("Please enter Video Title.");
-return;
-}
+ let projects=JSON.parse(localStorage.getItem('uaaaProjects') || '[]');
 
-let projects=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
+ projects.unshift(project);
 
-projects.push(project);
+ localStorage.setItem('uaaaProjects',JSON.stringify(projects));
 
-localStorage.setItem("uaaaProjects",JSON.stringify(projects));
-
-alert("Project saved successfully!");
-
-}
-
-if(window.speechSynthesis){
-loadVoices();
-speechSynthesis.onvoiceschanged=loadVoices;
+ saveStatus.innerText='Project saved successfully!';
 }
 
 </script>
 
 </body>
-  </html>
+</html>
