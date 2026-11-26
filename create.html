@@ -3,107 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UAAA AI Studio - Version 2.7</title>
+<title>UAAA AI Studio - Version 2.9</title>
 
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:#f1f5f9;
- color:#172033;
-}
-header{
- background:#111827;
- color:white;
- padding:20px;
-}
-header h1{margin:0 0 8px}
-header a{color:#93c5fd;text-decoration:none}
-.container{max-width:1000px;margin:auto;padding:15px}
-.card{
- background:white;
- border-radius:12px;
- padding:18px;
- margin:15px 0;
- box-shadow:0 2px 8px #00000010;
-}
-h2{font-size:20px;margin-top:0;color:#1d4ed8}
-h3{font-size:17px}
-label{
- display:block;
- font-weight:bold;
- margin:12px 0 6px;
-}
-input,select,textarea{
- width:100%;
- padding:11px;
- border:1px solid #cbd5e1;
- border-radius:7px;
- font-size:15px;
- background:white;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#111827;color:white;padding:18px}
+header h2{margin:0}
+.container{max-width:1000px;margin:20px auto;padding:12px}
+.card{background:white;padding:18px;margin-bottom:18px;border-radius:12px;box-shadow:0 2px 8px #00000012}
+h3{margin-top:0;color:#1d4ed8}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:7px;font-size:15px;background:white}
 textarea{min-height:90px;resize:vertical}
-button{
- background:#2563eb;
- color:white;
- border:0;
- border-radius:7px;
- padding:11px 15px;
- margin:8px 5px 5px 0;
- font-size:14px;
- cursor:pointer;
-}
+button{border:0;border-radius:7px;padding:11px 15px;margin:8px 5px 5px 0;background:#2563eb;color:white;font-weight:bold;cursor:pointer}
 button.secondary{background:#475569}
-button.danger{background:#dc2626}
 button.success{background:#15803d}
-button:disabled{opacity:.5}
-.item{
- border:1px solid #dbeafe;
- border-radius:8px;
- padding:12px;
- margin:10px 0;
- background:#f8fafc;
-}
+button.danger{background:#dc2626}
+button:disabled{background:#94a3b8;cursor:not-allowed}
+.item{background:#f8fafc;border:1px solid #dbeafe;padding:12px;margin:10px 0;border-radius:8px}
+.status{padding:12px;border-radius:7px;margin-top:10px;background:#eff6ff;color:#1e40af}
+.status.ok{background:#dcfce7;color:#166534}
+.status.error{background:#fee2e2;color:#991b1b}
 .small{font-size:13px;color:#64748b}
-.status{font-weight:bold;color:#15803d}
-.error{font-weight:bold;color:#dc2626}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#dbeafe;color:#1e40af;font-size:12px;margin:3px}
 hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
+a{color:#2563eb}
+@media(max-width:650px){.row{grid-template-columns:1fr}.container{padding:8px}.card{padding:14px}}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🎬 UAAA AI Studio</h1>
-<p>Version 2.7 – Project Management & Save System</p>
-<a href="index.html">← Back to Dashboard</a>
+<h2>UAAA AI Studio</h2>
+<p>Version 2.9 – Project Workflow & Approval Management</p>
 </header>
 
 <div class="container">
 
-<!-- STEP 1 -->
-<section class="card">
-<h2>Step 1: Customer Brief</h2>
+<div class="card">
+<h3>Step 1: Customer Brief</h3>
 
+<div class="row">
+<div>
 <label>Video Category</label>
 <select id="category">
 <option>AI News Creator</option>
-<option>Product Promotion</option>
 <option>Job Alert</option>
-<option>Educational Videos</option>
-<option>Motivational Videos</option>
-<option>Stories & Documentary</option>
+<option>Product Promotion</option>
+<option>Educational</option>
+<option>Motivational</option>
+<option>Documentary</option>
+<option>Story</option>
+<option>Cartoon</option>
 <option>YouTube Shorts</option>
-<option>Cartoon Videos</option>
+<option>Other</option>
 </select>
+</div>
 
+<div>
 <label>Video Title</label>
 <input id="title" placeholder="Enter video title">
+</div>
 
+<div>
 <label>Customer / Company Name</label>
 <input id="customer" placeholder="Enter customer name">
+</div>
 
+<div>
 <label>Language</label>
 <select id="language">
 <option value="hi-IN">Hindi</option>
@@ -115,99 +85,97 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 <option value="te-IN">Telugu</option>
 <option value="pa-IN">Punjabi</option>
 </select>
+</div>
 
+<div>
 <label>Video Format</label>
 <select id="format">
 <option>16:9 Landscape</option>
 <option>9:16 Vertical</option>
 <option>1:1 Square</option>
 </select>
+</div>
 
-<label>Duration</label>
+<div>
+<label>Video Duration</label>
 <select id="duration">
 <option>30 Seconds</option>
 <option>1 Minute</option>
+<option>2 Minutes</option>
 <option>3 Minutes</option>
 <option>5 Minutes</option>
 <option>10 Minutes</option>
 </select>
+</div>
+</div>
 
 <label>Complete Customer Brief</label>
-<textarea id="brief" placeholder="Enter complete video requirements"></textarea>
-</section>
+<textarea id="brief" placeholder="Enter complete customer requirements, company details, offers, phone numbers, address etc."></textarea>
+</div>
 
-<!-- STEP 2 -->
-<section class="card">
-<h2>Step 2: Script Workspace</h2>
 
-<textarea id="script" placeholder="Your complete video script will appear here..."></textarea>
+<div class="card">
+<h3>Step 2: Script Workspace</h3>
+
+<label>Complete Video Script</label>
+<textarea id="script" placeholder="Prepare or paste your complete video script here"></textarea>
 
 <button onclick="prepareScript()">Prepare Sample Script</button>
-<button class="secondary" onclick="speakText()">Listen to Script</button>
-<button class="danger" onclick="stopAudio()">Stop Audio</button>
-</section>
+<button onclick="playScript()">Listen to Script</button>
+<button class="secondary" onclick="stopAudio()">Stop Audio</button>
 
-<!-- STEP 3 -->
-<section class="card">
-<h2>Step 3: Voice Engine</h2>
+<div class="small">Note: Sample script preparation is a basic template. Actual AI script generation will be connected later.</div>
+</div>
 
-<label>Voice Engine</label>
+
+<div class="card">
+<h3>Step 3: Voice Engine Selection</h3>
+
+<label>Select Voice Engine</label>
 <select id="engine">
 <option value="browser">Browser Voice</option>
-<option value="ai">AI Voice Studio (API Pending)</option>
+<option value="ai">AI Voice Studio – API Pending</option>
 </select>
 
-<div id="browserControls">
-<label>Available Browser Voice</label>
+<label>Browser Voice</label>
 <select id="browserVoice"></select>
 
+<div class="row">
+<div>
 <label>Voice Speed</label>
-<input id="speed" type="number" min="0.7" max="1.5" step="0.1" value="1">
-
+<input type="number" id="voiceSpeed" min="0.5" max="2" step="0.1" value="1">
+</div>
+<div>
 <label>Voice Pitch</label>
-<input id="pitch" type="number" min="0.5" max="1.5" step="0.1" value="1">
+<input type="number" id="voicePitch" min="0.5" max="2" step="0.1" value="1">
+</div>
 </div>
 
-<div id="aiControls" style="display:none">
-<label>AI Voice Gender</label>
-<select id="aiGender">
-<option>Male</option>
-<option>Female</option>
-</select>
+<button onclick="loadBrowserVoices()">Refresh Browser Voices</button>
+<button onclick="playScript()">Listen to Script</button>
+<button class="secondary" onclick="stopAudio()">Stop Audio</button>
 
-<label>Voice Style</label>
-<select id="aiStyle">
-<option>Modern YouTube News Presenter</option>
-<option>Professional News Anchor</option>
-<option>Storytelling</option>
-<option>Motivational Speaker</option>
-<option>Friendly Presenter</option>
-</select>
-
-<label>Voice Quality</label>
-<select id="aiQuality">
-<option>Standard</option>
-<option>High</option>
-<option>Premium</option>
-</select>
-
-<p class="small">Actual AI Voice API connection is pending.</p>
+<div class="status">
+AI Voice generation is not connected yet. Browser Voice uses voices available on your device.
 </div>
-</section>
+</div>
 
-<!-- STEP 4 -->
-<section class="card">
-<h2>Step 4: Voice Profile Management</h2>
+
+<div class="card">
+<h3>Step 4: Voice Profile Management</h3>
 
 <label>Profile Name</label>
 <input id="profileName" placeholder="Example: UAAA Hindi Male Voice">
 
+<div class="row">
+<div>
 <label>Gender</label>
 <select id="profileGender">
 <option>Male</option>
 <option>Female</option>
 </select>
-
+</div>
+<div>
 <label>Language</label>
 <select id="profileLanguage">
 <option value="hi-IN">Hindi</option>
@@ -218,38 +186,35 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 <option value="ta-IN">Tamil</option>
 <option value="te-IN">Telugu</option>
 </select>
-
+</div>
+<div>
 <label>Voice Style</label>
 <select id="profileStyle">
+<option>Professional</option>
 <option>Modern YouTube News Presenter</option>
-<option>Professional News Anchor</option>
+<option>News Anchor</option>
 <option>Storytelling</option>
 <option>Motivational Speaker</option>
-<option>Friendly Presenter</option>
+<option>Friendly</option>
 </select>
-
-<label>Voice Quality</label>
+</div>
+<div>
+<label>Quality</label>
 <select id="profileQuality">
 <option>Standard</option>
 <option>High</option>
 <option>Premium</option>
 </select>
-
-<label>Provider</label>
-<select id="profileProvider">
-<option>AI Voice API</option>
-<option>Browser Voice</option>
-</select>
+</div>
+</div>
 
 <button onclick="saveVoiceProfile()">Save Voice Profile</button>
-
-<h3>Saved Voice Profiles</h3>
 <div id="profileList"></div>
-</section>
+</div>
 
-<!-- STEP 5 -->
-<section class="card">
-<h2>Step 5: Character Management</h2>
+
+<div class="card">
+<h3>Step 5: Character Management</h3>
 
 <label>Character Name</label>
 <input id="characterName" placeholder="Example: Narrator">
@@ -258,11 +223,9 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 <select id="characterRole">
 <option>Narrator</option>
 <option>News Anchor</option>
-<option>Reporter</option>
-<option>Customer</option>
 <option>Male Character</option>
 <option>Female Character</option>
-<option>Teacher</option>
+<option>Customer</option>
 <option>Other</option>
 </select>
 
@@ -270,56 +233,53 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 <select id="characterProfile"></select>
 
 <button onclick="addCharacter()">+ Add Character</button>
-
-<h3>Saved Characters</h3>
 <div id="characterList"></div>
-</section>
+</div>
 
-<!-- STEP 6 -->
-<section class="card">
-<h2>Step 6: Dialogue Management</h2>
+
+<div class="card">
+<h3>Step 6: Dialogue Management</h3>
 
 <label>Select Character</label>
 <select id="dialogueCharacter"></select>
 
 <label>Scene Number</label>
-<input id="sceneNumber" type="number" min="1" value="1">
+<input type="number" id="sceneNumber" min="1" value="1">
 
 <label>Dialogue</label>
 <textarea id="dialogueText" placeholder="Enter character dialogue"></textarea>
 
 <button onclick="addDialogue()">+ Add Dialogue</button>
-
-<h3>Saved Dialogues</h3>
 <div id="dialogueList"></div>
-</section>
+</div>
 
-<!-- STEP 7 -->
-<section class="card">
-<h2>Step 7: Scene-wise Audio Preparation</h2>
+
+<div class="card">
+<h3>Step 7: Scene-wise Audio Preparation</h3>
 
 <label>Select Scene</label>
-<select id="audioScene"></select>
+<select id="audioScene" onchange="renderAudioScenes()"></select>
 
-<div id="sceneAudioList"></div>
+<div id="audioSceneList"></div>
 
-<button class="danger" onclick="stopAudio()">Stop Audio</button>
-</section>
+<button class="secondary" onclick="stopAudio()">Stop Audio</button>
+</div>
 
-<!-- STEP 8 -->
-<section class="card">
-<h2>Step 8: Customer Approval & Audio Lock</h2>
 
-<p>Review your script and dialogue plan before visual production.</p>
+<div class="card">
+<h3>Step 8: Customer Approval & Audio Lock</h3>
+
+<p>Customer should listen to the complete audio plan and verify all names, numbers, prices and other details before visual creation.</p>
+
+<div id="audioApprovalStatus" class="status">Audio approval pending.</div>
 
 <button class="success" onclick="approveAudio()">Approve Audio Plan</button>
+<button class="secondary" onclick="resetAudioApproval()">Request Audio Changes</button>
+</div>
 
-<p id="approvalStatus" class="status"></p>
-</section>
 
-<!-- STEP 9 -->
-<section class="card">
-<h2>Step 9: Visual Generation Studio</h2>
+<div class="card">
+<h3>Step 9: Visual Generation Studio</h3>
 
 <label>Select Scene</label>
 <select id="visualScene"></select>
@@ -335,836 +295,824 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 </select>
 
 <label>Visual Description</label>
-<textarea id="visualDescription" placeholder="Describe what should appear in this scene"></textarea>
+<textarea id="visualDescription" placeholder="Describe the scene visual"></textarea>
 
 <label>Upload Image (Optional)</label>
-<input id="visualImage" type="file" accept="image/*">
+<input type="file" id="visualFile" accept="image/*">
 
 <label>Subtitle Text</label>
 <textarea id="subtitleText" placeholder="Enter subtitle"></textarea>
 
 <label>Background Music Style</label>
 <select id="musicStyle">
+<option>No Music</option>
 <option>News Background Music</option>
 <option>Corporate</option>
 <option>Motivational</option>
 <option>Emotional</option>
 <option>Documentary</option>
-<option>No Music</option>
+<option>Energetic</option>
 </select>
 
 <button onclick="saveSceneVisual()">Save Scene Visual</button>
 
-<h3>Saved Scene Visuals</h3>
-<div id="visualList"></div>
+<div id="visualPreview"></div>
+<hr>
+<div id="savedVisuals"></div>
+
+<div id="visualApprovalStatus" class="status">Visual approval pending.</div>
 
 <button class="success" onclick="approveVisuals()">Approve Visual Plan</button>
-<p id="visualStatus" class="status"></p>
-</section>
+<button class="secondary" onclick="resetVisualApproval()">Request Visual Changes</button>
+</div>
 
-<!-- STEP 10 -->
-<section class="card">
-<h2>Step 10: Project Management & Save</h2>
+
+<div class="card">
+<h3>Step 10: Project Management & Save</h3>
 
 <label>Project Name *</label>
 <input id="projectName" placeholder="Example: UAAA News Demo 01">
 
 <label>Project Description (Optional)</label>
-<textarea id="projectDescription" placeholder="Enter project details or customer instructions"></textarea>
+<textarea id="projectDescription" placeholder="Enter project description"></textarea>
 
-<hr>
+<div id="projectStatus" class="status">Project not saved yet.</div>
 
-<button class="success" onclick="saveProject()">💾 Save Project / Draft</button>
-
-<p id="saveStatus" class="status"></p>
-<p id="saveError" class="error"></p>
+<button class="success" onclick="saveProject()">Save Project / Update Project</button>
 
 <p class="small">
-Your project details, characters, dialogues and scene visual information will be saved in this browser.
+Your project, characters, dialogues, visual plans and approval status will be saved in this browser.
 </p>
-
-<p class="small">
-Note: AI voice generation, AI image generation and final MP4 export will be connected in future versions.
-</p>
-</section>
+</div>
 
 </div>
 
+
 <script>
-
-/* STORAGE */
-
 const $ = id => document.getElementById(id);
 
-function readStore(key,fallback=[]){
+function readStore(key){
  try{
-  const value=JSON.parse(localStorage.getItem(key));
-  return Array.isArray(value)?value:fallback;
- }catch(e){
-  return fallback;
- }
+  const value=JSON.parse(localStorage.getItem(key)||"[]");
+  return Array.isArray(value)?value:[];
+ }catch(e){return [];}
 }
 
 function writeStore(key,value){
  localStorage.setItem(key,JSON.stringify(value));
 }
 
-/* DATA */
-
-let profiles=readStore("uaaaVoiceProfiles");
+let voiceProfiles=readStore("uaaaVoiceProfiles");
 let characters=readStore("uaaaCharacters");
 let dialogues=readStore("uaaaDialogues");
 let visuals=readStore("uaaaVisuals");
+let projects=readStore("uaaaProjects");
+let approvalStates=readStore("uaaaApprovalStates");
 
 let audioApproved=false;
 let visualApproved=false;
 
-/* PROFILE HELPERS */
-
-function profileName(p){
- return p.name || p.profileName || "Unnamed Profile";
+function normalizedName(value){
+ return String(value||"").trim().toLowerCase();
 }
 
-function refreshProfiles(){
+function getProjectName(){
+ return $("projectName").value.trim();
+}
 
- profiles=readStore("uaaaVoiceProfiles");
+function getProjectKey(){
+ return normalizedName(getProjectName() || $("title").value);
+}
 
- const el=$("characterProfile");
- const old=el.value;
+function findCurrentProject(){
+ const key=getProjectKey();
+ if(!key)return null;
 
- el.innerHTML='<option value="">Select Voice Profile</option>';
+ return projects.find(p=>
+  normalizedName(p.projectName || p.title)===key
+ ) || null;
+}
 
- profiles.forEach((p,i)=>{
-  const op=document.createElement("option");
-  op.value=String(i);
-  op.textContent=profileName(p)+" ("+(p.gender||p.aiGender||"Voice")+")";
-  el.appendChild(op);
- });
+function getApprovalRecord(){
+ const key=getProjectKey();
+ return approvalStates.find(a=>a.key===key) || null;
+}
 
- if(old && Number(old)<profiles.length){
-  el.value=old;
+function updateApprovalRecord(){
+ const key=getProjectKey();
+ if(!key)return;
+
+ let record=approvalStates.find(a=>a.key===key);
+
+ if(!record){
+  record={key:key,audioApproved:false,visualApproved:false};
+  approvalStates.push(record);
  }
 
- renderProfiles();
+ record.audioApproved=audioApproved;
+ record.visualApproved=visualApproved;
+ record.updatedAt=new Date().toISOString();
+
+ writeStore("uaaaApprovalStates",approvalStates);
 }
 
-function saveVoiceProfile(){
+function getProjectStatus(audio,visual){
+ if(audio && visual)return "Ready for Final Review";
+ if(audio)return "Audio Approved";
+ if(visual)return "Visual Approved";
+ return "Draft";
+}
 
- const name=$("profileName").value.trim();
+function updateExistingProjectApproval(){
+ const existing=findCurrentProject();
+ if(!existing)return;
 
- if(!name){
-  alert("Please enter Profile Name.");
-  return;
+ existing.audioApproved=audioApproved;
+ existing.visualApproved=visualApproved;
+ existing.status=getProjectStatus(audioApproved,visualApproved);
+ existing.updatedAt=new Date().toISOString();
+
+ writeStore("uaaaProjects",projects);
+}
+
+function loadApprovalState(){
+ const existing=findCurrentProject();
+ const saved=getApprovalRecord();
+
+ if(existing){
+  audioApproved=!!existing.audioApproved;
+  visualApproved=!!existing.visualApproved;
+ }else if(saved){
+  audioApproved=!!saved.audioApproved;
+  visualApproved=!!saved.visualApproved;
+ }else{
+  audioApproved=false;
+  visualApproved=false;
  }
 
- profiles=readStore("uaaaVoiceProfiles");
-
- const p={
-  id:"profile_"+Date.now(),
-  name:name,
-  gender:$("profileGender").value,
-  language:$("profileLanguage").value,
-  style:$("profileStyle").value,
-  quality:$("profileQuality").value,
-  provider:$("profileProvider").value
- };
-
- profiles.push(p);
- writeStore("uaaaVoiceProfiles",profiles);
-
- $("profileName").value="";
-
- refreshProfiles();
- alert("Voice Profile Saved Successfully!");
+ renderApprovalStatus();
 }
 
-function renderProfiles(){
+function renderApprovalStatus(){
+ $("audioApprovalStatus").textContent=
+  audioApproved?"Audio Approved ✓":"Audio approval pending.";
 
- profiles=readStore("uaaaVoiceProfiles");
+ $("audioApprovalStatus").className=
+  audioApproved?"status ok":"status";
 
- $("profileList").innerHTML="";
+ $("visualApprovalStatus").textContent=
+  visualApproved?"Visual Plan Approved ✓":"Visual approval pending.";
 
- if(!profiles.length){
-  $("profileList").innerHTML="<p>No saved profiles yet.</p>";
-  return;
+ $("visualApprovalStatus").className=
+  visualApproved?"status ok":"status";
+}
+
+function resetAudioApproval(){
+ audioApproved=false;
+ visualApproved=false;
+ updateApprovalRecord();
+ updateExistingProjectApproval();
+ renderApprovalStatus();
+ alert("Audio approval reset. Please review the audio again.");
+}
+
+function resetVisualApproval(){
+ visualApproved=false;
+ updateApprovalRecord();
+ updateExistingProjectApproval();
+ renderApprovalStatus();
+ alert("Visual approval reset. Please review the visual plan again.");
+}
+
+function prepareScript(){
+ const title=$("title").value.trim() || "हमारा नया वीडियो";
+ const brief=$("brief").value.trim();
+
+ $("script").value=
+ `नमस्कार दोस्तों!\n\nआज हम आपके लिए लेकर आए हैं ${title}।\n\n${brief}\n\nइस वीडियो में हमने आपके लिए महत्वपूर्ण जानकारी प्रस्तुत की है।\n\nवीडियो पसंद आए तो इसे लाइक और शेयर जरूर करें।\n\nधन्यवाद!`;
+
+ audioApproved=false;
+ visualApproved=false;
+ updateApprovalRecord();
+ updateExistingProjectApproval();
+ renderApprovalStatus();
+}
+
+function stopAudio(){
+ if("speechSynthesis" in window){
+  speechSynthesis.cancel();
  }
-
- profiles.forEach((p,i)=>{
-  const div=document.createElement("div");
-  div.className="item";
-
-  const title=document.createElement("b");
-  title.textContent=profileName(p);
-
-  const info=document.createElement("p");
-  info.textContent=(p.gender||"")+
-   " | "+(p.style||"")+
-   " | "+(p.quality||"");
-
-  const del=document.createElement("button");
-  del.className="danger";
-  del.textContent="Delete";
-  del.onclick=()=>deleteProfile(i);
-
-  div.append(title,info,del);
-  $("profileList").appendChild(div);
- });
 }
 
-function deleteProfile(index){
-
- if(!confirm("Delete this Voice Profile?"))return;
-
- profiles=readStore("uaaaVoiceProfiles");
- profiles.splice(index,1);
-
- writeStore("uaaaVoiceProfiles",profiles);
- refreshProfiles();
-}
-
-/* CHARACTER MANAGEMENT */
-
-function refreshCharacters(){
-
- characters=readStore("uaaaCharacters");
-
- const el=$("dialogueCharacter");
- const old=el.value;
-
- el.innerHTML='<option value="">Select Character</option>';
-
- characters.forEach((c,i)=>{
-  const op=document.createElement("option");
-  op.value=String(i);
-  op.textContent=c.name+" ("+c.role+")";
-  el.appendChild(op);
- });
-
- if(old && Number(old)<characters.length){
-  el.value=old;
- }
-
- renderCharacters();
- refreshScenes();
-}
-
-function addCharacter(){
-
- const name=$("characterName").value.trim();
- const role=$("characterRole").value;
- const profileIndex=$("characterProfile").value;
-
- if(!name){
-  alert("Please enter Character Name.");
-  return;
- }
-
- if(profileIndex===""){
-  alert("Please select a Voice Profile.");
-  return;
- }
-
- profiles=readStore("uaaaVoiceProfiles");
-
- const profile=profiles[Number(profileIndex)];
-
- if(!profile){
-  alert("Selected Voice Profile not found. Please refresh the page and try again.");
-  refreshProfiles();
-  return;
- }
-
- characters=readStore("uaaaCharacters");
-
- characters.push({
-  id:"character_"+Date.now(),
-  name:name,
-  role:role,
-  profileId:profile.id || "",
-  profileName:profileName(profile)
- });
-
- writeStore("uaaaCharacters",characters);
-
- $("characterName").value="";
-
- refreshCharacters();
-
- alert("Character Added Successfully!");
-}
-
-function renderCharacters(){
-
- characters=readStore("uaaaCharacters");
-
- $("characterList").innerHTML="";
-
- if(!characters.length){
-  $("characterList").innerHTML="<p>No characters added yet.</p>";
-  return;
- }
-
- characters.forEach((c,i)=>{
-  const div=document.createElement("div");
-  div.className="item";
-
-  const title=document.createElement("b");
-  title.textContent=c.name;
-
-  const info=document.createElement("p");
-  info.textContent="Role: "+c.role+" | Voice: "+c.profileName;
-
-  const del=document.createElement("button");
-  del.className="danger";
-  del.textContent="Delete Character";
-  del.onclick=()=>deleteCharacter(i);
-
-  div.append(title,info,del);
-  $("characterList").appendChild(div);
- });
-}
-
-function deleteCharacter(index){
-
- if(!confirm("Delete this Character?"))return;
-
- characters=readStore("uaaaCharacters");
- characters.splice(index,1);
-
- writeStore("uaaaCharacters",characters);
- refreshCharacters();
-}
-
-/* DIALOGUE MANAGEMENT */
-
-function addDialogue(){
-
- characters=readStore("uaaaCharacters");
-
- const index=$("dialogueCharacter").value;
-
- if(index===""){
-  alert("Please add a Character first.");
-  return;
- }
-
- const character=characters[Number(index)];
-
- if(!character){
-  alert("Character not found. Please refresh the page.");
-  refreshCharacters();
-  return;
- }
-
- const scene=Math.max(1,Number($("sceneNumber").value)||1);
- const text=$("dialogueText").value.trim();
-
- if(!text){
-  alert("Please enter Dialogue.");
-  return;
- }
-
- dialogues=readStore("uaaaDialogues");
-
- dialogues.push({
-  id:"dialogue_"+Date.now(),
-  characterId:character.id,
-  characterName:character.name,
-  profileName:character.profileName,
-  scene:scene,
-  text:text
- });
-
- writeStore("uaaaDialogues",dialogues);
-
- $("dialogueText").value="";
- refreshDialogues();
-
- alert("Dialogue Added Successfully!");
-}
-
-function renderDialogues(){
-
- dialogues=readStore("uaaaDialogues");
-
- $("dialogueList").innerHTML="";
-
- if(!dialogues.length){
-  $("dialogueList").innerHTML="<p>No dialogues added yet.</p>";
-  return;
- }
-
- dialogues.forEach((d,i)=>{
-  const div=document.createElement("div");
-  div.className="item";
-
-  const title=document.createElement("b");
-  title.textContent="Scene "+d.scene+" – "+d.characterName;
-
-  const content=document.createElement("p");
-  content.textContent=d.text;
-
-  const play=document.createElement("button");
-  play.textContent="Play Dialogue";
-  play.onclick=()=>speak(d.text);
-
-  const del=document.createElement("button");
-  del.className="danger";
-  del.textContent="Delete";
-  del.onclick=()=>deleteDialogue(i);
-
-  div.append(title,content,play,del);
-  $("dialogueList").appendChild(div);
- });
-}
-
-function deleteDialogue(index){
-
- dialogues=readStore("uaaaDialogues");
- dialogues.splice(index,1);
-
- writeStore("uaaaDialogues",dialogues);
- refreshDialogues();
-}
-
-function refreshDialogues(){
- renderDialogues();
- refreshScenes();
-}
-
-/* SCENE MANAGEMENT */
-
-function getScenes(){
-
- dialogues=readStore("uaaaDialogues");
-
- const nums=[...new Set(dialogues.map(d=>Number(d.scene)))];
-
- return nums.filter(n=>n>0).sort((a,b)=>a-b);
-}
-
-function refreshScenes(){
-
- const scenes=getScenes();
-
- ["audioScene","visualScene"].forEach(id=>{
-
-  const el=$(id);
-  const old=el.value;
-
-  el.innerHTML='<option value="">Select Scene</option>';
-
-  scenes.forEach(n=>{
-   const op=document.createElement("option");
-   op.value=String(n);
-   op.textContent="Scene "+n;
-   el.appendChild(op);
-  });
-
-  if(scenes.includes(Number(old))){
-   el.value=old;
-  }
- });
-
- renderSceneAudio();
-}
-
-/* SCENE AUDIO */
-
-function renderSceneAudio(){
-
- const scene=Number($("audioScene").value);
-
- dialogues=readStore("uaaaDialogues");
-
- const selected=dialogues.filter(d=>Number(d.scene)===scene);
-
- const box=$("sceneAudioList");
- box.innerHTML="";
-
- if(!scene){
-  box.innerHTML="<p>Select a Scene to view its dialogues.</p>";
-  return;
- }
-
- if(!selected.length){
-  box.innerHTML="<p>No dialogue in this scene.</p>";
-  return;
- }
-
- selected.forEach(d=>{
-  const div=document.createElement("div");
-  div.className="item";
-
-  const title=document.createElement("b");
-  title.textContent=d.characterName;
-
-  const content=document.createElement("p");
-  content.textContent=d.text;
-
-  const play=document.createElement("button");
-  play.textContent="Play Dialogue";
-  play.onclick=()=>speak(d.text);
-
-  div.append(title,content,play);
-  box.appendChild(div);
- });
-
- const full=document.createElement("button");
- full.textContent="Play Full Scene";
- full.onclick=()=>speak(selected.map(d=>d.text).join(" "));
-
- box.appendChild(full);
-}
-
-/* BROWSER VOICE */
-
-function loadBrowserVoices(){
-
- const list=$("browserVoice");
- const voices=window.speechSynthesis?
-  window.speechSynthesis.getVoices():[];
-
- list.innerHTML="";
-
- voices.forEach((v,i)=>{
-  const op=document.createElement("option");
-  op.value=String(i);
-  op.textContent=v.name+" ("+v.lang+")";
-  list.appendChild(op);
- });
-}
-
-function speak(text){
-
- if(!window.speechSynthesis){
-  alert("Browser speech is not supported.");
-  return;
- }
-
- if(!text || !text.trim()){
-  alert("There is no text to play.");
+function playText(text){
+ if(!("speechSynthesis" in window)){
+  alert("Browser voice is not supported on this device.");
   return;
  }
 
  stopAudio();
 
  const utterance=new SpeechSynthesisUtterance(text);
- const voices=window.speechSynthesis.getVoices();
- const voice=voices[Number($("browserVoice").value)];
-
- if(voice)utterance.voice=voice;
-
- utterance.rate=Number($("speed").value)||1;
- utterance.pitch=Number($("pitch").value)||1;
  utterance.lang=$("language").value;
+ utterance.rate=Number($("voiceSpeed").value)||1;
+ utterance.pitch=Number($("voicePitch").value)||1;
 
- window.speechSynthesis.speak(utterance);
-}
+ const voices=speechSynthesis.getVoices();
+ const selected=$("browserVoice").value;
 
-function speakText(){
- speak($("script").value);
-}
-
-function stopAudio(){
- if(window.speechSynthesis){
-  window.speechSynthesis.cancel();
+ if(selected){
+  const voice=voices.find(v=>v.name===selected);
+  if(voice)utterance.voice=voice;
  }
+
+ speechSynthesis.speak(utterance);
 }
 
-/* SCRIPT */
+function playScript(){
+ const text=$("script").value.trim();
+ if(!text){alert("Please enter a script first.");return;}
+ playText(text);
+}
 
-function prepareScript(){
+function loadBrowserVoices(){
+ if(!("speechSynthesis" in window))return;
 
- const title=$("title").value.trim();
- const brief=$("brief").value.trim();
+ const list=$("browserVoice");
+ const voices=speechSynthesis.getVoices();
+ const previous=list.value;
 
- if(!title || !brief){
-  alert("Please enter Video Title and Customer Brief.");
+ list.innerHTML="";
+
+ voices.forEach(v=>{
+  const option=document.createElement("option");
+  option.value=v.name;
+  option.textContent=v.name+" ("+v.lang+")";
+  list.appendChild(option);
+ });
+
+ if(previous)list.value=previous;
+}
+
+if("speechSynthesis" in window){
+ loadBrowserVoices();
+ speechSynthesis.onvoiceschanged=loadBrowserVoices;
+}
+
+
+/* VOICE PROFILES */
+
+function saveVoiceProfile(){
+ const name=$("profileName").value.trim();
+ if(!name){alert("Please enter Profile Name.");return;}
+
+ voiceProfiles.push({
+  id:Date.now().toString(),
+  name:name,
+  gender:$("profileGender").value,
+  language:$("profileLanguage").value,
+  style:$("profileStyle").value,
+  quality:$("profileQuality").value,
+  provider:"AI Voice Studio"
+ });
+
+ writeStore("uaaaVoiceProfiles",voiceProfiles);
+ $("profileName").value="";
+ renderProfiles();
+ alert("Voice Profile Saved Successfully!");
+}
+
+function renderProfiles(){
+ const box=$("profileList");
+ box.innerHTML="<h4>Saved Voice Profiles</h4>";
+
+ $("characterProfile").innerHTML="";
+ const empty=document.createElement("option");
+ empty.value="";
+ empty.textContent="Select Voice Profile";
+ $("characterProfile").appendChild(empty);
+
+ voiceProfiles.forEach((p,i)=>{
+  const name=p.name||p.profileName||"Unnamed Profile";
+  const gender=p.gender||"Not specified";
+
+  const option=document.createElement("option");
+  option.value=String(i);
+  option.textContent=name+" ("+gender+")";
+  $("characterProfile").appendChild(option);
+
+  const item=document.createElement("div");
+  item.className="item";
+  item.innerHTML=
+   "<strong>"+escapeHTML(name)+"</strong><br>"+
+   "<span class='small'>"+escapeHTML(gender)+" | "+
+   escapeHTML(p.language||"")+"</span>";
+
+  const del=document.createElement("button");
+  del.className="danger";
+  del.textContent="Delete";
+  del.onclick=()=>{
+   if(!confirm("Delete this voice profile?"))return;
+   voiceProfiles.splice(i,1);
+   writeStore("uaaaVoiceProfiles",voiceProfiles);
+   renderProfiles();
+   renderCharacters();
+  };
+
+  item.appendChild(del);
+  box.appendChild(item);
+ });
+}
+
+
+/* CHARACTER MANAGEMENT */
+
+function addCharacter(){
+ const name=$("characterName").value.trim();
+ const profileIndex=$("characterProfile").value;
+
+ if(!name){alert("Please enter Character Name.");return;}
+ if(profileIndex===""){alert("Please select a Voice Profile.");return;}
+
+ const profile=voiceProfiles[Number(profileIndex)];
+ if(!profile){alert("Selected profile not found.");return;}
+
+ characters.push({
+  id:Date.now().toString(),
+  name:name,
+  role:$("characterRole").value,
+  profileName:profile.name||profile.profileName||"Voice Profile",
+  profileId:profile.id||""
+ });
+
+ writeStore("uaaaCharacters",characters);
+ $("characterName").value="";
+ renderCharacters();
+ alert("Character added successfully.");
+}
+
+function renderCharacters(){
+ const box=$("characterList");
+ box.innerHTML="<h4>Saved Characters</h4>";
+
+ $("dialogueCharacter").innerHTML="";
+ const empty=document.createElement("option");
+ empty.value="";
+ empty.textContent="Select Character";
+ $("dialogueCharacter").appendChild(empty);
+
+ characters.forEach((c,i)=>{
+  const option=document.createElement("option");
+  option.value=String(i);
+  option.textContent=c.name;
+  $("dialogueCharacter").appendChild(option);
+
+  const item=document.createElement("div");
+  item.className="item";
+  item.innerHTML="<strong>"+escapeHTML(c.name)+"</strong><br>"+
+   "Role: "+escapeHTML(c.role||"")+
+   "<br>Voice Profile: "+escapeHTML(c.profileName||"");
+
+  const del=document.createElement("button");
+  del.className="danger";
+  del.textContent="Delete";
+  del.onclick=()=>{
+   if(!confirm("Delete this character?"))return;
+   characters.splice(i,1);
+   writeStore("uaaaCharacters",characters);
+   renderCharacters();
+  };
+
+  item.appendChild(del);
+  box.appendChild(item);
+ });
+}
+
+
+/* DIALOGUE MANAGEMENT */
+
+function addDialogue(){
+ const index=$("dialogueCharacter").value;
+ const text=$("dialogueText").value.trim();
+ const scene=Math.max(1,Number($("sceneNumber").value)||1);
+
+ if(index===""){alert("Please select a character.");return;}
+ if(!text){alert("Please enter dialogue.");return;}
+
+ const character=characters[Number(index)];
+ if(!character){alert("Selected character not found.");return;}
+
+ dialogues.push({
+  id:Date.now().toString(),
+  scene:scene,
+  character:character.name,
+  text:text
+ });
+
+ writeStore("uaaaDialogues",dialogues);
+
+ $("dialogueText").value="";
+
+ audioApproved=false;
+ visualApproved=false;
+ updateApprovalRecord();
+ updateExistingProjectApproval();
+
+ renderDialogues();
+ renderSceneOptions();
+ renderAudioScenes();
+ renderApprovalStatus();
+
+ alert("Dialogue added successfully.");
+}
+
+function renderDialogues(){
+ const box=$("dialogueList");
+ box.innerHTML="<h4>Saved Dialogues</h4>";
+
+ dialogues.forEach((d,i)=>{
+  const item=document.createElement("div");
+  item.className="item";
+  item.innerHTML=
+   "<strong>Scene "+escapeHTML(d.scene)+" – "+
+   escapeHTML(d.character)+"</strong><br>"+
+   escapeHTML(d.text||d.dialogue||"");
+
+  const del=document.createElement("button");
+  del.className="danger";
+  del.textContent="Delete";
+  del.onclick=()=>{
+   dialogues.splice(i,1);
+   writeStore("uaaaDialogues",dialogues);
+   audioApproved=false;
+   visualApproved=false;
+   updateApprovalRecord();
+   updateExistingProjectApproval();
+   renderDialogues();
+   renderSceneOptions();
+   renderAudioScenes();
+   renderApprovalStatus();
+  };
+
+  item.appendChild(del);
+  box.appendChild(item);
+ });
+}
+
+
+/* SCENE OPTIONS */
+
+function getSceneNumbers(){
+ return [...new Set(dialogues.map(d=>Number(d.scene)||1))].sort((a,b)=>a-b);
+}
+
+function fillSelect(id,scenes){
+ const select=$(id);
+ const previous=select.value;
+ select.innerHTML="";
+
+ if(scenes.length===0){
+  const option=document.createElement("option");
+  option.value="";
+  option.textContent="No scenes available – Add a dialogue first";
+  select.appendChild(option);
   return;
  }
 
- $("script").value=
- "नमस्कार दोस्तों!\n\n"+
- "आज के इस वीडियो में हम बात करेंगे "+title+" के बारे में।\n\n"+
- brief+
- "\n\nअधिक जानकारी के लिए हमारे साथ जुड़े रहें।\n\nधन्यवाद!";
+ scenes.forEach(scene=>{
+  const option=document.createElement("option");
+  option.value=String(scene);
+  option.textContent="Scene "+scene;
+  select.appendChild(option);
+ });
+
+ if(scenes.includes(Number(previous)))select.value=previous;
 }
 
-/* APPROVAL */
+function renderSceneOptions(){
+ const scenes=getSceneNumbers();
+ fillSelect("audioScene",scenes);
+ fillSelect("visualScene",scenes);
+}
+
+function renderAudioScenes(){
+ const scene=Number($("audioScene").value);
+ const box=$("audioSceneList");
+ box.innerHTML="";
+
+ const list=dialogues.filter(d=>Number(d.scene)===scene);
+
+ if(!list.length){
+  box.textContent="No dialogue in this scene.";
+  return;
+ }
+
+ list.forEach(d=>{
+  const item=document.createElement("div");
+  item.className="item";
+  item.innerHTML="<strong>"+escapeHTML(d.character)+"</strong><br>"+
+   escapeHTML(d.text||d.dialogue||"");
+
+  const play=document.createElement("button");
+  play.textContent="Play Dialogue";
+  play.onclick=()=>playText(d.text||d.dialogue||"");
+  item.appendChild(play);
+  box.appendChild(item);
+ });
+
+ const full=document.createElement("button");
+ full.className="success";
+ full.textContent="Play Full Scene";
+ full.onclick=()=>{
+  const text=list.map(d=>(d.text||d.dialogue||"")).join(" ");
+  playText(text);
+ };
+ box.appendChild(full);
+}
+
+
+/* AUDIO APPROVAL */
 
 function approveAudio(){
+ if(!getProjectKey()){
+  alert("Please enter Project Name in Step 10 or Video Title in Step 1 first.");
+  return;
+ }
 
- if(!readStore("uaaaDialogues").length){
-  alert("Please add at least one Dialogue first.");
+ if(dialogues.length===0){
+  alert("Please add at least one dialogue before approving audio.");
   return;
  }
 
  audioApproved=true;
- $("approvalStatus").textContent="Audio Plan Approved Successfully!";
+ visualApproved=false;
+
+ updateApprovalRecord();
+ updateExistingProjectApproval();
+ renderApprovalStatus();
+
+ alert("Audio plan approved and saved successfully!");
 }
 
-/* VISUALS */
+
+/* VISUAL MANAGEMENT */
 
 function saveSceneVisual(){
-
  const scene=Number($("visualScene").value);
-
- if(!scene){
-  alert("Please select a Scene. First add a Dialogue in Step 6.");
-  return;
- }
+ if(!scene){alert("Please add a dialogue and select a scene first.");return;}
 
  const description=$("visualDescription").value.trim();
+ const subtitle=$("subtitleText").value.trim();
 
- if(!description){
-  alert("Please enter Visual Description.");
+ if(!description && !subtitle){
+  alert("Please enter Visual Description or Subtitle.");
   return;
  }
 
- const file=$("visualImage").files[0];
+ const file=$("visualFile").files[0];
 
- const record={
-  id:"visual_"+Date.now(),
-  scene:scene,
-  type:$("visualType").value,
-  description:description,
-  subtitle:$("subtitleText").value,
-  music:$("musicStyle").value,
-  imageData:null
- };
-
- function finishSave(){
-
-  visuals=readStore("uaaaVisuals");
-  visuals.push(record);
+ const saveRecord=(imageData)=>{
+  visuals.push({
+   id:Date.now().toString(),
+   scene:scene,
+   type:$("visualType").value,
+   description:description,
+   subtitle:subtitle,
+   music:$("musicStyle").value,
+   image:imageData||""
+  });
 
   try{
    writeStore("uaaaVisuals",visuals);
   }catch(e){
-   alert("Storage space may be full. Please try without uploading an image.");
+   visuals.pop();
+   alert("Browser storage limit reached. Please use a smaller image or remove an old visual.");
    return;
   }
+
+  visualApproved=false;
+  updateApprovalRecord();
+  updateExistingProjectApproval();
+  renderVisuals();
+  renderApprovalStatus();
 
   $("visualDescription").value="";
   $("subtitleText").value="";
-  $("visualImage").value="";
+  $("visualFile").value="";
 
-  renderVisuals();
   alert("Scene Visual Saved Successfully!");
- }
+ };
 
  if(file){
-
   if(!file.type.startsWith("image/")){
-   alert("This version supports image uploads only.");
+   alert("Please upload an image file. Video upload is not enabled yet.");
    return;
   }
 
-  if(file.size>1024*1024){
-   alert("Please use an image smaller than 1 MB.");
+  if(file.size>1500000){
+   alert("Please upload an image smaller than 1.5 MB.");
    return;
   }
 
   const reader=new FileReader();
-
-  reader.onload=function(e){
-   record.imageData=e.target.result;
-   finishSave();
-  };
-
+  reader.onload=e=>saveRecord(e.target.result);
   reader.readAsDataURL(file);
-
  }else{
-  finishSave();
+  saveRecord("");
  }
 }
 
 function renderVisuals(){
-
- visuals=readStore("uaaaVisuals");
-
- const box=$("visualList");
- box.innerHTML="";
-
- if(!visuals.length){
-  box.innerHTML="<p>No Scene Visuals saved yet.</p>";
-  return;
- }
+ const box=$("savedVisuals");
+ box.innerHTML="<h4>Saved Scene Visuals</h4>";
 
  visuals.forEach((v,i)=>{
+  const item=document.createElement("div");
+  item.className="item";
 
-  const div=document.createElement("div");
-  div.className="item";
+  item.innerHTML="<strong>Scene "+escapeHTML(v.scene)+"</strong><br>"+
+   "Type: "+escapeHTML(v.type||"")+
+   "<br>Description: "+escapeHTML(v.description||"")+
+   "<br>Subtitle: "+escapeHTML(v.subtitle||"")+
+   "<br>Music: "+escapeHTML(v.music||"");
 
-  const title=document.createElement("b");
-  title.textContent="Scene "+v.scene+" – "+v.type;
-
-  const desc=document.createElement("p");
-  desc.textContent=v.description;
-
-  div.append(title,desc);
-
-  if(v.subtitle){
-   const sub=document.createElement("p");
-   sub.textContent="Subtitle: "+v.subtitle;
-   div.appendChild(sub);
-  }
-
-  if(v.music){
-   const music=document.createElement("p");
-   music.textContent="Music: "+v.music;
-   div.appendChild(music);
-  }
-
-  if(v.imageData){
+  if(v.image){
    const img=document.createElement("img");
-   img.src=v.imageData;
-   img.style.width="100%";
-   img.style.maxWidth="300px";
-   div.appendChild(img);
+   img.src=v.image;
+   img.style.maxWidth="100%";
+   img.style.marginTop="10px";
+   item.appendChild(img);
   }
 
   const del=document.createElement("button");
   del.className="danger";
   del.textContent="Delete Visual";
-
   del.onclick=()=>{
-   visuals=readStore("uaaaVisuals");
    visuals.splice(i,1);
    writeStore("uaaaVisuals",visuals);
+   visualApproved=false;
+   updateApprovalRecord();
+   updateExistingProjectApproval();
    renderVisuals();
+   renderApprovalStatus();
   };
 
-  div.appendChild(del);
-  box.appendChild(div);
+  item.appendChild(del);
+  box.appendChild(item);
  });
 }
 
 function approveVisuals(){
+ if(!getProjectKey()){
+  alert("Please enter Project Name in Step 10 or Video Title in Step 1 first.");
+  return;
+ }
 
- visuals=readStore("uaaaVisuals");
+ if(!audioApproved){
+  alert("Please approve the audio plan first. This is our Audio First workflow.");
+  return;
+ }
 
- if(!visuals.length){
-  alert("Please save at least one Scene Visual.");
+ if(visuals.length===0){
+  alert("Please save at least one Scene Visual before approval.");
   return;
  }
 
  visualApproved=true;
- $("visualStatus").textContent="Visual Plan Approved Successfully!";
+
+ updateApprovalRecord();
+ updateExistingProjectApproval();
+ renderApprovalStatus();
+
+ alert("Visual plan approved and saved successfully!");
 }
 
-/* PROJECT MANAGEMENT - VERSION 2.7 */
+
+/* PROJECT MANAGEMENT */
 
 function saveProject(){
-
- const projectName=$("projectName").value.trim();
+ const projectName=getProjectName();
 
  if(!projectName){
-  $("saveError").textContent="Please enter a Project Name.";
-  $("saveStatus").textContent="";
+  alert("Please enter Project Name.");
   $("projectName").focus();
   return;
  }
 
- const videoTitle=$("title").value.trim();
+ const key=normalizedName(projectName);
+ const now=new Date().toISOString();
+
+ const existingIndex=projects.findIndex(p=>
+  normalizedName(p.projectName||p.title)===key
+ );
+
+ const existing=existingIndex>=0?projects[existingIndex]:null;
+
+ const savedApproval=getApprovalRecord();
+
+ const finalAudio=audioApproved || (savedApproval&&savedApproval.audioApproved) || false;
+ const finalVisual=visualApproved || (savedApproval&&savedApproval.visualApproved) || false;
 
  const project={
-  id:"project_"+Date.now(),
+  ...(existing||{}),
 
-  /* My Projects compatibility */
-  title:videoTitle || projectName,
+  id:existing?existing.id:Date.now().toString(),
+
   projectName:projectName,
   projectDescription:$("projectDescription").value.trim(),
 
+  title:$("title").value.trim()||projectName,
   category:$("category").value,
-  customer:$("customer").value,
+  customer:$("customer").value.trim(),
   language:$("language").value,
   format:$("format").value,
   duration:$("duration").value,
-
-  brief:$("brief").value,
+  brief:$("brief").value.trim(),
   script:$("script").value,
 
   voiceEngine:$("engine").value,
   browserVoice:$("browserVoice").value,
-  voiceSpeed:$("speed").value,
-  voicePitch:$("pitch").value,
+  voiceSpeed:$("voiceSpeed").value,
+  voicePitch:$("voicePitch").value,
 
-  characters:readStore("uaaaCharacters"),
-  dialogues:readStore("uaaaDialogues"),
-  visuals:readStore("uaaaVisuals"),
+  characters:characters,
+  dialogues:dialogues,
+  visuals:visuals,
+  voiceProfiles:voiceProfiles,
 
-  voiceProfiles:readStore("uaaaVoiceProfiles"),
+  audioApproved:!!finalAudio,
+  visualApproved:!!finalVisual,
 
-  audioApproved:audioApproved,
-  visualApproved:visualApproved,
+  status:getProjectStatus(!!finalAudio,!!finalVisual),
 
-  status:"Draft",
-  createdAt:new Date().toISOString()
+  createdAt:existing?existing.createdAt:now,
+  updatedAt:now
  };
 
- let projects=readStore("uaaaProjects");
-
- projects.unshift(project);
+ if(existingIndex>=0){
+  projects[existingIndex]=project;
+ }else{
+  projects.unshift(project);
+ }
 
  try{
-
   writeStore("uaaaProjects",projects);
 
-  $("saveStatus").textContent=
-   "✅ Project Saved Successfully! Project Name: "+projectName;
+  audioApproved=!!finalAudio;
+  visualApproved=!!finalVisual;
+  updateApprovalRecord();
+  renderApprovalStatus();
 
-  $("saveError").textContent="";
+  $("projectStatus").textContent=
+   "Project Saved Successfully! Status: "+project.status;
+  $("projectStatus").className="status ok";
 
-  alert("Project Saved Successfully!");
+  alert(existingIndex>=0?
+   "Existing Project Updated Successfully!":
+   "New Project Saved Successfully!");
 
- }catch(error){
-
-  $("saveStatus").textContent="";
-
-  $("saveError").textContent=
-   "Project could not be saved. Browser storage may be full. Try removing large uploaded images.";
+ }catch(e){
+  $("projectStatus").textContent="Unable to save project. Browser storage may be full.";
+  $("projectStatus").className="status error";
  }
 }
 
-/* ENGINE SWITCH */
 
-$("engine").addEventListener("change",function(){
+/* BASIC HTML ESCAPING */
 
- const ai=this.value==="ai";
-
- $("aiControls").style.display=ai?"block":"none";
- $("browserControls").style.display=ai?"none":"block";
-});
-
-/* EVENT LISTENERS */
-
-$("audioScene").addEventListener("change",renderSceneAudio);
-
-if(window.speechSynthesis){
- window.speechSynthesis.onvoiceschanged=loadBrowserVoices;
+function escapeHTML(value){
+ return String(value??"")
+ .replace(/&/g,"&amp;")
+ .replace(/</g,"&lt;")
+ .replace(/>/g,"&gt;")
+ .replace(/"/g,"&quot;")
+ .replace(/'/g,"&#039;");
 }
 
-/* INITIALIZE */
+
+/* INITIAL LOAD */
 
 function initialize(){
+ voiceProfiles=readStore("uaaaVoiceProfiles");
+ characters=readStore("uaaaCharacters");
+ dialogues=readStore("uaaaDialogues");
+ visuals=readStore("uaaaVisuals");
+ projects=readStore("uaaaProjects");
+ approvalStates=readStore("uaaaApprovalStates");
 
- refreshProfiles();
- refreshCharacters();
- refreshDialogues();
- refreshScenes();
+ renderProfiles();
+ renderCharacters();
+ renderDialogues();
+ renderSceneOptions();
+ renderAudioScenes();
  renderVisuals();
- loadBrowserVoices();
 
- $("audioScene").value="";
- $("visualScene").value="";
+ loadApprovalState();
 
- renderSceneAudio();
+ $("projectName").addEventListener("change",loadApprovalState);
+ $("title").addEventListener("change",loadApprovalState);
 }
 
 initialize();
-
 </script>
 
 </body>
