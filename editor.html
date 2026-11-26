@@ -3,50 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UAAA AI Studio V3.4</title>
+<title>UAAA AI Studio V3.5</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#eef2f7;color:#172033}
 header{background:#14213d;color:white;padding:18px}
 header h1{margin:0;font-size:22px}
 header p{font-size:13px;color:#cbd5e1;margin:6px 0 0}
-.container{max-width:1100px;margin:auto;padding:14px}
+.container{max-width:1150px;margin:auto;padding:14px}
 .card{background:white;padding:16px;border-radius:12px;margin-bottom:15px;box-shadow:0 2px 8px #0001}
 h2{font-size:18px;margin:0 0 13px}
+h3{font-size:15px;margin:15px 0 8px}
 label{display:block;font-size:13px;font-weight:bold;margin:12px 0 5px}
-input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:white}
-textarea{min-height:75px}
-button{border:0;border-radius:8px;padding:11px 14px;background:#2563eb;color:white;font-weight:bold;margin:5px 3px 5px 0}
+input,select,textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;background:white}
+input[type=range]{padding:0}
+textarea{min-height:70px}
+button{border:0;border-radius:8px;padding:10px 13px;background:#2563eb;color:white;font-weight:bold;margin:5px 3px 5px 0;cursor:pointer}
 button.green{background:#15803d}
 button.orange{background:#ea580c}
 button.red{background:#dc2626}
 button.gray{background:#475569}
 button:disabled{opacity:.5}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .status{background:#eff6ff;border-left:4px solid #2563eb;padding:10px;border-radius:5px;font-size:13px;margin-top:10px}
 .small{font-size:12px;color:#64748b;line-height:1.5}
-.scene-list{display:flex;gap:8px;overflow-x:auto;padding:7px 0}
-.scene-card{min-width:115px;padding:12px;border:2px solid #cbd5e1;border-radius:9px;background:#f8fafc}
+.scene-list{display:flex;gap:8px;overflow-x:auto;padding:7px 0;min-height:75px}
+.scene-card{min-width:115px;padding:12px;border:2px solid #cbd5e1;border-radius:9px;background:#f8fafc;cursor:grab}
 .scene-card.active{border-color:#2563eb;background:#eff6ff}
+.scene-card.dragging{opacity:.4}
 .scene-card strong{display:block}
 .scene-card span{font-size:11px;color:#64748b}
 .preview-wrap{background:#111827;padding:12px;border-radius:12px;display:flex;justify-content:center;align-items:center;min-height:220px}
-#videoPreview{position:relative;width:100%;max-width:650px;aspect-ratio:16/9;background:#202b3c;color:white;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center;border:2px solid #64748b;transition:opacity .6s,transform .6s}
+#videoPreview{position:relative;width:100%;max-width:650px;aspect-ratio:16/9;background:#202b3c;color:white;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center;border:2px solid #64748b;opacity:1;transform:translateX(0) scale(1);clip-path:inset(0);transition:opacity .5s,transform .5s,filter .3s,clip-path .5s}
 #previewImage{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
 #visualText{position:relative;z-index:2;padding:20px;font-size:20px;font-weight:bold;text-shadow:2px 2px 5px black}
 #subtitleBox{position:absolute;z-index:4;bottom:9%;left:5%;width:90%;text-align:center;color:white;font-size:clamp(13px,3vw,23px);font-weight:bold;text-shadow:2px 2px 4px black;padding:5px;display:none}
 #sceneNumber{position:absolute;z-index:5;top:8px;left:10px;background:#0009;padding:5px 8px;border-radius:5px;font-size:11px}
 #previewTitle{position:absolute;z-index:5;top:8px;right:10px;background:#0009;padding:5px 8px;font-size:11px}
+.subtitle-pop{animation:subPop .5s ease}
+.subtitle-fade{animation:subFade .7s ease}
+.subtitle-slide{animation:subSlide .5s ease}
+@keyframes subPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes subFade{from{opacity:0}to{opacity:1}}
+@keyframes subSlide{from{transform:translateY(25px);opacity:0}to{transform:translateY(0);opacity:1}}
 .progress-track{height:10px;background:#cbd5e1;border-radius:20px;overflow:hidden;margin:12px 0 5px}
 #progressBar{height:100%;width:0;background:#2563eb;transition:width .1s}
 .ruler{display:flex;justify-content:space-between;font-size:11px;color:#64748b}
-@media(max-width:600px){.row{grid-template-columns:1fr}.container{padding:9px}}
+.tool-group{border:1px solid #e2e8f0;padding:10px;border-radius:9px;margin-top:10px}
+@media(max-width:600px){.row,.row3{grid-template-columns:1fr}.container{padding:9px}.card{padding:13px}}
 </style>
 </head>
 <body>
 <header>
 <h1>UAAA AI Studio</h1>
-<p>Version 3.4 – Multi-Scene Video Preview & Professional Transitions</p>
+<p>Version 3.5 – Professional Video Editing Studio</p>
 </header>
 
 <div class="container">
@@ -60,7 +71,7 @@ button:disabled{opacity:.5}
 </div>
 
 <div class="card">
-<h2>Step 2: Multi-Scene Video Preview</h2>
+<h2>Step 2: Professional Video Preview</h2>
 <div class="row">
 <div>
 <label>Video Format</label>
@@ -72,13 +83,21 @@ button:disabled{opacity:.5}
 </div>
 <div>
 <label>Scene Transition</label>
-<select id="transitionType">
+<select id="transitionType" onchange="saveEditorSettings()">
 <option value="cut">Cut</option>
 <option value="fade">Fade</option>
 <option value="slide">Slide</option>
+<option value="zoom">Zoom</option>
+<option value="wipe">Wipe</option>
 </select>
 </div>
 </div>
+<label>Transition Duration</label>
+<select id="transitionDuration" onchange="saveEditorSettings()">
+<option value="0.5">0.5 Second</option>
+<option value="1" selected>1 Second</option>
+<option value="2">2 Seconds</option>
+</select>
 
 <div class="preview-wrap">
 <div id="videoPreview">
@@ -89,16 +108,16 @@ button:disabled{opacity:.5}
 <div id="subtitleBox"></div>
 </div>
 </div>
-
 <div class="progress-track"><div id="progressBar"></div></div>
 <div class="ruler"><span id="currentTime">00:00</span><span id="totalTime">00:00</span></div>
 <div style="text-align:center;margin-top:12px">
 <button class="green" onclick="playAllScenes()">▶ Play Full Video</button>
 <button class="orange" onclick="pausePreview()">Pause</button>
 <button class="red" onclick="stopPreview()">Stop</button>
+<button class="gray" onclick="toggleFullscreen()">⛶ Full Screen</button>
 </div>
 <div id="previewStatus" class="status">Preview ready.</div>
-<p class="small">This is a browser preview, not an exported MP4 video.</p>
+<p class="small">Browser preview only. Actual MP4 rendering is not yet available.</p>
 </div>
 
 <div class="card">
@@ -107,7 +126,7 @@ button:disabled{opacity:.5}
 <button class="green" onclick="addScene()">＋ Add New Scene</button>
 <button class="gray" onclick="duplicateScene()">Duplicate Selected Scene</button>
 <button class="red" onclick="deleteScene()">Delete Selected Scene</button>
-<div class="small">Tap a Scene to edit it. You can create multiple scenes for one video.</div>
+<p class="small">Drag and drop scene cards to change their order. Tap a scene to edit it.</p>
 </div>
 
 <div class="card">
@@ -125,24 +144,116 @@ button:disabled{opacity:.5}
 <input type="number" id="subtitleStart" min="0" step="0.1" value="0">
 </div>
 </div>
-
 <label>Subtitle End (Seconds)</label>
 <input type="number" id="subtitleEnd" min="0" step="0.1" value="5">
 
 <label>Dialogue / Voice Script</label>
 <textarea id="dialogueText" placeholder="Enter scene dialogue"></textarea>
-
 <label>Visual Description</label>
 <textarea id="visualDescription" placeholder="Describe scene background"></textarea>
-
 <label>Subtitle Text</label>
 <textarea id="subtitleText" placeholder="Enter subtitle"></textarea>
-
-<label>Scene Background Image (Optional)</label>
+<label>Scene Background Image</label>
 <input type="file" id="sceneImageFile" accept="image/*">
+
+<div class="tool-group">
+<h3>Visual Effects</h3>
+<div class="row">
+<div>
+<label>Zoom</label>
+<select id="visualZoom">
+<option value="1">Normal</option>
+<option value="1.1">Zoom In 1.1x</option>
+<option value="1.2">Zoom In 1.2x</option>
+<option value="1.3">Zoom In 1.3x</option>
+</select>
+</div>
+<div>
+<label>Image Display</label>
+<select id="imageFit">
+<option value="cover">Fill Screen</option>
+<option value="contain">Fit Screen</option>
+</select>
+</div>
+</div>
+<div class="row">
+<div>
+<label>Brightness: <span id="brightnessValue">100%</span></label>
+<input id="brightness" type="range" min="50" max="150" value="100" oninput="updateEffectLabels()">
+</div>
+<div>
+<label>Contrast: <span id="contrastValue">100%</span></label>
+<input id="contrast" type="range" min="50" max="150" value="100" oninput="updateEffectLabels()">
+</div>
+</div>
+<label>Blur</label>
+<select id="blurEffect">
+<option value="0">No Blur</option>
+<option value="1">Light Blur</option>
+<option value="2">Medium Blur</option>
+<option value="4">Strong Blur</option>
+</select>
+<button class="gray" onclick="applyVisualEffects()">Apply Visual Effects</button>
+</div>
+
+<div class="tool-group">
+<h3>Subtitle Design</h3>
+<div class="row">
+<div>
+<label>Font Size</label>
+<select id="subtitleSize">
+<option value="16">Small</option>
+<option value="22" selected>Medium</option>
+<option value="28">Large</option>
+<option value="36">Extra Large</option>
+</select>
+</div>
+<div>
+<label>Subtitle Position</label>
+<select id="subtitlePosition">
+<option value="bottom">Bottom</option>
+<option value="center">Center</option>
+<option value="top">Top</option>
+</select>
+</div>
+</div>
+<div class="row">
+<div>
+<label>Font Color</label>
+<input type="color" id="subtitleColor" value="#ffffff">
+</div>
+<div>
+<label>Background Color</label>
+<input type="color" id="subtitleBackground" value="#000000">
+</div>
+</div>
+<label>Subtitle Animation</label>
+<select id="subtitleAnimation">
+<option value="none">None</option>
+<option value="subtitle-fade">Fade In</option>
+<option value="subtitle-pop">Pop</option>
+<option value="subtitle-slide">Slide Up</option>
+</select>
+<button class="gray" onclick="applySubtitleDesign()">Apply Subtitle Design</button>
+</div>
+
+<div class="tool-group">
+<h3>Scene Audio Settings</h3>
+<label>Voice Volume: <span id="voiceVolumeValue">100%</span></label>
+<input type="range" id="voiceVolume" min="0" max="100" value="100" oninput="updateAudioLabels()">
+<label>Scene Music Volume: <span id="sceneMusicVolumeValue">20%</span></label>
+<input type="range" id="sceneMusicVolume" min="0" max="100" value="20" oninput="updateAudioLabels()">
+<label>Voice Fade In (Seconds)</label>
+<input type="number" id="voiceFadeIn" min="0" max="5" step=".1" value="0">
+<label>Voice Fade Out (Seconds)</label>
+<input type="number" id="voiceFadeOut" min="0" max="5" step=".1" value="0">
+<p class="small">Voice volume and fade controls are saved as scene settings. Browser speech synthesis may not support true volume fading consistently.</p>
+</div>
+
 <button class="green" onclick="saveScene()">Save Scene Changes</button>
 <button class="gray" onclick="previewSelectedScene()">Preview This Scene</button>
 <button onclick="playSelectedAudio()">▶ Play Voice</button>
+<div id="sceneSaveStatus" class="status">Scene changes not yet saved.</div>
 </div>
 
 <div class="card">
@@ -155,13 +266,10 @@ button:disabled{opacity:.5}
 <option value="1.1">Presenter Style</option>
 <option value="1.2">Fast</option>
 </select>
-
 <label>Background Music File</label>
 <input type="file" id="musicFile" accept="audio/*">
-
 <label>Music Volume: <span id="volumeValue">20%</span></label>
 <input type="range" id="musicVolume" min="0" max="100" value="20" oninput="updateVolume()">
-
 <label>Music During Voice</label>
 <select id="duckMode">
 <option value="duck">Automatic Low Volume</option>
@@ -175,7 +283,16 @@ button:disabled{opacity:.5}
 </div>
 
 <div class="card">
-<h2>Step 6: Timeline Settings</h2>
+<h2>Step 6: Editing Controls</h2>
+<button class="gray" onclick="undoEdit()">↶ Undo</button>
+<button class="gray" onclick="redoEdit()">↷ Redo</button>
+<button class="green" onclick="saveProject()">Save Project</button>
+<button class="orange" onclick="saveTimeline()">Save Timeline Settings</button>
+<div id="saveStatus" class="status">Auto Save is enabled. Changes are stored in this browser.</div>
+</div>
+
+<div class="card">
+<h2>Step 7: Timeline Settings</h2>
 <div class="row">
 <div>
 <label>Video Format</label>
@@ -191,21 +308,21 @@ button:disabled{opacity:.5}
 <option value="Cut">Cut</option>
 <option value="Fade">Fade</option>
 <option value="Slide">Slide</option>
+<option value="Zoom">Zoom</option>
+<option value="Wipe">Wipe</option>
 </select>
 </div>
 </div>
 <label>Total Video Duration</label>
 <input id="timelineTotal" readonly value="00:00">
-<button class="green" onclick="saveTimeline()">Save Timeline Settings</button>
-<button class="gray" onclick="saveProject()">Save Project</button>
-<div id="saveStatus" class="status">Changes are stored in this browser.</div>
 </div>
 
 <div class="card">
-<h2>Step 7: Export Video</h2>
+<h2>Step 8: Export Video</h2>
 <button disabled>Export MP4 – Coming Soon</button>
 <p class="small">Actual MP4 rendering and downloadable video export will be added in a future version.</p>
 </div>
+
 </div>
 
 <script>
@@ -220,6 +337,12 @@ let timer=null;
 let playing=false;
 let paused=false;
 let runToken=0;
+let autoSaveTimer=null;
+let history=[];
+let historyIndex=-1;
+let dragIndex=null;
+let totalElapsed=0;
+let previewStart=0;
 
 function getData(key){
  try{return JSON.parse(localStorage.getItem(key)||"[]")}catch(e){return []}
@@ -235,7 +358,11 @@ function visualOf(v){
  return v?.description||v?.visualDescription||v?.text||"";
 }
 function subtitleOf(v){return v?.subtitle||""}
-
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function formatTime(n){
+ n=Math.floor(n||0);
+ return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
+}
 function loadProjectList(){
  projects=getData("uaaaProjects");
  const sel=document.getElementById("projectSelect");
@@ -245,29 +372,29 @@ function loadProjectList(){
   o.value=i;o.textContent=projectName(p);sel.appendChild(o);
  });
 }
-
 function loadProject(){
  const i=document.getElementById("projectSelect").value;
  if(i===""){alert("Select a project first.");return}
+ projects=getData("uaaaProjects");
  currentProject=projects[Number(i)];
  if(!currentProject)return;
-
  const ds=currentProject.dialogues||[];
  const vs=currentProject.visuals||[];
  const ts=currentProject.timeline||[];
  const count=Math.max(ds.length,vs.length,ts.length,1);
-
  scenes=[];
  for(let n=0;n<count;n++){
   const d=ds.find(x=>Number(x.sceneIndex)===n)||ds[n]||{text:""};
   const v=vs.find(x=>Number(x.sceneIndex)===n)||vs[n]||{description:"",subtitle:""};
   const t=ts[n]||{};
   scenes.push({
-   dialogue:typeof d==="string"?{text:d}:JSON.parse(JSON.stringify(d)),
-   visual:typeof v==="string"?{description:v,subtitle:""}:JSON.parse(JSON.stringify(v)),
+   dialogue:typeof d==="string"?{text:d}:clone(d),
+   visual:typeof v==="string"?{description:v,subtitle:""}:clone(v),
    duration:Number(t.duration||10),
    subtitleStart:Number(t.subtitleStart??0),
-   subtitleEnd:Number(t.subtitleEnd??5)
+   subtitleEnd:Number(t.subtitleEnd??5),
+   effects:t.effects||{},
+   audio:t.audio||{}
   });
  }
  musicData=currentProject.musicData||null;
@@ -277,30 +404,31 @@ function loadProject(){
  document.getElementById("videoFormat").value=fmt.replace(":","/");
  document.getElementById("timelineFormat").value=fmt;
  document.getElementById("timelineTransition").value=currentProject.transition||"Cut";
+ document.getElementById("transitionType").value=(currentProject.transition||"Cut").toLowerCase();
+ document.getElementById("transitionDuration").value=String(currentProject.transitionDuration||1);
  selectedIndex=0;
- renderTimeline();
- selectScene(0);
- changeFormat();
- updateTotal();
+ renderTimeline();selectScene(0);changeFormat();updateTotal();
+ history=[];historyIndex=-1;takeSnapshot();
+ if(currentProject.musicName)document.getElementById("musicStatus").textContent="Music loaded: "+currentProject.musicName;
 }
-
 function renderTimeline(){
  const box=document.getElementById("sceneTimeline");
  box.innerHTML="";
  scenes.forEach((s,i)=>{
   const b=document.createElement("div");
   b.className="scene-card"+(i===selectedIndex?" active":"");
-  const title=document.createElement("strong");
-  title.textContent="Scene "+(i+1);
-  const detail=document.createElement("span");
-  detail.textContent=(s.duration||10)+" seconds";
-  b.append(title,detail);
+  b.draggable=true;
+  b.dataset.index=i;
+  b.innerHTML="<strong>Scene "+(i+1)+"</strong><span>"+(s.duration||10)+" seconds</span>";
   b.onclick=()=>selectScene(i);
+  b.ondragstart=e=>{dragIndex=i;b.classList.add("dragging");e.dataTransfer.effectAllowed="move"};
+  b.ondragend=()=>{dragIndex=null;b.classList.remove("dragging")};
+  b.ondragover=e=>e.preventDefault();
+  b.ondrop=e=>{e.preventDefault();if(dragIndex===null||dragIndex===i)return;const item=scenes.splice(dragIndex,1)[0];scenes.splice(i,0,item);selectedIndex=i;persistScenes();renderTimeline();selectScene(i);takeSnapshot()};
   box.appendChild(b);
  });
  updateTotal();
 }
-
 function selectScene(i){
  if(i<0||i>=scenes.length)return;
  selectedIndex=i;
@@ -313,10 +441,24 @@ function selectScene(i){
  document.getElementById("visualDescription").value=visualOf(s.visual);
  document.getElementById("subtitleText").value=subtitleOf(s.visual);
  sceneImageData=s.visual.image||null;
- renderTimeline();
- showScene(i,0);
+ const e=s.effects||{},a=s.audio||{};
+ document.getElementById("visualZoom").value=e.zoom||"1";
+ document.getElementById("imageFit").value=e.fit||"cover";
+ document.getElementById("brightness").value=e.brightness||100;
+ document.getElementById("contrast").value=e.contrast||100;
+ document.getElementById("blurEffect").value=e.blur||0;
+ document.getElementById("subtitleSize").value=e.subtitleSize||22;
+ document.getElementById("subtitlePosition").value=e.subtitlePosition||"bottom";
+ document.getElementById("subtitleColor").value=e.subtitleColor||"#ffffff";
+ document.getElementById("subtitleBackground").value=e.subtitleBackground||"#000000";
+ document.getElementById("subtitleAnimation").value=e.subtitleAnimation||"none";
+ document.getElementById("voiceVolume").value=a.voiceVolume??100;
+ document.getElementById("sceneMusicVolume").value=a.musicVolume??20;
+ document.getElementById("voiceFadeIn").value=a.fadeIn||0;
+ document.getElementById("voiceFadeOut").value=a.fadeOut||0;
+ updateEffectLabels();updateAudioLabels();
+ renderTimeline();showScene(i,0);
 }
-
 function showScene(i,elapsed){
  const s=scenes[i];if(!s)return;
  const img=document.getElementById("previewImage");
@@ -326,17 +468,34 @@ function showScene(i,elapsed){
  text.textContent=visualOf(s.visual)||"Scene "+(i+1);
  if(s.visual.image){img.src=s.visual.image;img.style.display="block"}
  else img.style.display="none";
- const start=Number(s.subtitleStart||0);
- const end=Number(s.subtitleEnd||5);
+ applyEffectValues(s);
+ const start=Number(s.subtitleStart||0),end=Number(s.subtitleEnd||5);
  if(subtitleOf(s.visual)&&elapsed>=start&&elapsed<=end){
   sub.textContent=subtitleOf(s.visual);sub.style.display="block";
+  applySubtitleValues(s);
  }else sub.style.display="none";
 }
-
+function applyEffectValues(s){
+ const e=s.effects||{},box=document.getElementById("videoPreview"),img=document.getElementById("previewImage");
+ const filter="brightness("+(e.brightness||100)+"%) contrast("+(e.contrast||100)+"%) blur("+(e.blur||0)+"px)";
+ img.style.filter=filter;
+ img.style.objectFit=e.fit||"cover";
+ img.style.transform="scale("+(e.zoom||1)+")";
+ document.getElementById("visualText").style.filter=filter;
+}
+function applySubtitleValues(s){
+ const e=s.effects||{},sub=document.getElementById("subtitleBox");
+ sub.style.fontSize=(e.subtitleSize||22)+"px";
+ sub.style.color=e.subtitleColor||"#ffffff";
+ sub.style.background=(e.subtitleBackground||"#000000")+"bb";
+ sub.style.top=e.subtitlePosition==="top"?"12%":e.subtitlePosition==="center"?"45%":"";
+ sub.style.bottom=e.subtitlePosition==="bottom"?"9%":"";
+ sub.className="";
+ if(e.subtitleAnimation&&e.subtitleAnimation!=="none")sub.classList.add(e.subtitleAnimation);
+}
 function changeFormat(){
  document.getElementById("videoPreview").style.aspectRatio=document.getElementById("videoFormat").value;
 }
-
 function saveScene(){
  if(!currentProject||!scenes.length){alert("Load a project first.");return}
  const s=scenes[selectedIndex];
@@ -349,42 +508,49 @@ function saveScene(){
  s.visual.description=document.getElementById("visualDescription").value;
  s.visual.subtitle=document.getElementById("subtitleText").value;
  if(sceneImageData)s.visual.image=sceneImageData;
- persistScenes();
- renderTimeline();showScene(selectedIndex,0);
- document.getElementById("saveStatus").textContent="Scene "+(selectedIndex+1)+" saved.";
+ s.effects={
+  zoom:document.getElementById("visualZoom").value,
+  fit:document.getElementById("imageFit").value,
+  brightness:Number(document.getElementById("brightness").value),
+  contrast:Number(document.getElementById("contrast").value),
+  blur:Number(document.getElementById("blurEffect").value),
+  subtitleSize:Number(document.getElementById("subtitleSize").value),
+  subtitlePosition:document.getElementById("subtitlePosition").value,
+  subtitleColor:document.getElementById("subtitleColor").value,
+  subtitleBackground:document.getElementById("subtitleBackground").value,
+  subtitleAnimation:document.getElementById("subtitleAnimation").value
+ };
+ s.audio={
+  voiceVolume:Number(document.getElementById("voiceVolume").value),
+  musicVolume:Number(document.getElementById("sceneMusicVolume").value),
+  fadeIn:Number(document.getElementById("voiceFadeIn").value)||0,
+  fadeOut:Number(document.getElementById("voiceFadeOut").value)||0
+ };
+ persistScenes();renderTimeline();showScene(selectedIndex,0);
+ document.getElementById("sceneSaveStatus").textContent="Scene "+(selectedIndex+1)+" saved.";
+ takeSnapshot();
 }
-
 function addScene(){
  if(!currentProject){alert("Load a project first.");return}
- scenes.push({
-  dialogue:{text:""},
-  visual:{description:"New scene background",subtitle:""},
-  duration:10,subtitleStart:0,subtitleEnd:5
- });
- selectedIndex=scenes.length-1;
- persistScenes();renderTimeline();selectScene(selectedIndex);
+ scenes.push({dialogue:{text:""},visual:{description:"New scene background",subtitle:""},duration:10,subtitleStart:0,subtitleEnd:5,effects:{},audio:{}});
+ selectedIndex=scenes.length-1;persistScenes();renderTimeline();selectScene(selectedIndex);takeSnapshot();
  document.getElementById("previewStatus").textContent="New Scene added.";
 }
-
 function duplicateScene(){
  if(!scenes.length)return;
- const copy=JSON.parse(JSON.stringify(scenes[selectedIndex]));
- scenes.splice(selectedIndex+1,0,copy);
- selectedIndex++;
- persistScenes();renderTimeline();selectScene(selectedIndex);
+ const copy=clone(scenes[selectedIndex]);
+ scenes.splice(selectedIndex+1,0,copy);selectedIndex++;
+ persistScenes();renderTimeline();selectScene(selectedIndex);takeSnapshot();
  document.getElementById("saveStatus").textContent="Scene duplicated.";
 }
-
 function deleteScene(){
  if(!currentProject||!scenes.length)return;
  if(scenes.length===1){alert("At least one scene must remain.");return}
  if(!confirm("Delete Scene "+(selectedIndex+1)+"?"))return;
- scenes.splice(selectedIndex,1);
- selectedIndex=Math.max(0,selectedIndex-1);
- persistScenes();renderTimeline();selectScene(selectedIndex);
+ scenes.splice(selectedIndex,1);selectedIndex=Math.max(0,selectedIndex-1);
+ persistScenes();renderTimeline();selectScene(selectedIndex);takeSnapshot();
  document.getElementById("saveStatus").textContent="Scene deleted.";
 }
-
 document.getElementById("sceneImageFile").addEventListener("change",function(e){
  const file=e.target.files[0];if(!file)return;
  if(file.size>1500000){alert("Image must be smaller than 1.5 MB.");this.value="";return}
@@ -392,46 +558,31 @@ document.getElementById("sceneImageFile").addEventListener("change",function(e){
  r.onload=()=>{sceneImageData=r.result;document.getElementById("previewImage").src=sceneImageData;document.getElementById("previewImage").style.display="block"};
  r.readAsDataURL(file);
 });
-
 function previewSelectedScene(){
  if(!scenes.length)return;
  saveScene();showScene(selectedIndex,0);
  document.getElementById("previewStatus").textContent="Previewing Scene "+(selectedIndex+1);
 }
-
 function updateTotal(){
  const total=scenes.reduce((a,s)=>a+Number(s.duration||10),0);
  document.getElementById("timelineTotal").value=formatTime(total);
  document.getElementById("totalTime").textContent=formatTime(total);
 }
-function formatTime(n){
- n=Math.floor(n||0);
- return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");
-}
-
 function persistScenes(){
  if(!currentProject)return;
  currentProject.dialogues=scenes.map((s,i)=>({...s.dialogue,sceneIndex:i}));
  currentProject.visuals=scenes.map((s,i)=>({...s.visual,sceneIndex:i}));
- currentProject.timeline=scenes.map(s=>({
-  duration:s.duration,subtitleStart:s.subtitleStart,subtitleEnd:s.subtitleEnd
- }));
+ currentProject.timeline=scenes.map(s=>({duration:s.duration,subtitleStart:s.subtitleStart,subtitleEnd:s.subtitleEnd,effects:s.effects||{},audio:s.audio||{}}));
  saveProject(false);
 }
-
 function saveProject(show=true){
  if(!currentProject)return;
  persistProjectData();
- const index=projects.findIndex(p=>p===currentProject);
- if(index>=0)projects[index]=currentProject;
- else{
-  const other=projects.findIndex(p=>projectName(p)===projectName(currentProject));
-  if(other>=0)projects[other]=currentProject;
-  else projects.push(currentProject);
- }
+ projects=getData("uaaaProjects");
+ const index=projects.findIndex(p=>p.id&&currentProject.id?p.id===currentProject.id:p===currentProject||projectName(p)===projectName(currentProject));
+ if(index>=0)projects[index]=currentProject;else projects.push(currentProject);
  try{
-  saveData("uaaaProjects",projects);
-  loadProjectList();
+  saveData("uaaaProjects",projects);loadProjectList();
   if(show)document.getElementById("saveStatus").textContent="Project saved successfully.";
  }catch(e){alert("Browser storage limit reached. Try smaller media files.")}
 }
@@ -439,29 +590,36 @@ function persistProjectData(){
  if(!currentProject)return;
  currentProject.dialogues=scenes.map((s,i)=>({...s.dialogue,sceneIndex:i}));
  currentProject.visuals=scenes.map((s,i)=>({...s.visual,sceneIndex:i}));
- currentProject.timeline=scenes.map(s=>({
-  duration:s.duration,subtitleStart:s.subtitleStart,subtitleEnd:s.subtitleEnd
- }));
+ currentProject.timeline=scenes.map(s=>({duration:s.duration,subtitleStart:s.subtitleStart,subtitleEnd:s.subtitleEnd,effects:s.effects||{},audio:s.audio||{}}));
 }
-
 function saveTimeline(){
  if(!currentProject)return;
  currentProject.format=document.getElementById("timelineFormat").value;
  currentProject.transition=document.getElementById("timelineTransition").value;
+ currentProject.transitionDuration=Number(document.getElementById("transitionDuration").value)||1;
  document.getElementById("videoFormat").value=currentProject.format.replace(":","/");
- changeFormat();saveProject();
+ document.getElementById("transitionType").value=currentProject.transition.toLowerCase();
+ changeFormat();saveProject();saveEditorSettings();
 }
-
+function saveEditorSettings(){
+ if(!currentProject)return;
+ currentProject.transition=document.getElementById("transitionType").value;
+ currentProject.transitionDuration=Number(document.getElementById("transitionDuration").value)||1;
+ currentProject.format=document.getElementById("videoFormat").value.replace("/",":");
+ document.getElementById("timelineTransition").value=currentProject.transition.charAt(0).toUpperCase()+currentProject.transition.slice(1);
+ document.getElementById("timelineFormat").value=currentProject.format;
+ scheduleAutoSave();
+}
 function playSelectedAudio(){
  if(!scenes.length)return;
- stopSpeech();
- speak(textOf(scenes[selectedIndex].dialogue));
+ stopSpeech();speak(textOf(scenes[selectedIndex].dialogue));
 }
 function speak(text,onEnd){
  if(!text){if(onEnd)onEnd();return}
  if(!window.speechSynthesis){alert("Speech playback unavailable.");return}
  const u=new SpeechSynthesisUtterance(text);
  u.lang="hi-IN";u.rate=Number(document.getElementById("voiceSpeed").value)||1;
+ u.volume=Number(scenes[selectedIndex]?.audio?.voiceVolume??100)/100;
  u.onstart=duckMusic;
  u.onend=()=>{restoreMusic();if(onEnd)onEnd()};
  u.onerror=()=>{restoreMusic();if(onEnd)onEnd()};
@@ -471,7 +629,6 @@ function stopSpeech(){
  if(window.speechSynthesis)speechSynthesis.cancel();
  restoreMusic();
 }
-
 function saveMusic(){
  const file=document.getElementById("musicFile").files[0];
  if(!file){alert("Choose a music file.");return}
@@ -506,49 +663,58 @@ function stopMusic(){
 function duckMusic(){
  if(!musicAudio)return;
  const mode=document.getElementById("duckMode").value;
- const base=Number(document.getElementById("musicVolume").value)/100;
+ const base=Number(scenes[selectedIndex]?.audio?.musicVolume??document.getElementById("musicVolume").value)/100;
  musicAudio.volume=mode==="mute"?0:mode==="duck"?base*.25:base;
 }
 function restoreMusic(){
- if(musicAudio)musicAudio.volume=Number(document.getElementById("musicVolume").value)/100;
+ if(musicAudio)musicAudio.volume=Number(scenes[selectedIndex]?.audio?.musicVolume??document.getElementById("musicVolume").value)/100;
 }
-
-function transitionToScene(i){
+function transitionToScene(i,token){
  const box=document.getElementById("videoPreview");
  const type=document.getElementById("transitionType").value;
- if(type==="fade"){
-  box.style.opacity="0";
-  setTimeout(()=>{selectScene(i);box.style.opacity="1"},300);
- }else if(type==="slide"){
-  box.style.transform="translateX(35px)";
-  setTimeout(()=>{selectScene(i);box.style.transform="translateX(0)"},250);
- }else selectScene(i);
+ const duration=Number(document.getElementById("transitionDuration").value)||1;
+ if(i===0||type==="cut"){selectScene(i);return Promise.resolve()}
+ return new Promise(resolve=>{
+  const half=duration*500;
+  box.style.transition="all "+half+"ms ease";
+  if(type==="fade")box.style.opacity="0";
+  if(type==="slide")box.style.transform="translateX(-35px)";
+  if(type==="zoom"){box.style.opacity="0";box.style.transform="scale(1.15)"}
+  if(type==="wipe")box.style.clipPath="inset(0 100% 0 0)";
+  setTimeout(()=>{
+   if(token!==runToken){resolve();return}
+   selectScene(i);
+   if(type==="slide")box.style.transform="translateX(35px)";
+   if(type==="zoom")box.style.transform="scale(.85)";
+   if(type==="wipe")box.style.clipPath="inset(0 0 0 100%)";
+   requestAnimationFrame(()=>{
+    box.style.opacity="1";box.style.transform="translateX(0) scale(1)";
+    box.style.clipPath="inset(0)";
+   });
+   setTimeout(()=>{box.style.transition="opacity .5s,transform .5s,filter .3s,clip-path .5s";resolve()},half);
+  },half);
+ });
 }
-
 function playAllScenes(){
  if(!scenes.length){alert("Load a project first.");return}
- stopPreview();
- saveScene();
- playing=true;paused=false;
- runToken++;
+ saveScene();stopPreview();playing=true;paused=false;
+ runToken++;totalElapsed=0;previewStart=Date.now();
  runScene(0,runToken);
 }
-
-function runScene(i,token){
+async function runScene(i,token){
  if(!playing||token!==runToken)return;
  if(i>=scenes.length){
-  stopPreview();
-  document.getElementById("previewStatus").textContent="Full video preview completed!";
-  document.getElementById("progressBar").style.width="100%";
-  return;
+  stopPreview();document.getElementById("previewStatus").textContent="Full video preview completed!";
+  document.getElementById("progressBar").style.width="100%";return;
  }
  const s=scenes[i];
+ await transitionToScene(i,token);
+ if(!playing||token!==runToken)return;
  selectedIndex=i;
- transitionToScene(i);
  document.getElementById("previewStatus").textContent="Playing Scene "+(i+1)+" of "+scenes.length;
  if(musicAudio){
-  musicAudio.volume=Number(document.getElementById("musicVolume").value)/100;
-  musicAudio.play().catch(()=>{});
+  const mv=Number(s.audio?.musicVolume??document.getElementById("musicVolume").value)/100;
+  musicAudio.volume=mv;musicAudio.play().catch(()=>{});
  }
  speak(textOf(s.dialogue));
  const duration=Math.max(1,Number(s.duration)||10);
@@ -564,13 +730,10 @@ function runScene(i,token){
   document.getElementById("currentTime").textContent=formatTime(done);
   document.getElementById("progressBar").style.width=Math.min(100,done/total*100)+"%";
   if(elapsed>=duration){
-   clearInterval(timer);
-   stopSpeech();
-   runScene(i+1,token);
+   clearInterval(timer);stopSpeech();runScene(i+1,token);
   }
  },100);
 }
-
 function pausePreview(){
  if(!playing)return;
  paused=true;clearInterval(timer);stopSpeech();
@@ -584,7 +747,59 @@ function stopPreview(){
  document.getElementById("currentTime").textContent="00:00";
  document.getElementById("previewStatus").textContent="Preview stopped.";
 }
-
+function toggleFullscreen(){
+ const el=document.getElementById("videoPreview");
+ if(!document.fullscreenElement){if(el.requestFullscreen)el.requestFullscreen().catch(()=>{})}
+ else if(document.exitFullscreen)document.exitFullscreen();
+}
+function applyVisualEffects(){
+ if(!scenes.length)return;
+ saveScene();showScene(selectedIndex,0);
+}
+function applySubtitleDesign(){
+ if(!scenes.length)return;
+ saveScene();showScene(selectedIndex,0);
+}
+function updateEffectLabels(){
+ document.getElementById("brightnessValue").textContent=document.getElementById("brightness").value+"%";
+ document.getElementById("contrastValue").textContent=document.getElementById("contrast").value+"%";
+}
+function updateAudioLabels(){
+ document.getElementById("voiceVolumeValue").textContent=document.getElementById("voiceVolume").value+"%";
+ document.getElementById("sceneMusicVolumeValue").textContent=document.getElementById("sceneMusicVolume").value+"%";
+}
+function takeSnapshot(){
+ if(!currentProject)return;
+ const snap=clone(scenes);
+ if(historyIndex<history.length-1)history=history.slice(0,historyIndex+1);
+ history.push(snap);
+ if(history.length>30)history.shift();
+ historyIndex=history.length-1;
+}
+function restoreSnapshot(){
+ if(historyIndex<0||!history[historyIndex])return;
+ scenes=clone(history[historyIndex]);
+ selectedIndex=Math.min(selectedIndex,scenes.length-1);
+ persistScenes();renderTimeline();selectScene(selectedIndex);
+ document.getElementById("saveStatus").textContent="Edit history restored.";
+}
+function undoEdit(){
+ if(historyIndex<=0){document.getElementById("saveStatus").textContent="Nothing to undo.";return}
+ historyIndex--;restoreSnapshot();
+}
+function redoEdit(){
+ if(historyIndex>=history.length-1){document.getElementById("saveStatus").textContent="Nothing to redo.";return}
+ historyIndex++;restoreSnapshot();
+}
+function scheduleAutoSave(){
+ clearTimeout(autoSaveTimer);
+ autoSaveTimer=setTimeout(()=>{
+  if(currentProject){saveProject(false);document.getElementById("saveStatus").textContent="Auto Save completed."}
+ },1200);
+}
+document.addEventListener("input",e=>{
+ if(e.target.closest(".card")&&currentProject)scheduleAutoSave();
+});
 loadProjectList();
 changeFormat();
 </script>
