@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAAA AI Studio - Video Editor 3.0</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#111827;color:white;padding:18px}
+header h2{margin:0}
+.container{max-width:1100px;margin:20px auto;padding:12px}
+.card{background:white;padding:18px;margin-bottom:16px;border-radius:12px;box-shadow:0 2px 8px #0001}
+h3{margin-top:0;color:#1d4ed8}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:7px;font-size:15px;background:white}
+textarea{min-height:75px}
+button{border:0;border-radius:7px;padding:11px 15px;margin:7px 5px 5px 0;background:#2563eb;color:white;font-weight:bold;cursor:pointer}
+button.secondary{background:#475569}
+button.success{background:#15803d}
+button:disabled{background:#94a3b8}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scene{border:1px solid #cbd5e1;border-radius:9px;padding:13px;margin:10px 0;background:#f8fafc}
+.scene.active{border:2px solid #2563eb;background:#eff6ff}
+.preview{background:#111827;color:white;border-radius:10px;min-height:220px;padding:16px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.preview img{max-width:100%;max-height:300px;object-fit:contain}
+.preview .subtitle{font-size:20px;font-weight:bold;margin-top:12px}
+.status{padding:12px;background:#eff6ff;color:#1e40af;border-radius:7px;margin-top:10px}
+.small{font-size:13px;color:#64748b}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#dbeafe;color:#1e40af;font-size:12px;margin:3px}
+.timeline-item{border-left:5px solid #2563eb;background:#f8fafc;padding:12px;margin:10px 0;border-radius:6px}
+@media(max-width:650px){.row{grid-template-columns:1fr}.container{padding:8px}.card{padding:14px}}
+</style>
+</head>
+<body>
+
+<header>
+<h2>UAAA AI Studio</h2>
+<p>Version 3.0 – Video Timeline & Editing Studio</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>Step 1: Select Your Project</h3>
+<label>Saved Projects</label>
+<select id="projectSelect">
+<option value="">Loading projects...</option>
+</select>
+<div id="projectInfo" class="status">Select a project to start editing.</div>
+<button onclick="loadSelectedProject()">Load Project</button>
+</div>
+
+<div class="card">
+<h3>Step 2: Scene Timeline</h3>
+<p class="small">Your saved dialogues and visual plans will be arranged scene-wise.</p>
+<div id="timeline">Please load a project first.</div>
+</div>
+
+<div class="card">
+<h3>Step 3: Edit Selected Scene</h3>
+<label>Select Scene</label>
+<select id="sceneSelect" onchange="showScene()">
+<option value="">Select a scene</option>
+</select>
+
+<div class="row">
+<div>
+<label>Scene Duration (Seconds)</label>
+<input type="number" id="sceneDuration" min="1" max="300" value="10">
+</div>
+<div>
+<label>Background Music</label>
+<select id="sceneMusic">
+<option>No Music</option>
+<option>News Background Music</option>
+<option>Corporate</option>
+<option>Motivational</option>
+<option>Emotional</option>
+<option>Documentary</option>
+<option>Energetic</option>
+</select>
+</div>
+</div>
+
+<label>Scene Dialogue / Audio Text</label>
+<textarea id="sceneDialogue" placeholder="Scene dialogue will appear here"></textarea>
+
+<label>Scene Visual Description</label>
+<textarea id="sceneDescription" placeholder="Visual description"></textarea>
+
+<label>Subtitle Text</label>
+<textarea id="sceneSubtitle" placeholder="Subtitle text"></textarea>
+
+<button onclick="saveSceneEdit()">Save Scene Changes</button>
+<button class="secondary" onclick="playSelectedDialogue()">Play Scene Audio</button>
+<button class="secondary" onclick="stopAudio()">Stop Audio</button>
+</div>
+
+<div class="card">
+<h3>Step 4: Video Preview</h3>
+<div class="preview" id="videoPreview">
+<p>Select a project and scene to see the preview.</p>
+</div>
+<p class="small">This is a scene preview, not the final rendered MP4 video.</p>
+</div>
+
+<div class="card">
+<h3>Step 5: Timeline Settings</h3>
+<div class="row">
+<div>
+<label>Video Format</label>
+<select id="videoFormat">
+<option>16:9 Landscape</option>
+<option>9:16 Vertical</option>
+<option>1:1 Square</option>
+</select>
+</div>
+<div>
+<label>Transition Style</label>
+<select id="transition">
+<option>Cut</option>
+<option>Fade</option>
+<option>Slide</option>
+</select>
+</div>
+</div>
+<div id="totalDuration" class="status">Total Video Duration: 0 seconds</div>
+<button class="success" onclick="saveTimeline()">Save Timeline to Project</button>
+</div>
+
+<div class="card">
+<h3>Step 6: Export Video</h3>
+<p>Export preparation will be connected in a later version. This version can save your editing timeline and preview individual scenes.</p>
+<button disabled>Export MP4 – Coming Soon</button>
+<div class="status">No paid API or external service is being used in this version.</div>
+</div>
+
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let projects=[];
+let currentProject=null;
+let timeline=[];
+let selectedScene=null;
+
+function readProjects(){
+ try{
+  const data=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
+  return Array.isArray(data)?data:[];
+ }catch(e){return [];}
+}
+
+function writeProjects(){
+ localStorage.setItem("uaaaProjects",JSON.stringify(projects));
+}
+
+function escapeHTML(value){
+ return String(value??"")
+ .replace(/&/g,"&amp;")
+ .replace(/</g,"&lt;")
+ .replace(/>/g,"&gt;")
+ .replace(/"/g,"&quot;")
+ .replace(/'/g,"&#039;");
+}
+
+function getProjectName(p){
+ return p.projectName||p.title||"Untitled Project";
+}
+
+function initialize(){
+ projects=readProjects();
+ const select=$("projectSelect");
+ select.innerHTML="";
+
+ if(projects.length===0){
+  select.innerHTML='<option value="">No saved projects found</option>';
+  $("projectInfo").textContent="Please save a project first in Create New Video.";
+  return;
+ }
+
+ select.innerHTML='<option value="">Select a project</option>';
+
+ projects.forEach((p,i)=>{
+  const option=document.createElement("option");
+  option.value=String(i);
+  option.textContent=getProjectName(p);
+  select.appendChild(option);
+ });
+}
+
+function loadSelectedProject(){
+ const index=$("projectSelect").value;
+ if(index===""){
+  alert("Please select a project.");
+  return;
+ }
+
+ projects=readProjects();
+ currentProject=projects[Number(index)];
+
+ if(!currentProject){
+  alert("Project not found. Please refresh and try again.");
+  return;
+ }
+
+ const savedTimeline=Array.isArray(currentProject.timeline)?currentProject.timeline:[];
+ const dialogueList=Array.isArray(currentProject.dialogues)?currentProject.dialogues:[];
+ const visualList=Array.isArray(currentProject.visuals)?currentProject.visuals:[];
+
+ const sceneNumbers=[...new Set([
+  ...dialogueList.map(d=>Number(d.scene)||1),
+  ...visualList.map(v=>Number(v.scene)||1),
+  ...savedTimeline.map(s=>Number(s.scene)||1)
+ ])].sort((a,b)=>a-b);
+
+ timeline=sceneNumbers.map(scene=>{
+  const old=savedTimeline.find(s=>Number(s.scene)===scene);
+  const dialogues=dialogueList.filter(d=>Number(d.scene)===scene);
+  const visuals=visualList.filter(v=>Number(v.scene)===scene);
+  const visual=visuals[visuals.length-1]||{};
+
+  return {
+   scene:scene,
+   duration:old?Number(old.duration)||10:10,
+   music:old?old.music:(visual.music||"No Music"),
+   transition:old?old.transition:"Cut",
+   dialogue:old?old.dialogue:dialogues.map(d=>d.text||d.dialogue||"").join("\n"),
+   description:old?old.description:(visual.description||""),
+   subtitle:old?old.subtitle:(visual.subtitle||""),
+   image:visual.image||""
+  };
+ });
+
+ $("projectInfo").textContent=
+  "Loaded: "+getProjectName(currentProject)+
+  " | "+timeline.length+" Scenes"+
+  " | Status: "+(currentProject.status||"Draft");
+
+ $("videoFormat").value=currentProject.format||"16:9 Landscape";
+
+ renderTimeline();
+ fillSceneSelect();
+
+ if(timeline.length){
+  $("sceneSelect").value=String(timeline[0].scene);
+  showScene();
+ }else{
+  $("videoPreview").innerHTML="<p>No scenes found. Add dialogues in Create New Video first.</p>";
+ }
+
+ updateTotalDuration();
+}
+
+function renderTimeline(){
+ const box=$("timeline");
+
+ if(!timeline.length){
+  box.textContent="No scenes found in this project.";
+  return;
+ }
+
+ box.innerHTML="";
+
+ timeline.forEach((s,i)=>{
+  const item=document.createElement("div");
+  item.className="timeline-item";
+
+  const title=document.createElement("strong");
+  title.textContent="Scene "+s.scene;
+
+  const details=document.createElement("p");
+  details.textContent="Duration: "+s.duration+" sec | Music: "+s.music;
+
+  const dialogue=document.createElement("p");
+  dialogue.textContent=s.dialogue||"No dialogue";
+
+  const button=document.createElement("button");
+  button.textContent="Edit This Scene";
+  button.onclick=()=>{
+   $("sceneSelect").value=String(s.scene);
+   showScene();
+   window.scrollTo({top:$("sceneSelect").getBoundingClientRect().top+window.scrollY-20,behavior:"smooth"});
+  };
+
+  item.append(title,details,dialogue,button);
+  box.appendChild(item);
+ });
+}
+
+function fillSceneSelect(){
+ const select=$("sceneSelect");
+ select.innerHTML="";
+
+ timeline.forEach(s=>{
+  const option=document.createElement("option");
+  option.value=String(s.scene);
+  option.textContent="Scene "+s.scene;
+  select.appendChild(option);
+ });
+}
+
+function getSelectedScene(){
+ const scene=Number($("sceneSelect").value);
+ return timeline.find(s=>Number(s.scene)===scene)||null;
+}
+
+function showScene(){
+ const s=getSelectedScene();
+ if(!s)return;
+
+ selectedScene=s.scene;
+
+ $("sceneDuration").value=s.duration;
+ $("sceneMusic").value=s.music;
+ $("sceneDialogue").value=s.dialogue;
+ $("sceneDescription").value=s.description;
+ $("sceneSubtitle").value=s.subtitle;
+
+ renderPreview(s);
+}
+
+function renderPreview(s){
+ const box=$("videoPreview");
+ box.innerHTML="";
+
+ if(s.image){
+  const img=document.createElement("img");
+  img.src=s.image;
+  box.appendChild(img);
+ }else{
+  const description=document.createElement("p");
+  description.textContent=s.description||"No visual image uploaded for this scene.";
+  box.appendChild(description);
+ }
+
+ if(s.subtitle){
+  const subtitle=document.createElement("div");
+  subtitle.className="subtitle";
+  subtitle.textContent=s.subtitle;
+  box.appendChild(subtitle);
+ }
+}
+
+function saveSceneEdit(){
+ const s=getSelectedScene();
+ if(!s){
+  alert("Please select a scene.");
+  return;
+ }
+
+ const duration=Number($("sceneDuration").value);
+ if(!duration||duration<1){
+  alert("Please enter a valid scene duration.");
+  return;
+ }
+
+ s.duration=duration;
+ s.music=$("sceneMusic").value;
+ s.dialogue=$("sceneDialogue").value;
+ s.description=$("sceneDescription").value;
+ s.subtitle=$("sceneSubtitle").value;
+ s.transition=$("transition").value;
+
+ renderTimeline();
+ renderPreview(s);
+ updateTotalDuration();
+
+ alert("Scene changes saved in the editing workspace. Click Save Timeline to Project to keep them.");
+}
+
+function playSelectedDialogue(){
+ const s=getSelectedScene();
+ if(!s||!s.dialogue.trim()){
+  alert("No dialogue available for this scene.");
+  return;
+ }
+
+ if(!("speechSynthesis" in window)){
+  alert("Browser speech is not supported.");
+  return;
+ }
+
+ stopAudio();
+
+ const utterance=new SpeechSynthesisUtterance(s.dialogue);
+ utterance.lang=currentProject.language||"hi-IN";
+
+ const voices=speechSynthesis.getVoices();
+ const voice=voices.find(v=>v.lang===utterance.lang)||
+             voices.find(v=>v.lang.startsWith("hi"));
+ if(voice)utterance.voice=voice;
+
+ speechSynthesis.speak(utterance);
+}
+
+function stopAudio(){
+ if("speechSynthesis" in window)speechSynthesis.cancel();
+}
+
+function updateTotalDuration(){
+ const total=timeline.reduce((sum,s)=>sum+(Number(s.duration)||0),0);
+ $("totalDuration").textContent=
+  "Total Video Duration: "+total+" seconds ("+(total/60).toFixed(2)+" minutes)";
+}
+
+function saveTimeline(){
+ if(!currentProject){
+  alert("Please load a project first.");
+  return;
+ }
+
+ currentProject.timeline=timeline;
+ currentProject.format=$("videoFormat").value;
+ currentProject.transition=$("transition").value;
+ currentProject.updatedAt=new Date().toISOString();
+
+ const index=projects.findIndex(p=>String(p.id)===String(currentProject.id));
+
+ if(index>=0)projects[index]=currentProject;
+
+ try{
+  writeProjects();
+  $("projectInfo").textContent=
+   "Timeline saved successfully for: "+getProjectName(currentProject);
+  alert("Timeline saved to project successfully!");
+ }catch(e){
+  alert("Unable to save. Browser storage may be full.");
+ }
+}
+
+initialize();
+</script>
+
+</body>
+</html>
