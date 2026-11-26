@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UAAA AI Studio - Version 2.6</title>
+<title>UAAA AI Studio - Version 2.7</title>
 
 <style>
 *{box-sizing:border-box}
@@ -67,14 +67,8 @@ button:disabled{opacity:.5}
 }
 .small{font-size:13px;color:#64748b}
 .status{font-weight:bold;color:#15803d}
+.error{font-weight:bold;color:#dc2626}
 hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
-.preview{
- background:#0f172a;
- color:white;
- padding:15px;
- border-radius:8px;
- min-height:50px;
-}
 </style>
 </head>
 
@@ -82,7 +76,7 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 
 <header>
 <h1>🎬 UAAA AI Studio</h1>
-<p>Version 2.6 – Character & Scene Management</p>
+<p>Version 2.7 – Project Management & Save System</p>
 <a href="index.html">← Back to Dashboard</a>
 </header>
 
@@ -370,10 +364,24 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 
 <!-- STEP 10 -->
 <section class="card">
-<h2>Step 10: Save Project</h2>
+<h2>Step 10: Project Management & Save</h2>
 
-<button class="success" onclick="saveProject()">Save Project / Draft</button>
+<label>Project Name *</label>
+<input id="projectName" placeholder="Example: UAAA News Demo 01">
+
+<label>Project Description (Optional)</label>
+<textarea id="projectDescription" placeholder="Enter project details or customer instructions"></textarea>
+
+<hr>
+
+<button class="success" onclick="saveProject()">💾 Save Project / Draft</button>
+
 <p id="saveStatus" class="status"></p>
+<p id="saveError" class="error"></p>
+
+<p class="small">
+Your project details, characters, dialogues and scene visual information will be saved in this browser.
+</p>
 
 <p class="small">
 Note: AI voice generation, AI image generation and final MP4 export will be connected in future versions.
@@ -388,11 +396,13 @@ Note: AI voice generation, AI image generation and final MP4 export will be conn
 
 const $ = id => document.getElementById(id);
 
-function readStore(key, fallback=[]){
+function readStore(key,fallback=[]){
  try{
   const value=JSON.parse(localStorage.getItem(key));
   return Array.isArray(value)?value:fallback;
- }catch(e){return fallback;}
+ }catch(e){
+  return fallback;
+ }
 }
 
 function writeStore(key,value){
@@ -419,22 +429,21 @@ function refreshProfiles(){
 
  profiles=readStore("uaaaVoiceProfiles");
 
- const selects=["characterProfile"];
+ const el=$("characterProfile");
+ const old=el.value;
 
- selects.forEach(id=>{
-  const el=$(id);
-  const old=el.value;
-  el.innerHTML='<option value="">Select Voice Profile</option>';
+ el.innerHTML='<option value="">Select Voice Profile</option>';
 
-  profiles.forEach((p,i)=>{
-   const op=document.createElement("option");
-   op.value=String(i);
-   op.textContent=profileName(p)+" ("+(p.gender||p.aiGender||"Voice")+")";
-   el.appendChild(op);
-  });
-
-  if(old && Number(old)<profiles.length) el.value=old;
+ profiles.forEach((p,i)=>{
+  const op=document.createElement("option");
+  op.value=String(i);
+  op.textContent=profileName(p)+" ("+(p.gender||p.aiGender||"Voice")+")";
+  el.appendChild(op);
  });
+
+ if(old && Number(old)<profiles.length){
+  el.value=old;
+ }
 
  renderProfiles();
 }
@@ -519,23 +528,21 @@ function refreshCharacters(){
 
  characters=readStore("uaaaCharacters");
 
- const dropdowns=["dialogueCharacter"];
+ const el=$("dialogueCharacter");
+ const old=el.value;
 
- dropdowns.forEach(id=>{
-  const el=$(id);
-  const old=el.value;
+ el.innerHTML='<option value="">Select Character</option>';
 
-  el.innerHTML='<option value="">Select Character</option>';
-
-  characters.forEach((c,i)=>{
-   const op=document.createElement("option");
-   op.value=String(i);
-   op.textContent=c.name+" ("+c.role+")";
-   el.appendChild(op);
-  });
-
-  if(old && Number(old)<characters.length)el.value=old;
+ characters.forEach((c,i)=>{
+  const op=document.createElement("option");
+  op.value=String(i);
+  op.textContent=c.name+" ("+c.role+")";
+  el.appendChild(op);
  });
+
+ if(old && Number(old)<characters.length){
+  el.value=old;
+ }
 
  renderCharacters();
  refreshScenes();
@@ -569,15 +576,13 @@ function addCharacter(){
 
  characters=readStore("uaaaCharacters");
 
- const character={
+ characters.push({
   id:"character_"+Date.now(),
   name:name,
   role:role,
   profileId:profile.id || "",
   profileName:profileName(profile)
- };
-
- characters.push(character);
+ });
 
  writeStore("uaaaCharacters",characters);
 
@@ -627,7 +632,6 @@ function deleteCharacter(index){
  characters.splice(index,1);
 
  writeStore("uaaaCharacters",characters);
-
  refreshCharacters();
 }
 
@@ -674,7 +678,6 @@ function addDialogue(){
  writeStore("uaaaDialogues",dialogues);
 
  $("dialogueText").value="";
-
  refreshDialogues();
 
  alert("Dialogue Added Successfully!");
@@ -721,7 +724,6 @@ function deleteDialogue(index){
  dialogues.splice(index,1);
 
  writeStore("uaaaDialogues",dialogues);
-
  refreshDialogues();
 }
 
@@ -759,7 +761,9 @@ function refreshScenes(){
    el.appendChild(op);
   });
 
-  if(scenes.includes(Number(old)))el.value=old;
+  if(scenes.includes(Number(old))){
+   el.value=old;
+  }
  });
 
  renderSceneAudio();
@@ -838,6 +842,11 @@ function speak(text){
   return;
  }
 
+ if(!text || !text.trim()){
+  alert("There is no text to play.");
+  return;
+ }
+
  stopAudio();
 
  const utterance=new SpeechSynthesisUtterance(text);
@@ -848,7 +857,6 @@ function speak(text){
 
  utterance.rate=Number($("speed").value)||1;
  utterance.pitch=Number($("pitch").value)||1;
-
  utterance.lang=$("language").value;
 
  window.speechSynthesis.speak(utterance);
@@ -859,7 +867,9 @@ function speakText(){
 }
 
 function stopAudio(){
- if(window.speechSynthesis)window.speechSynthesis.cancel();
+ if(window.speechSynthesis){
+  window.speechSynthesis.cancel();
+ }
 }
 
 /* SCRIPT */
@@ -879,7 +889,6 @@ function prepareScript(){
  "आज के इस वीडियो में हम बात करेंगे "+title+" के बारे में।\n\n"+
  brief+
  "\n\nअधिक जानकारी के लिए हमारे साथ जुड़े रहें।\n\nधन्यवाद!";
-
 }
 
 /* APPROVAL */
@@ -926,16 +935,22 @@ function saveSceneVisual(){
  };
 
  function finishSave(){
+
   visuals=readStore("uaaaVisuals");
   visuals.push(record);
-  writeStore("uaaaVisuals",visuals);
+
+  try{
+   writeStore("uaaaVisuals",visuals);
+  }catch(e){
+   alert("Storage space may be full. Please try without uploading an image.");
+   return;
+  }
 
   $("visualDescription").value="";
   $("subtitleText").value="";
   $("visualImage").value="";
 
   renderVisuals();
-
   alert("Scene Visual Saved Successfully!");
  }
 
@@ -996,6 +1011,12 @@ function renderVisuals(){
    div.appendChild(sub);
   }
 
+  if(v.music){
+   const music=document.createElement("p");
+   music.textContent="Music: "+v.music;
+   div.appendChild(music);
+  }
+
   if(v.imageData){
    const img=document.createElement("img");
    img.src=v.imageData;
@@ -1007,6 +1028,7 @@ function renderVisuals(){
   const del=document.createElement("button");
   del.className="danger";
   del.textContent="Delete Visual";
+
   del.onclick=()=>{
    visuals=readStore("uaaaVisuals");
    visuals.splice(i,1);
@@ -1032,42 +1054,78 @@ function approveVisuals(){
  $("visualStatus").textContent="Visual Plan Approved Successfully!";
 }
 
-/* SAVE PROJECT */
+/* PROJECT MANAGEMENT - VERSION 2.7 */
 
 function saveProject(){
 
- const title=$("title").value.trim();
+ const projectName=$("projectName").value.trim();
 
- if(!title){
-  alert("Please enter Video Title.");
+ if(!projectName){
+  $("saveError").textContent="Please enter a Project Name.";
+  $("saveStatus").textContent="";
+  $("projectName").focus();
   return;
  }
 
+ const videoTitle=$("title").value.trim();
+
  const project={
   id:"project_"+Date.now(),
-  title:title,
+
+  /* My Projects compatibility */
+  title:videoTitle || projectName,
+  projectName:projectName,
+  projectDescription:$("projectDescription").value.trim(),
+
   category:$("category").value,
   customer:$("customer").value,
   language:$("language").value,
   format:$("format").value,
   duration:$("duration").value,
+
   brief:$("brief").value,
   script:$("script").value,
+
+  voiceEngine:$("engine").value,
+  browserVoice:$("browserVoice").value,
+  voiceSpeed:$("speed").value,
+  voicePitch:$("pitch").value,
+
   characters:readStore("uaaaCharacters"),
   dialogues:readStore("uaaaDialogues"),
   visuals:readStore("uaaaVisuals"),
+
+  voiceProfiles:readStore("uaaaVoiceProfiles"),
+
   audioApproved:audioApproved,
   visualApproved:visualApproved,
+
   status:"Draft",
   createdAt:new Date().toISOString()
  };
 
  let projects=readStore("uaaaProjects");
+
  projects.unshift(project);
 
- writeStore("uaaaProjects",projects);
+ try{
 
- $("saveStatus").textContent="Project Saved Successfully!";
+  writeStore("uaaaProjects",projects);
+
+  $("saveStatus").textContent=
+   "✅ Project Saved Successfully! Project Name: "+projectName;
+
+  $("saveError").textContent="";
+
+  alert("Project Saved Successfully!");
+
+ }catch(error){
+
+  $("saveStatus").textContent="";
+
+  $("saveError").textContent=
+   "Project could not be saved. Browser storage may be full. Try removing large uploaded images.";
+ }
 }
 
 /* ENGINE SWITCH */
@@ -1078,7 +1136,6 @@ $("engine").addEventListener("change",function(){
 
  $("aiControls").style.display=ai?"block":"none";
  $("browserControls").style.display=ai?"none":"block";
-
 });
 
 /* EVENT LISTENERS */
