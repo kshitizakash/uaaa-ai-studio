@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UAAA AI Studio - Version 3.1</title>
+<title>UAAA AI Studio - Version 3.2</title>
 
 <style>
 *{box-sizing:border-box}
@@ -21,11 +21,7 @@ header{
 }
 header h1{margin:0 0 8px}
 header p{margin:0;color:#cbd5e1}
-.container{
- max-width:1100px;
- margin:auto;
- padding:16px;
-}
+.container{max-width:1100px;margin:auto;padding:16px}
 .card{
  background:white;
  padding:20px;
@@ -33,16 +29,8 @@ header p{margin:0;color:#cbd5e1}
  border-radius:12px;
  box-shadow:0 2px 8px rgba(0,0,0,.07);
 }
-h2{
- font-size:20px;
- margin-top:0;
- color:#1e3a8a;
-}
-label{
- display:block;
- font-weight:bold;
- margin:12px 0 6px;
-}
+h2{font-size:20px;margin-top:0;color:#1e3a8a}
+label{display:block;font-weight:bold;margin:12px 0 6px}
 input,select,textarea{
  width:100%;
  padding:11px;
@@ -51,6 +39,7 @@ input,select,textarea{
  font-size:15px;
  background:white;
 }
+input[type=range]{padding:0}
 textarea{min-height:90px;resize:vertical}
 button{
  border:0;
@@ -68,11 +57,7 @@ button.green{background:#15803d}
 button.orange{background:#c2410c}
 button.red{background:#b91c1c}
 button:disabled{background:#94a3b8;cursor:not-allowed}
-.row{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:14px;
-}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .scene{
  border:1px solid #cbd5e1;
  border-radius:9px;
@@ -80,12 +65,9 @@ button:disabled{background:#94a3b8;cursor:not-allowed}
  margin:12px 0;
  background:#f8fafc;
 }
-.scene.active{
- border:2px solid #2563eb;
- background:#eff6ff;
-}
+.scene.active{border:2px solid #2563eb;background:#eff6ff}
 .preview{
- min-height:180px;
+ min-height:190px;
  border:2px dashed #94a3b8;
  border-radius:10px;
  display:flex;
@@ -98,18 +80,14 @@ button:disabled{background:#94a3b8;cursor:not-allowed}
  position:relative;
  overflow:hidden;
 }
-.preview img{
- max-width:100%;
- max-height:300px;
- object-fit:contain;
-}
+.preview img{max-width:100%;max-height:300px;object-fit:contain}
 .preview-subtitle{
  position:absolute;
  bottom:15px;
  left:5%;
  width:90%;
  text-align:center;
- background:rgba(0,0,0,.75);
+ background:rgba(0,0,0,.8);
  color:white;
  padding:10px;
  border-radius:5px;
@@ -123,11 +101,8 @@ button:disabled{background:#94a3b8;cursor:not-allowed}
  color:#166534;
  margin-top:12px;
 }
-.note{
- color:#64748b;
- font-size:13px;
- line-height:1.5;
-}
+.note{color:#64748b;font-size:13px;line-height:1.5}
+.volume-value{font-weight:bold;color:#1d4ed8}
 audio{width:100%;margin-top:10px}
 hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 @media(max-width:650px){
@@ -141,31 +116,29 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 
 <header>
  <h1>UAAA AI Studio</h1>
- <p>Version 3.1 – Real Audio & Visual Preview</p>
+ <p>Version 3.2 – Audio Mixing & Advanced Timeline</p>
 </header>
 
 <div class="container">
 
 <div class="card">
  <h2>Step 1: Select Your Project</h2>
-
  <label>Saved Projects</label>
  <select id="projectSelect">
   <option value="">Select a project</option>
  </select>
-
  <button onclick="loadProject()">Load Project</button>
  <div id="projectStatus" class="note"></div>
 </div>
 
 <div class="card">
  <h2>Step 2: Scene Timeline</h2>
- <p class="note">आपके Project के Dialogues और Visuals Scene के अनुसार यहाँ दिखाई देंगे।</p>
+ <p class="note">आपके Project के Dialogues और Visuals Scene के अनुसार दिखाई देंगे।</p>
  <div id="timelineList">Please load a project first.</div>
 </div>
 
 <div class="card">
- <h2>Step 3: Edit Selected Scene</h2>
+ <h2>Step 3: Advanced Scene Editing</h2>
 
  <label>Select Scene</label>
  <select id="sceneSelect" onchange="selectScene()">
@@ -200,30 +173,34 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
  <label>Subtitle Text</label>
  <textarea id="sceneSubtitle"></textarea>
 
+ <div class="row">
+  <div>
+   <label>Subtitle Start Time (Seconds)</label>
+   <input type="number" id="subtitleStart" min="0" value="0">
+  </div>
+  <div>
+   <label>Subtitle End Time (Seconds)</label>
+   <input type="number" id="subtitleEnd" min="0" value="10">
+  </div>
+ </div>
+
  <button class="green" onclick="saveSceneEdit()">Save Scene Changes</button>
- <button onclick="playSceneAudio()">Play Scene Audio</button>
- <button class="red" onclick="stopAudio()">Stop Audio</button>
+ <button onclick="playSceneAudio()">Play Scene Audio + Music</button>
+ <button class="red" onclick="stopAll()">Stop Playback</button>
 </div>
 
 <div class="card">
- <h2>Step 4: Real-Time Scene Preview</h2>
-
+ <h2>Step 4: Real-Time Visual Preview</h2>
  <div class="preview" id="visualPreview">
   Load a project to see scene preview.
  </div>
-
  <p id="previewSceneName" class="note"></p>
-
- <button onclick="playSceneAudio()">Play Scene Voice</button>
- <button class="red" onclick="stopAudio()">Stop Voice</button>
 </div>
 
 <div class="card">
  <h2>Step 5: Background Music Upload</h2>
-
  <p class="note">
- आप अपने वीडियो के लिए Background Music की छोटी Audio File अपलोड कर सकते हैं।
- अधिकतम File Size 1.5 MB रखें।
+ Upload your own background music. Maximum file size: 1.5 MB.
  </p>
 
  <label>Upload Background Music</label>
@@ -232,30 +209,65 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
  <button class="green" onclick="saveMusic()">Save Background Music</button>
 
  <div id="musicStatus" class="note"></div>
-
  <audio id="musicPlayer" controls></audio>
 
- <button onclick="playMusic()">Play Music</button>
+ <div class="row">
+  <div>
+   <label>Background Music Volume: <span id="musicVolumeValue" class="volume-value">15%</span></label>
+   <input type="range" id="musicVolume" min="0" max="100" value="15"
+    oninput="updateMusicVolume()">
+  </div>
+  <div>
+   <label>Music During Voice</label>
+   <select id="musicDuringVoice">
+    <option value="duck">Automatic Low Volume During Voice</option>
+    <option value="same">Keep Same Volume</option>
+    <option value="mute">Mute Music During Voice</option>
+   </select>
+  </div>
+ </div>
+
+ <button onclick="playMusic()">Play Music Only</button>
  <button class="red" onclick="stopMusic()">Stop Music</button>
 </div>
 
 <div class="card">
- <h2>Step 6: Play All Scenes</h2>
+ <h2>Step 6: Voice + Music Preview</h2>
 
  <p class="note">
- यह Preview सभी Scenes को क्रम से चलाएगा। हर Scene का Dialogue Browser Voice से सुनाई देगा और उसका Visual Preview दिखाई देगा।
+ Voice और Background Music एक साथ चलेंगे। Voice Browser Speech से आएगी और Music आपकी Uploaded Audio File से चलेगा।
+ </p>
+
+ <label>Voice Playback Speed</label>
+ <select id="voiceSpeed">
+  <option value="0.8">Slow</option>
+  <option value="0.9">Slightly Slow</option>
+  <option value="1" selected>Normal</option>
+  <option value="1.1">Fast</option>
+  <option value="1.2">Very Fast</option>
+ </select>
+
+ <button class="green" onclick="playSceneAudio()">▶ Play Voice + Music</button>
+ <button class="red" onclick="stopAll()">■ Stop All</button>
+
+ <div id="mixStatus" class="status">Ready for audio preview.</div>
+</div>
+
+<div class="card">
+ <h2>Step 7: Play All Scenes</h2>
+
+ <p class="note">
+ पूरे वीडियो के Scenes क्रम से चलेंगे। Scene बदलने पर Visual और Subtitle भी बदलेंगे।
  </p>
 
  <button class="green" onclick="playAllScenes()">▶ Play All Scenes</button>
  <button class="red" onclick="stopAll()">■ Stop All</button>
 
- <div id="playAllStatus" class="status">
-  Ready to play.
- </div>
+ <div id="playAllStatus" class="status">Ready to play.</div>
 </div>
 
 <div class="card">
- <h2>Step 7: Timeline Settings</h2>
+ <h2>Step 8: Timeline Settings</h2>
 
  <div class="row">
   <div>
@@ -266,7 +278,6 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
     <option value="1:1 Square">1:1 Square</option>
    </select>
   </div>
-
   <div>
    <label>Transition Style</label>
    <select id="transition">
@@ -283,18 +294,14 @@ hr{border:0;border-top:1px solid #e2e8f0;margin:18px 0}
 </div>
 
 <div class="card">
- <h2>Step 8: Export Video</h2>
-
+ <h2>Step 9: Export Video</h2>
  <p>
- आपकी Timeline और Scene Preview सेव हो सकते हैं।
- लेकिन वास्तविक MP4 Rendering और Export अभी इस Version में उपलब्ध नहीं है।
+ Timeline और Audio Preview सेव किए जा सकते हैं। वास्तविक MP4 Rendering अभी उपलब्ध नहीं है।
  </p>
-
  <button disabled>Export MP4 – Coming Soon</button>
-
- <div class="note">
- No paid API or external AI service is being used in this version.
- </div>
+ <p class="note">
+ यह Version Browser Preview देता है। Voice और Music को मिलाकर डाउनलोड करने योग्य MP4 या Audio File अभी नहीं बनाता।
+ </p>
 </div>
 
 </div>
@@ -310,6 +317,12 @@ let selectedScene=null;
 let playingAll=false;
 let playbackToken=0;
 let currentUtterance=null;
+let subtitleTimer1=null;
+let subtitleTimer2=null;
+let sceneTimer=null;
+let musicDuckTimer=null;
+
+const $=id=>document.getElementById(id);
 
 function readProjects(){
  try{
@@ -348,7 +361,7 @@ function getMusic(item){
 
 function populateProjects(){
  projects=readProjects();
- const select=document.getElementById("projectSelect");
+ const select=$("projectSelect");
  select.innerHTML='<option value="">Select a project</option>';
 
  projects.forEach((p,i)=>{
@@ -361,11 +374,12 @@ function populateProjects(){
 
 function loadProject(){
  stopAll();
-
  projects=readProjects();
- const index=Number(document.getElementById("projectSelect").value);
 
- if(document.getElementById("projectSelect").value==="" || !projects[index]){
+ const value=$("projectSelect").value;
+ const index=Number(value);
+
+ if(value==="" || !projects[index]){
   alert("Please select a valid project.");
   return;
  }
@@ -373,21 +387,19 @@ function loadProject(){
  currentProjectIndex=index;
  currentProject=projects[index];
 
- document.getElementById("projectStatus").textContent=
-  "Loaded: "+getProjectName(currentProject);
+ $("projectStatus").textContent="Loaded: "+getProjectName(currentProject);
 
- document.getElementById("videoFormat").value=
-  currentProject.format || currentProject.timelineFormat || "16:9 Landscape";
+ $("videoFormat").value=currentProject.format ||
+  currentProject.timelineFormat || "16:9 Landscape";
 
- document.getElementById("transition").value=
-  currentProject.transition || "Cut";
+ $("transition").value=currentProject.transition || "Cut";
 
  buildScenes();
  renderTimeline();
  populateSceneSelect();
 
  if(scenes.length){
-  document.getElementById("sceneSelect").value="1";
+  $("sceneSelect").value=String(scenes[0].number);
   selectScene();
  }
 
@@ -417,24 +429,22 @@ function buildScenes(){
     music:"No Music",
     image:"",
     duration:10,
-    transition:"Cut"
+    transition:"Cut",
+    subtitleStart:0,
+    subtitleEnd:10
    };
   }
   return map[n];
  }
 
  dialogues.forEach(d=>{
-  const n=getSceneNumber(d);
-  const s=ensureScene(n);
-  const text=getDialogueText(d);
-  if(text){
-   s.dialogue+=(s.dialogue?"\n":"")+text;
-  }
+  const s=ensureScene(getSceneNumber(d));
+  const t=getDialogueText(d);
+  if(t)s.dialogue+=(s.dialogue?"\n":"")+t;
  });
 
  visuals.forEach(v=>{
-  const n=getSceneNumber(v);
-  const s=ensureScene(n);
+  const s=ensureScene(getSceneNumber(v));
   s.description=getVisualDescription(v);
   s.subtitle=getSubtitle(v);
   s.music=getMusic(v);
@@ -442,22 +452,25 @@ function buildScenes(){
  });
 
  timeline.forEach(t=>{
-  const n=getSceneNumber(t);
-  const s=ensureScene(n);
+  const s=ensureScene(getSceneNumber(t));
   s.duration=Number(t.duration)||10;
-  s.transition=t.transition || "Cut";
+
   if(t.dialogue!==undefined)s.dialogue=t.dialogue;
   if(t.description!==undefined)s.description=t.description;
   if(t.subtitle!==undefined)s.subtitle=t.subtitle;
   if(t.music!==undefined)s.music=t.music;
   if(t.image)s.image=t.image;
+  if(t.transition)s.transition=t.transition;
+
+  s.subtitleStart=Number(t.subtitleStart)||0;
+  s.subtitleEnd=Number(t.subtitleEnd)||s.duration;
  });
 
  scenes=Object.values(map).sort((a,b)=>a.number-b.number);
 }
 
 function renderTimeline(){
- const box=document.getElementById("timelineList");
+ const box=$("timelineList");
 
  if(!scenes.length){
   box.textContent="No scenes found. Add dialogues and visuals in Create New Video first.";
@@ -475,7 +488,9 @@ function renderTimeline(){
 
   const info=document.createElement("p");
   info.className="note";
-  info.textContent="Duration: "+scene.duration+" sec | Music: "+scene.music;
+  info.textContent=
+   "Duration: "+scene.duration+" sec | Music: "+scene.music+
+   " | Subtitle: "+scene.subtitleStart+"s - "+scene.subtitleEnd+"s";
 
   const dialogue=document.createElement("p");
   dialogue.textContent=scene.dialogue || "No dialogue added.";
@@ -483,7 +498,7 @@ function renderTimeline(){
   const button=document.createElement("button");
   button.textContent="Edit This Scene";
   button.onclick=()=>{
-   document.getElementById("sceneSelect").value=String(scene.number);
+   $("sceneSelect").value=String(scene.number);
    selectScene();
   };
 
@@ -493,7 +508,7 @@ function renderTimeline(){
 }
 
 function populateSceneSelect(){
- const select=document.getElementById("sceneSelect");
+ const select=$("sceneSelect");
  select.innerHTML='<option value="">Select Scene</option>';
 
  scenes.forEach(s=>{
@@ -505,27 +520,28 @@ function populateSceneSelect(){
 }
 
 function selectScene(){
- const value=document.getElementById("sceneSelect").value;
+ const value=$("sceneSelect").value;
  if(value==="")return;
 
- const n=Number(value);
- const scene=scenes.find(s=>s.number===n);
+ const scene=scenes.find(s=>s.number===Number(value));
  if(!scene)return;
 
- selectedScene=n;
+ selectedScene=scene.number;
 
- document.getElementById("sceneDuration").value=scene.duration;
- document.getElementById("sceneMusic").value=scene.music;
- document.getElementById("sceneDialogue").value=scene.dialogue;
- document.getElementById("sceneDescription").value=scene.description;
- document.getElementById("sceneSubtitle").value=scene.subtitle;
+ $("sceneDuration").value=scene.duration;
+ $("sceneMusic").value=scene.music;
+ $("sceneDialogue").value=scene.dialogue;
+ $("sceneDescription").value=scene.description;
+ $("sceneSubtitle").value=scene.subtitle;
+ $("subtitleStart").value=scene.subtitleStart;
+ $("subtitleEnd").value=scene.subtitleEnd;
 
  renderPreview(scene);
  renderTimeline();
 }
 
-function renderPreview(scene){
- const preview=document.getElementById("visualPreview");
+function renderPreview(scene,showSubtitle=true){
+ const preview=$("visualPreview");
  preview.innerHTML="";
 
  if(scene.image){
@@ -539,15 +555,14 @@ function renderPreview(scene){
   preview.appendChild(text);
  }
 
- if(scene.subtitle){
+ if(scene.subtitle && showSubtitle){
   const subtitle=document.createElement("div");
   subtitle.className="preview-subtitle";
   subtitle.textContent=scene.subtitle;
   preview.appendChild(subtitle);
  }
 
- document.getElementById("previewSceneName").textContent=
-  "Preview: Scene "+scene.number;
+ $("previewSceneName").textContent="Preview: Scene "+scene.number;
 }
 
 function saveSceneEdit(){
@@ -559,31 +574,19 @@ function saveSceneEdit(){
  const scene=scenes.find(s=>s.number===selectedScene);
  if(!scene)return;
 
- scene.duration=Math.max(1,Number(document.getElementById("sceneDuration").value)||10);
- scene.music=document.getElementById("sceneMusic").value;
- scene.dialogue=document.getElementById("sceneDialogue").value;
- scene.description=document.getElementById("sceneDescription").value;
- scene.subtitle=document.getElementById("sceneSubtitle").value;
+ scene.duration=Math.max(1,Number($("sceneDuration").value)||10);
+ scene.music=$("sceneMusic").value;
+ scene.dialogue=$("sceneDialogue").value;
+ scene.description=$("sceneDescription").value;
+ scene.subtitle=$("sceneSubtitle").value;
+ scene.subtitleStart=Math.max(0,Number($("subtitleStart").value)||0);
+ scene.subtitleEnd=Math.max(scene.subtitleStart,Number($("subtitleEnd").value)||scene.duration);
 
- const timeline=scenes.map(s=>({
-  sceneNumber:s.number,
-  duration:s.duration,
-  dialogue:s.dialogue,
-  description:s.description,
-  subtitle:s.subtitle,
-  music:s.music,
-  image:s.image,
-  transition:s.transition
- }));
+ if(scene.subtitleEnd>scene.duration){
+  scene.subtitleEnd=scene.duration;
+ }
 
- currentProject.timeline=timeline;
- currentProject.format=document.getElementById("videoFormat").value;
- currentProject.transition=document.getElementById("transition").value;
- currentProject.updatedAt=new Date().toISOString();
-
- projects[currentProjectIndex]=currentProject;
- writeProjects();
-
+ saveTimelineData();
  renderTimeline();
  renderPreview(scene);
  updateDuration();
@@ -591,24 +594,84 @@ function saveSceneEdit(){
  alert("Scene changes saved successfully!");
 }
 
+function saveTimelineData(){
+ currentProject.timeline=scenes.map(s=>({
+  sceneNumber:s.number,
+  duration:s.duration,
+  dialogue:s.dialogue,
+  description:s.description,
+  subtitle:s.subtitle,
+  music:s.music,
+  image:s.image,
+  transition:s.transition,
+  subtitleStart:s.subtitleStart,
+  subtitleEnd:s.subtitleEnd
+ }));
+
+ currentProject.format=$("videoFormat").value;
+ currentProject.transition=$("transition").value;
+ currentProject.updatedAt=new Date().toISOString();
+
+ projects[currentProjectIndex]=currentProject;
+ writeProjects();
+}
+
 function getLanguage(){
  const lang=currentProject && currentProject.language
   ?currentProject.language:"hi-IN";
 
  const map={
-  "hi":"hi-IN",
-  "hi-IN":"hi-IN",
-  "en":"en-IN",
-  "en-IN":"en-IN",
-  "bho-IN":"hi-IN",
-  "bn-IN":"bn-IN",
-  "mr-IN":"mr-IN",
-  "ta-IN":"ta-IN",
-  "te-IN":"te-IN",
-  "pa-IN":"pa-IN"
+  "hi":"hi-IN","hi-IN":"hi-IN","en":"en-IN","en-IN":"en-IN",
+  "bho-IN":"hi-IN","bn-IN":"bn-IN","mr-IN":"mr-IN",
+  "ta-IN":"ta-IN","te-IN":"te-IN","pa-IN":"pa-IN"
  };
 
  return map[lang]||lang;
+}
+
+function clearSubtitleTimers(){
+ clearTimeout(subtitleTimer1);
+ clearTimeout(subtitleTimer2);
+ clearTimeout(sceneTimer);
+ subtitleTimer1=null;
+ subtitleTimer2=null;
+ sceneTimer=null;
+}
+
+function startMusic(){
+ const player=$("musicPlayer");
+
+ if(!currentProject || !currentProject.musicData)return false;
+
+ player.loop=true;
+ player.volume=Number($("musicVolume").value)/100;
+
+ const mode=$("musicDuringVoice").value;
+ if(mode==="mute")player.volume=0;
+ else if(mode==="duck")player.volume=Math.min(player.volume,0.12);
+
+ player.play().catch(()=>{});
+ return true;
+}
+
+function stopMusic(){
+ const player=$("musicPlayer");
+ player.pause();
+ player.currentTime=0;
+}
+
+function setMusicForVoice(){
+ const player=$("musicPlayer");
+ const base=Number($("musicVolume").value)/100;
+ const mode=$("musicDuringVoice").value;
+
+ if(mode==="mute")player.volume=0;
+ else if(mode==="duck")player.volume=Math.min(base,0.12);
+ else player.volume=base;
+}
+
+function restoreMusicVolume(){
+ $("musicPlayer").volume=Number($("musicVolume").value)/100;
 }
 
 function playText(text,onEnd){
@@ -619,23 +682,31 @@ function playText(text,onEnd){
 
  if(!("speechSynthesis" in window)){
   alert("Browser speech audio is not supported on this device.");
+  if(onEnd)onEnd();
   return;
  }
 
  const utterance=new SpeechSynthesisUtterance(text);
  utterance.lang=getLanguage();
- utterance.rate=1;
+ utterance.rate=Number($("voiceSpeed").value)||1;
  utterance.pitch=1;
 
  currentUtterance=utterance;
 
+ utterance.onstart=()=>{
+  setMusicForVoice();
+  $("mixStatus").textContent="Voice is playing with background music.";
+ };
+
  utterance.onend=()=>{
   if(currentUtterance===utterance)currentUtterance=null;
+  restoreMusicVolume();
   if(onEnd)onEnd();
  };
 
  utterance.onerror=()=>{
   if(currentUtterance===utterance)currentUtterance=null;
+  restoreMusicVolume();
   if(onEnd)onEnd();
  };
 
@@ -654,14 +725,28 @@ function playSceneAudio(){
   return;
  }
 
- stopAudio();
- playText(scene.dialogue);
+ stopAll();
+ startMusic();
+
+ $("mixStatus").textContent="Starting Scene "+scene.number+" audio...";
+ playText(scene.dialogue,()=>{
+  $("mixStatus").textContent="Scene voice playback completed.";
+  stopMusic();
+ });
 }
 
-function stopAudio(){
- if("speechSynthesis" in window){
-  speechSynthesis.cancel();
- }
+function stopAll(){
+ playingAll=false;
+ playbackToken++;
+ clearSubtitleTimers();
+ stopAudioOnly();
+ stopMusic();
+ $("playAllStatus").textContent="Playback stopped.";
+ $("mixStatus").textContent="Playback stopped.";
+}
+
+function stopAudioOnly(){
+ if("speechSynthesis" in window)speechSynthesis.cancel();
  currentUtterance=null;
 }
 
@@ -676,44 +761,71 @@ function playAllScenes(){
  const token=++playbackToken;
  let index=0;
 
+ startMusic();
+
  function next(){
   if(!playingAll || token!==playbackToken)return;
 
   if(index>=scenes.length){
    playingAll=false;
-   document.getElementById("playAllStatus").textContent=
-    "All scenes preview completed.";
+   stopMusic();
+   $("playAllStatus").textContent="All scenes preview completed.";
+   $("mixStatus").textContent="Full preview completed.";
    return;
   }
 
   const scene=scenes[index];
   selectedScene=scene.number;
-
-  document.getElementById("sceneSelect").value=String(scene.number);
+  $("sceneSelect").value=String(scene.number);
   selectScene();
 
-  document.getElementById("playAllStatus").textContent=
+  $("playAllStatus").textContent=
    "Playing Scene "+scene.number+" of "+scenes.length;
+
+  $("mixStatus").textContent="Scene "+scene.number+" is playing.";
+
+  const duration=Math.max(1,Number(scene.duration)||10);
+  const start=Math.min(duration,Math.max(0,Number(scene.subtitleStart)||0));
+  const end=Math.min(duration,Math.max(start,Number(scene.subtitleEnd)||duration));
+
+  renderPreview(scene,false);
+
+  subtitleTimer1=setTimeout(()=>{
+   if(playingAll && token===playbackToken)renderPreview(scene,true);
+  },start*1000);
+
+  subtitleTimer2=setTimeout(()=>{
+   if(playingAll && token===playbackToken)renderPreview(scene,false);
+  },end*1000);
 
   index++;
 
-  const text=scene.dialogue || "";
+  const started=Date.now();
 
-  if(!text.trim()){
-   setTimeout(next,500);
-  }else{
-   playText(text,next);
-  }
+  playText(scene.dialogue,()=>{
+   if(!playingAll || token!==playbackToken)return;
+
+   const elapsed=(Date.now()-started)/1000;
+   const remaining=Math.max(0,duration-elapsed);
+
+   restoreMusicVolume();
+
+   sceneTimer=setTimeout(()=>{
+    if(playingAll && token===playbackToken)next();
+   },remaining*1000);
+  });
  }
 
  next();
 }
 
-function stopAll(){
- playingAll=false;
- playbackToken++;
- stopAudio();
- document.getElementById("playAllStatus").textContent="Playback stopped.";
+function updateMusicVolume(){
+ const value=Number($("musicVolume").value);
+ $("musicVolumeValue").textContent=value+"%";
+
+ if(!$("musicPlayer").paused){
+  setMusicForVoice();
+ }
 }
 
 function saveMusic(){
@@ -722,7 +834,7 @@ function saveMusic(){
   return;
  }
 
- const file=document.getElementById("musicUpload").files[0];
+ const file=$("musicUpload").files[0];
 
  if(!file){
   alert("Please select an audio file.");
@@ -751,8 +863,7 @@ function saveMusic(){
   try{
    writeProjects();
    loadMusicPlayer();
-   document.getElementById("musicStatus").textContent=
-    "Background music saved: "+file.name;
+   $("musicStatus").textContent="Background music saved: "+file.name;
   }catch(e){
    alert("Storage limit reached. Please use a smaller audio file.");
   }
@@ -762,43 +873,40 @@ function saveMusic(){
 }
 
 function loadMusicPlayer(){
- const player=document.getElementById("musicPlayer");
+ const player=$("musicPlayer");
 
  if(currentProject && currentProject.musicData){
   player.src=currentProject.musicData;
-  document.getElementById("musicStatus").textContent=
+  player.loop=true;
+  player.load();
+
+  $("musicStatus").textContent=
    "Saved Music: "+(currentProject.musicFileName||"Background Music");
  }else{
   player.removeAttribute("src");
   player.load();
-  document.getElementById("musicStatus").textContent=
-   "No uploaded background music saved.";
+  $("musicStatus").textContent="No uploaded background music saved.";
  }
 }
 
 function playMusic(){
- const player=document.getElementById("musicPlayer");
+ const player=$("musicPlayer");
 
  if(!player.src){
   alert("Please upload and save background music first.");
   return;
  }
 
+ player.volume=Number($("musicVolume").value)/100;
  player.play().catch(()=>{
   alert("Please tap Play Music again to start playback.");
  });
 }
 
-function stopMusic(){
- const player=document.getElementById("musicPlayer");
- player.pause();
- player.currentTime=0;
-}
-
 function updateDuration(){
  const total=scenes.reduce((sum,s)=>sum+(Number(s.duration)||10),0);
 
- document.getElementById("totalDuration").textContent=
+ $("totalDuration").textContent=
   "Total Video Duration: "+total+" seconds ("+
   (total/60).toFixed(2)+" minutes)";
 }
@@ -809,26 +917,9 @@ function saveTimeline(){
   return;
  }
 
- currentProject.timeline=scenes.map(s=>({
-  sceneNumber:s.number,
-  duration:s.duration,
-  dialogue:s.dialogue,
-  description:s.description,
-  subtitle:s.subtitle,
-  music:s.music,
-  image:s.image,
-  transition:s.transition
- }));
-
- currentProject.format=document.getElementById("videoFormat").value;
- currentProject.transition=document.getElementById("transition").value;
- currentProject.updatedAt=new Date().toISOString();
-
- projects[currentProjectIndex]=currentProject;
-
  try{
-  writeProjects();
-  alert("Timeline saved successfully!");
+  saveTimelineData();
+  alert("Advanced Timeline saved successfully!");
  }catch(e){
   alert("Storage limit reached. Please reduce uploaded media size.");
  }
