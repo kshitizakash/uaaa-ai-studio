@@ -1,89 +1,372 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Projects - UAAA AI Studio</title>
+<title>UAAA AI Studio - My Projects 2.8</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f5fa;color:#172033}
-header{background:#101b35;color:white;padding:18px;display:flex;justify-content:space-between;align-items:center}
-header a{color:white;text-decoration:none}
-.container{max-width:950px;margin:25px auto;padding:15px}
-.card{background:white;padding:20px;border-radius:12px;box-shadow:0 3px 15px #0001;margin-bottom:15px}
-button{border:0;border-radius:7px;padding:10px 15px;cursor:pointer;font-weight:bold;margin:5px 5px 0 0}
-.primary{background:#3659d9;color:white}
-.danger{background:#ffe8e8;color:#b42318}
-.muted{color:#65718a}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#111827;color:white;padding:18px}
+header h2{margin:0}
+.container{max-width:1100px;margin:auto;padding:18px}
+.card{background:white;border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px #00000010}
+h2,h3{margin-top:0}
+input,textarea,select{
+width:100%;padding:11px;margin:7px 0 14px;
+border:1px solid #cbd5e1;border-radius:7px;font-size:15px
+}
+textarea{min-height:100px;resize:vertical}
+button{
+border:0;border-radius:7px;padding:11px 16px;
+background:#2563eb;color:white;font-weight:bold;
+margin:4px;cursor:pointer
+}
+button.secondary{background:#475569}
+button.danger{background:#dc2626}
+button.success{background:#15803d}
+.project{border:1px solid #e2e8f0;border-radius:10px;padding:15px;margin:12px 0}
+.badge{display:inline-block;background:#dbeafe;color:#1d4ed8;padding:5px 9px;border-radius:20px;font-size:12px}
+.info{background:#f8fafc;padding:12px;border-radius:8px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hidden{display:none}
+.small{color:#64748b;font-size:13px}
+.item{border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin:10px 0}
+.status{padding:10px;background:#dcfce7;color:#166534;border-radius:7px;margin:10px 0}
+@media(max-width:650px){.row{grid-template-columns:1fr}.container{padding:10px}}
 </style>
 </head>
+
 <body>
+
 <header>
-<h2>UAAA AI Studio</h2>
-<a href="index.html">← Dashboard</a>
+<h2>🎬 UAAA AI Studio</h2>
+<p>My Projects – Version 2.8</p>
 </header>
+
 <div class="container">
+
+<div class="card">
+<button onclick="location.href='index.html'" class="secondary">← Dashboard</button>
+<button onclick="location.href='create.html'">+ Create New Video</button>
 <h2>📁 My Projects</h2>
-<p class="muted">Your saved video projects are listed here.</p>
+<p class="small">Open, view and edit your saved video projects.</p>
 <div id="projectList"></div>
 </div>
+
+<div id="detailsSection" class="hidden">
+
+<div class="card">
+<button onclick="backToProjects()" class="secondary">← Back to Projects</button>
+<h2>📋 Project Details & Editing</h2>
+<div id="saveMessage"></div>
+
+<label>Project Name</label>
+<input id="editProjectName">
+
+<label>Project Description</label>
+<textarea id="editProjectDescription"></textarea>
+
+<div class="row">
+<div>
+<label>Video Title</label>
+<input id="editTitle">
+</div>
+<div>
+<label>Category</label>
+<input id="editCategory">
+</div>
+<div>
+<label>Customer / Company</label>
+<input id="editCustomer">
+</div>
+<div>
+<label>Language</label>
+<input id="editLanguage">
+</div>
+<div>
+<label>Video Format</label>
+<input id="editFormat">
+</div>
+<div>
+<label>Duration</label>
+<input id="editDuration">
+</div>
+</div>
+
+<label>Customer Brief</label>
+<textarea id="editBrief"></textarea>
+
+<label>Complete Video Script</label>
+<textarea id="editScript" style="min-height:220px"></textarea>
+
+<button class="success" onclick="saveBasicDetails()">Save Project Details</button>
+</div>
+
+<div class="card">
+<h3>🎭 Characters & Voice Profiles</h3>
+<div id="characterDetails"></div>
+</div>
+
+<div class="card">
+<h3>💬 Dialogue Management</h3>
+<div id="dialogueDetails"></div>
+</div>
+
+<div class="card">
+<h3>🎨 Scene Visuals</h3>
+<div id="visualDetails"></div>
+</div>
+
+<div class="card">
+<h3>✅ Project Status</h3>
+<div id="projectStatus"></div>
+</div>
+
+</div>
+</div>
+
 <script>
-function loadProjects(){
-const projects=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
-const list=document.getElementById("projectList");if(projects.length===0){
-list.innerHTML='<div class="card">No saved projects yet. Go to Create New Video and save your first project.</div>';
-return;
+const PROJECT_KEY="uaaaProjects";
+
+let projects=[];
+let currentIndex=-1;
+
+function readProjects(){
+try{
+const data=JSON.parse(localStorage.getItem(PROJECT_KEY)||"[]");
+return Array.isArray(data)?data:[];
+}catch(e){
+return [];
+}
 }
 
-list.innerHTML="";
-projects.forEach((p,index)=>{
-const card=document.createElement("div");
-card.className="card";
-
-const title=document.createElement("h3");
-title.textContent=p.title||"Untitled Project";
-
-const details=document.createElement("p");
-details.textContent="Category: "+(p.category||"-")+" | Language: "+(p.language||"-")+" | Duration: "+(p.duration||"-");
-
-const status=document.createElement("p");
-status.className="muted";
-status.textContent="Status: "+(p.status||"Draft");
-
-const view=document.createElement("button");
-view.className="primary";
-view.textContent="View Details";
-view.onclick=()=>showDetails(p);
-
-const remove=document.createElement("button");
-remove.className="danger";
-remove.textContent="Delete";
-remove.onclick=()=>{
-if(confirm("Delete this project?")){
-const all=JSON.parse(localStorage.getItem("uaaaProjects")||"[]");
-all.splice(index,1);
-localStorage.setItem("uaaaProjects",JSON.stringify(all));
-loadProjects();
+function writeProjects(){
+localStorage.setItem(PROJECT_KEY,JSON.stringify(projects));
 }
-};
 
-card.append(title,details,status,view,remove);
-list.appendChild(card);
+function escapeHTML(value){
+return String(value??"").replace(/[&<>"']/g,function(c){
+return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
 });
 }
 
-function showDetails(p){
-alert(
-"Project: "+p.title+
-"\nCategory: "+p.category+
-"\nLanguage: "+p.language+
-"\nFormat: "+p.format+
-"\nDuration: "+p.duration+
-"\nVoice: "+p.voice+
-"\nTopic: "+p.topic
-);
+function showProjects(){
+projects=readProjects();
+
+const box=document.getElementById("projectList");
+
+if(!projects.length){
+box.innerHTML="<p>No saved projects yet. Go to Create New Video and save your first project.</p>";
+return;
 }
 
-loadProjects();
+box.innerHTML=projects.map((p,i)=>`
+<div class="project">
+<h3>${escapeHTML(p.projectName||p.title||"Untitled Project")}</h3>
+<p>${escapeHTML(p.projectDescription||p.brief||"No description available")}</p>
+<span class="badge">${escapeHTML(p.category||"Video Project")}</span>
+<span class="badge">${escapeHTML(p.status||"Draft")}</span>
+<p class="small">Created: ${escapeHTML(p.createdAt||"Not available")}</p>
+<button onclick="openProject(${i})">Open Project</button>
+<button class="danger" onclick="deleteProject(${i})">Delete</button>
+</div>
+`).join("");
+}
+
+function openProject(index){
+projects=readProjects();
+currentIndex=index;
+
+const p=projects[index];
+if(!p)return;
+
+document.getElementById("detailsSection").classList.remove("hidden");
+
+document.getElementById("editProjectName").value=p.projectName||p.title||"";
+document.getElementById("editProjectDescription").value=p.projectDescription||"";
+document.getElementById("editTitle").value=p.title||"";
+document.getElementById("editCategory").value=p.category||"";
+document.getElementById("editCustomer").value=p.customer||"";
+document.getElementById("editLanguage").value=p.language||"";
+document.getElementById("editFormat").value=p.format||"";
+document.getElementById("editDuration").value=p.duration||"";
+document.getElementById("editBrief").value=p.brief||"";
+document.getElementById("editScript").value=p.script||"";
+
+renderCharacters(p);
+renderDialogues(p);
+renderVisuals(p);
+renderStatus(p);
+
+window.scrollTo(0,0);
+}
+
+function saveBasicDetails(){
+if(currentIndex<0)return;
+
+const p=projects[currentIndex];
+
+p.projectName=document.getElementById("editProjectName").value.trim();
+p.projectDescription=document.getElementById("editProjectDescription").value;
+p.title=document.getElementById("editTitle").value;
+p.category=document.getElementById("editCategory").value;
+p.customer=document.getElementById("editCustomer").value;
+p.language=document.getElementById("editLanguage").value;
+p.format=document.getElementById("editFormat").value;
+p.duration=document.getElementById("editDuration").value;
+p.brief=document.getElementById("editBrief").value;
+p.script=document.getElementById("editScript").value;
+p.updatedAt=new Date().toLocaleString();
+
+try{
+writeProjects();
+document.getElementById("saveMessage").innerHTML=
+'<div class="status">Project details updated successfully!</div>';
+}catch(e){
+document.getElementById("saveMessage").innerHTML=
+'<div style="color:red">Unable to save changes. Browser storage may be full.</div>';
+}
+}
+
+function renderCharacters(p){
+const box=document.getElementById("characterDetails");
+const arr=Array.isArray(p.characters)?p.characters:[];
+
+if(!arr.length){
+box.innerHTML="<p>No characters saved in this project.</p>";
+return;
+}
+
+box.innerHTML=arr.map(c=>`
+<div class="item">
+<strong>${escapeHTML(c.name||c.characterName||"Character")}</strong>
+<p>Role: ${escapeHTML(c.role||"Not specified")}</p>
+<p>Voice Profile: ${escapeHTML(c.profileName||c.voiceProfileName||c.voiceName||"Not specified")}</p>
+</div>
+`).join("");
+}
+
+function renderDialogues(p){
+const box=document.getElementById("dialogueDetails");
+const arr=Array.isArray(p.dialogues)?p.dialogues:[];
+
+if(!arr.length){
+box.innerHTML="<p>No dialogues saved in this project.</p>";
+return;
+}
+
+box.innerHTML=arr.map((d,i)=>`
+<div class="item">
+<strong>Scene ${escapeHTML(d.sceneNumber||d.scene||i+1)}</strong>
+<p>Character: ${escapeHTML(d.characterName||d.character||"Not specified")}</p>
+<textarea id="dialogue_${i}">${escapeHTML(d.text||d.dialogue||"")}</textarea>
+<button onclick="saveDialogue(${i})">Save Dialogue</button>
+</div>
+`).join("");
+}
+
+function saveDialogue(index){
+const p=projects[currentIndex];
+const d=p.dialogues[index];
+
+const value=document.getElementById("dialogue_"+index).value;
+
+if("text" in d || !("dialogue" in d)){
+d.text=value;
+}else{
+d.dialogue=value;
+}
+
+try{
+writeProjects();
+alert("Dialogue updated successfully!");
+}catch(e){
+alert("Unable to save dialogue. Storage may be full.");
+}
+}
+
+function renderVisuals(p){
+const box=document.getElementById("visualDetails");
+const arr=Array.isArray(p.visuals)?p.visuals:[];
+
+if(!arr.length){
+box.innerHTML="<p>No scene visuals saved in this project.</p>";
+return;
+}
+
+box.innerHTML=arr.map((v,i)=>`
+<div class="item">
+<h4>Scene ${escapeHTML(v.sceneNumber||v.scene||i+1)}</h4>
+<label>Visual Description</label>
+<textarea id="visualDesc_${i}">${escapeHTML(v.description||v.visualDescription||"")}</textarea>
+<label>Subtitle</label>
+<textarea id="visualSubtitle_${i}">${escapeHTML(v.subtitle||v.subtitleText||"")}</textarea>
+<p>Visual Type: ${escapeHTML(v.type||v.visualType||"Not specified")}</p>
+<p>Background Music: ${escapeHTML(v.musicStyle||v.music||"Not specified")}</p>
+<button onclick="saveVisual(${i})">Save Scene Visual</button>
+</div>
+`).join("");
+}
+
+function saveVisual(index){
+const p=projects[currentIndex];
+const v=p.visuals[index];
+
+const description=document.getElementById("visualDesc_"+index).value;
+const subtitle=document.getElementById("visualSubtitle_"+index).value;
+
+if("description" in v || !("visualDescription" in v)){
+v.description=description;
+}else{
+v.visualDescription=description;
+}
+
+if("subtitle" in v || !("subtitleText" in v)){
+v.subtitle=subtitle;
+}else{
+v.subtitleText=subtitle;
+}
+
+try{
+writeProjects();
+alert("Scene visual updated successfully!");
+}catch(e){
+alert("Unable to save visual changes. Storage may be full.");
+}
+}
+
+function renderStatus(p){
+document.getElementById("projectStatus").innerHTML=`
+<p>Project Status: <strong>${escapeHTML(p.status||"Draft")}</strong></p>
+<p>Audio Approved: ${p.audioApproved?"Yes":"Not yet"}</p>
+<p>Visual Approved: ${p.visualApproved?"Yes":"Not yet"}</p>
+<p>Last Updated: ${escapeHTML(p.updatedAt||"Not available")}</p>
+`;
+}
+
+function backToProjects(){
+document.getElementById("detailsSection").classList.add("hidden");
+showProjects();
+window.scrollTo(0,0);
+}
+
+function deleteProject(index){
+if(!confirm("Are you sure you want to delete this project?"))return;
+
+projects=readProjects();
+projects.splice(index,1);
+
+try{
+writeProjects();
+showProjects();
+}catch(e){
+alert("Unable to delete project.");
+}
+}
+
+showProjects();
 </script>
 
 </body>
