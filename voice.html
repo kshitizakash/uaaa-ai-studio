@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UAAA AI Studio - Voice Studio</title>
+<title>UAAA AI Studio - Voice Studio V1.0.1</title>
 
 <style>
 *{box-sizing:border-box}
@@ -21,14 +21,20 @@ button{border:0;padding:11px 15px;border-radius:7px;margin:4px 3px 4px 0;cursor:
 .success{background:#16a36a;color:white}
 .danger{background:#d94b55;color:white}
 .secondary{background:#405574;color:white}
+.warning{background:#bd8125;color:white}
 .scene{background:#111e30;border:1px solid #405574;padding:15px;border-radius:10px;margin:12px 0}
 .scene strong{color:#62caff}
 .small{font-size:12px;color:#a9bdd4}
 .status{color:#6ee7a8;font-size:13px;margin-top:10px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .actions{display:flex;flex-wrap:wrap;gap:5px}
+.audio-status{padding:9px;background:#192e40;border-radius:7px;margin:10px 0;font-size:13px}
 a{color:#66caff;text-decoration:none}
-@media(max-width:650px){.row{grid-template-columns:1fr}.container{padding:10px}.card{padding:13px}}
+@media(max-width:650px){
+ .row{grid-template-columns:1fr}
+ .container{padding:10px}
+ .card{padding:13px}
+}
 </style>
 </head>
 
@@ -45,15 +51,15 @@ a{color:#66caff;text-decoration:none}
 <div class="container">
 
 <div class="card">
- <h3>🎙️ Voice Studio V1.0</h3>
- <p class="small">Create voice previews for your video scripts.</p>
+ <h3>🎙️ Voice Studio V1.0.1</h3>
+ <p class="small">Create, edit and manage voice for every scene.</p>
 
  <label>Select Saved Project</label>
  <select id="projectSelect">
   <option value="">-- Select Project --</option>
  </select>
- <button class="primary" onclick="loadSelectedProject()">Load Project</button>
 
+ <button class="primary" onclick="loadSelectedProject()">Load Project</button>
  <p id="projectInfo" class="small">No project loaded.</p>
 </div>
 
@@ -86,13 +92,16 @@ a{color:#66caff;text-decoration:none}
   <option value="">Loading voices...</option>
  </select>
 
- <p class="small">Male/Female identification depends on your device and browser. Some voices may not provide gender information.</p>
+ <p class="small">
+ Male/Female identification depends on available device voices.
+ </p>
 
  <div class="row">
   <div>
    <label>Voice Speed: <span id="rateValue">1.0</span></label>
    <input id="rate" type="range" min="0.6" max="1.5" step="0.1" value="1">
   </div>
+
   <div>
    <label>Voice Pitch: <span id="pitchValue">1.0</span></label>
    <input id="pitch" type="range" min="0.5" max="1.5" step="0.1" value="1">
@@ -102,14 +111,14 @@ a{color:#66caff;text-decoration:none}
  <div class="actions">
   <button class="primary" onclick="previewSample()">▶ Test Voice</button>
   <button class="secondary" onclick="saveVoiceProfile()">Save Voice Profile</button>
-  <button class="danger" onclick="stopVoice()">■ Stop Voice</button>
+  <button class="danger" onclick="stopVoice()">■ Stop</button>
  </div>
 
  <p id="voiceStatus" class="status">Voice Studio ready.</p>
 </div>
 
 <div class="card">
- <h3>📝 Script & Scene Voice Preview</h3>
+ <h3>📝 Scene Voice Management</h3>
 
  <div class="actions">
   <button class="success" onclick="playAll()">▶ Play All Scenes</button>
@@ -122,8 +131,11 @@ a{color:#66caff;text-decoration:none}
 </div>
 
 <div class="card">
- <h3>💾 Voice Project</h3>
- <p class="small">Your voice settings are saved locally in this browser.</p>
+ <h3>💾 Save Voice Project</h3>
+ <p class="small">
+ Voice settings, dialogues and audio selections are saved in this browser.
+ </p>
+
  <button class="primary" onclick="saveVoiceData()">Save Voice Settings to Project</button>
  <p id="saveStatus" class="status"></p>
 </div>
@@ -131,58 +143,69 @@ a{color:#66caff;text-decoration:none}
 </div>
 
 <script>
-const KEY = "uaaaProjects";
-const PROFILE_KEY = "uaaaVoiceProfiles";
 
-let projects = [];
-let currentProject = null;
-let scenes = [];
-let voices = [];
-let activeAudio = null;
-let playSequence = false;
-let sequenceIndex = 0;
+const KEY="uaaaProjects";
+const PROFILE_KEY="uaaaVoiceProfiles";
 
-const $ = id => document.getElementById(id);
+let projects=[];
+let currentProject=null;
+let scenes=[];
+let voices=[];
+let activeAudio=null;
+let activeAudioURL=null;
+let playSequence=false;
+let sequenceIndex=0;
+let dbPromise=null;
+let autosaveTimer=null;
+let playbackToken=0;
+
+const $=id=>document.getElementById(id);
 
 function getProjects(){
  try{
-  const data = JSON.parse(localStorage.getItem(KEY)||"[]");
+  const data=JSON.parse(localStorage.getItem(KEY)||"[]");
   return Array.isArray(data)?data:[];
- }catch(e){return []}
+ }catch(e){
+  return [];
+ }
+}
+
+function setStatus(message){
+ $("voiceStatus").textContent=message;
 }
 
 function getVoices(){
  if(!("speechSynthesis" in window)){
-  $("voiceStatus").textContent="Browser Speech Synthesis is not supported.";
+  setStatus("Browser Speech Synthesis is not supported.");
   return;
  }
 
- voices = speechSynthesis.getVoices();
+ voices=speechSynthesis.getVoices();
  updateVoiceOptions();
 }
 
 function updateVoiceOptions(){
- const select = $("voiceSelect");
- const lang = $("language").value;
- const gender = $("gender").value;
+ const select=$("voiceSelect");
+ const language=$("language").value;
+ const gender=$("gender").value;
+ const languageCode=language.split("-")[0];
 
- const languageCode = lang.split("-")[0];
-
- let filtered = voices.filter(v=>
+ let filtered=voices.filter(v=>
   v.lang.toLowerCase().startsWith(languageCode.toLowerCase())
  );
 
- if(gender !== "all"){
-  const words = gender==="male"
-   ? ["male","man","masculine"]
-   : ["female","woman","feminine"];
+ if(gender!=="all"){
+  const words=gender==="male"
+   ?["male","man","masculine"]
+   :["female","woman","feminine"];
 
-  const identified = filtered.filter(v=>
+  const identified=filtered.filter(v=>
    words.some(w=>v.name.toLowerCase().includes(w))
   );
 
-  if(identified.length) filtered=identified;
-  else {
+  if(identified.length){
+   filtered=identified;
+  }else{
    select.innerHTML='<option value="">No clearly identified voice. Choose All Available Voices.</option>';
    return;
   }
@@ -205,21 +228,48 @@ function updateVoiceOptions(){
 
 function getSelectedVoice(){
  const index=Number($("voiceSelect").value);
- return voices[index] || null;
+ return voices[index]||null;
+}
+
+function cancelPlayback(){
+ playbackToken++;
+
+ playSequence=false;
+ sequenceIndex=0;
+
+ if("speechSynthesis" in window){
+  speechSynthesis.cancel();
+ }
+
+ if(activeAudio){
+  activeAudio.pause();
+  activeAudio=null;
+ }
+
+ if(activeAudioURL){
+  URL.revokeObjectURL(activeAudioURL);
+  activeAudioURL=null;
+ }
+}
+
+function stopVoice(){
+ cancelPlayback();
+ setStatus("Playback stopped.");
 }
 
 function speak(text,onComplete){
- if(!text || !text.trim()){
-  if(onComplete) onComplete();
+ if(!text||!text.trim()){
+  setStatus("No dialogue available in this scene.");
+  if(onComplete)onComplete();
   return;
  }
 
  if(!("speechSynthesis" in window)){
-  alert("Speech Synthesis is not supported in this browser.");
+  alert("Speech Synthesis is not supported.");
   return;
  }
 
- speechSynthesis.cancel();
+ const token=playbackToken;
 
  const utterance=new SpeechSynthesisUtterance(text);
  utterance.lang=$("language").value;
@@ -227,45 +277,37 @@ function speak(text,onComplete){
  utterance.pitch=Number($("pitch").value);
 
  const voice=getSelectedVoice();
- if(voice) utterance.voice=voice;
+ if(voice)utterance.voice=voice;
 
  utterance.onstart=()=>{
-  $("voiceStatus").textContent="🔊 Voice is playing...";
+  if(token===playbackToken){
+   setStatus("🔊 Browser Voice is playing...");
+  }
  };
 
  utterance.onend=()=>{
-  $("voiceStatus").textContent="Voice playback completed.";
-  if(onComplete) onComplete();
+  if(token!==playbackToken)return;
+  setStatus("Voice playback completed.");
+  if(onComplete)onComplete();
  };
 
- utterance.onerror=(event)=>{
-  $("voiceStatus").textContent="Voice playback error: "+event.error;
-  if(onComplete) onComplete();
+ utterance.onerror=event=>{
+  if(token!==playbackToken)return;
+  setStatus("Voice playback error: "+event.error);
+  if(onComplete)onComplete();
  };
 
  speechSynthesis.speak(utterance);
 }
 
 function previewSample(){
+ cancelPlayback();
+
  const sample=$("language").value==="hi-IN"
- ? "नमस्कार दोस्तों! आपका स्वागत है UAAA AI Studio में। आज हम आपके लिए लेकर आए हैं एक शानदार वीडियो।"
- : "Hello friends! Welcome to UAAA AI Studio. Let's create an amazing video together.";
+ ?"नमस्कार दोस्तों! आपका स्वागत है UAAA AI Studio में। आज हम आपके लिए लेकर आए हैं एक शानदार वीडियो।"
+ :"Hello friends! Welcome to UAAA AI Studio. Let's create an amazing video together.";
 
  speak(sample);
-}
-
-function stopVoice(){
- playSequence=false;
- sequenceIndex=0;
-
- if("speechSynthesis" in window) speechSynthesis.cancel();
-
- if(activeAudio){
-  activeAudio.pause();
-  activeAudio=null;
- }
-
- $("voiceStatus").textContent="Playback stopped.";
 }
 
 function populateProjects(){
@@ -277,35 +319,46 @@ function populateProjects(){
  projects.forEach(project=>{
   const option=document.createElement("option");
   option.value=project.id;
-  option.textContent=project.name || project.title || "Untitled Project";
+  option.textContent=project.name||project.title||"Untitled Project";
   select.appendChild(option);
  });
 }
 
 function normalizeScenes(project){
- if(Array.isArray(project.scenes) && project.scenes.length){
+ if(Array.isArray(project.scenes)&&project.scenes.length){
   return project.scenes.map(s=>({
    ...s,
-   dialogue:s.dialogue || "",
-   visual:s.visual || "",
-   subtitle:s.subtitle || "",
+   id:s.id||makeId(),
+   dialogue:s.dialogue||"",
+   visual:s.visual||"",
+   subtitle:s.subtitle||"",
    duration:Number(s.duration)||5
   }));
  }
 
- const dialogues=project.dialogues || [];
- const visuals=project.visuals || [];
- const timeline=project.timeline || [];
+ const dialogues=project.dialogues||[];
+ const visuals=project.visuals||[];
+ const timeline=project.timeline||[];
 
- const count=Math.max(dialogues.length,visuals.length,timeline.length,1);
+ const count=Math.max(
+  dialogues.length,
+  visuals.length,
+  timeline.length,
+  1
+ );
 
  return Array.from({length:count},(_,i)=>({
-  id:"scene_"+i,
-  dialogue:dialogues[i]?.text || "",
-  visual:visuals[i]?.description || "",
-  subtitle:visuals[i]?.subtitle || "",
-  duration:Number(timeline[i]?.duration)||5
+  id:makeId(),
+  dialogue:dialogues[i]?.text||"",
+  visual:visuals[i]?.description||"",
+  subtitle:visuals[i]?.subtitle||"",
+  duration:Number(timeline[i]?.duration)||5,
+  audioKey:dialogues[i]?.audioKey||""
  }));
+}
+
+function makeId(){
+ return "scene_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
 }
 
 function loadSelectedProject(){
@@ -325,10 +378,34 @@ function loadSelectedProject(){
   return;
  }
 
+ cancelPlayback();
+
  scenes=normalizeScenes(currentProject);
 
- $("projectInfo").textContent="Loaded: "+(currentProject.name || currentProject.title);
+ if(currentProject.voiceSettings){
+  const settings=currentProject.voiceSettings;
+
+  $("language").value=settings.language||"hi-IN";
+  $("gender").value=settings.gender||"all";
+  $("rate").value=settings.rate||1;
+  $("pitch").value=settings.pitch||1;
+
+  $("rateValue").textContent=$("rate").value;
+  $("pitchValue").textContent=$("pitch").value;
+
+  updateVoiceOptions();
+
+  const matching=voices.findIndex(v=>v.name===settings.voiceName);
+
+  if(matching>=0){
+   $("voiceSelect").value=matching;
+  }
+ }
+
+ $("projectInfo").textContent="Loaded: "+(currentProject.name||currentProject.title);
+
  renderScenes();
+
  $("saveStatus").textContent="Project loaded successfully.";
 }
 
@@ -344,39 +421,57 @@ function renderScenes(){
   title.textContent="SCENE "+(index+1);
   div.appendChild(title);
 
-  const dialogueLabel=document.createElement("p");
-  dialogueLabel.className="small";
-  dialogueLabel.textContent="Dialogue";
+  const dialogueLabel=document.createElement("label");
+  dialogueLabel.textContent="Scene Dialogue / Text";
   div.appendChild(dialogueLabel);
 
   const dialogue=document.createElement("textarea");
-  dialogue.value=scene.dialogue || "";
-  dialogue.placeholder="Scene dialogue...";
+  dialogue.value=scene.dialogue||"";
+  dialogue.placeholder="Enter scene dialogue...";
   dialogue.addEventListener("input",()=>{
    scenes[index].dialogue=dialogue.value;
+   scheduleAutosave();
   });
   div.appendChild(dialogue);
 
   const visual=document.createElement("p");
   visual.className="small";
-  visual.textContent="Visual: "+(scene.visual || "No visual description");
+  visual.textContent="Visual: "+(scene.visual||"No visual description");
   div.appendChild(visual);
+
+  const audioStatus=document.createElement("div");
+  audioStatus.className="audio-status";
+  audioStatus.id="audioStatus_"+index;
+  audioStatus.textContent=scene.audioKey
+   ?"✅ Personal Audio Uploaded"
+   :"🔊 Browser Text-to-Speech Selected";
+
+  div.appendChild(audioStatus);
 
   const buttons=document.createElement("div");
   buttons.className="actions";
 
-  const play=document.createElement("button");
-  play.className="primary";
-  play.textContent="▶ Play Scene";
-  play.onclick=()=>{
+  const playAudio=document.createElement("button");
+  playAudio.className="primary";
+  playAudio.textContent="▶ Play Audio";
+  playAudio.onclick=()=>{
    stopVoice();
-   const audioKey=scene.audioKey;
-   playSceneAudio(index,audioKey);
+   playSceneAudio(index);
+  };
+
+  const playText=document.createElement("button");
+  playText.className="success";
+  playText.textContent="🗣 Play Text";
+  playText.onclick=()=>{
+   stopVoice();
+   playSceneText(index);
   };
 
   const upload=document.createElement("button");
   upload.className="secondary";
-  upload.textContent="Upload Scene Audio";
+  upload.textContent=scene.audioKey
+   ?"🔄 Replace Audio"
+   :"📁 Upload Audio";
 
   const file=document.createElement("input");
   file.type="file";
@@ -387,7 +482,7 @@ function renderScenes(){
 
   file.onchange=async()=>{
    const selected=file.files[0];
-   if(!selected) return;
+   if(!selected)return;
 
    if(selected.size>15*1024*1024){
     alert("Audio file must be under 15 MB.");
@@ -395,27 +490,60 @@ function renderScenes(){
     return;
    }
 
-   const key=await storeAudio(selected,currentProject.id,scene.id || index);
-   scenes[index].audioKey=key;
+   try{
+    const key=await storeAudio(
+     selected,
+     currentProject.id,
+     scenes[index].id
+    );
 
-   saveVoiceData();
-   alert("Audio uploaded and saved for this scene.");
-   renderScenes();
+    scenes[index].audioKey=key;
+
+    await saveVoiceData();
+
+    renderScenes();
+
+    setStatus("New audio uploaded successfully.");
+   }catch(error){
+    alert("Audio upload failed. Please try again.");
+   }
+
+   file.value="";
   };
 
-  const audioLabel=document.createElement("p");
-  audioLabel.className="small";
-  audioLabel.textContent=scene.audioKey
-   ?"✅ Uploaded audio available"
-   :"No uploaded audio";
+  const remove=document.createElement("button");
+  remove.className="danger";
+  remove.textContent="❌ Remove Audio";
+  remove.disabled=!scene.audioKey;
+  remove.style.opacity=scene.audioKey?"1":"0.45";
 
-  buttons.appendChild(play);
+  remove.onclick=async()=>{
+   if(!scene.audioKey)return;
+
+   if(!confirm("क्या आप इस Scene की Uploaded Audio हटाना चाहते हैं?"))return;
+
+   try{
+    await removeStoredAudio(scene.audioKey);
+
+    scenes[index].audioKey="";
+
+    await saveVoiceData();
+
+    renderScenes();
+
+    setStatus("Uploaded Audio removed. Browser Text-to-Speech is now selected.");
+   }catch(error){
+    alert("Audio remove नहीं हो पाया। दोबारा कोशिश करें।");
+   }
+  };
+
+  buttons.appendChild(playAudio);
+  buttons.appendChild(playText);
   buttons.appendChild(upload);
+  buttons.appendChild(remove);
   buttons.appendChild(file);
 
   div.appendChild(buttons);
-  div.appendChild(audioLabel);
-
   box.appendChild(div);
  });
 }
@@ -424,14 +552,15 @@ function playSceneAudio(index){
  const scene=scenes[index];
 
  if(scene.audioKey){
-  playStoredAudio(scene.audioKey,()=>{
-   if(playSequence) playNextScene();
-  });
+  playStoredAudio(scene.audioKey);
  }else{
-  speak(scene.dialogue,()=>{
-   if(playSequence) playNextScene();
-  });
+  playSceneText(index);
  }
+}
+
+function playSceneText(index,onComplete){
+ const scene=scenes[index];
+ speak(scene.dialogue,onComplete);
 }
 
 function playAll(){
@@ -440,112 +569,44 @@ function playAll(){
   return;
  }
 
- stopVoice();
+ cancelPlayback();
+
  playSequence=true;
  sequenceIndex=0;
+
  playNextScene();
 }
 
 function playNextScene(){
- if(!playSequence) return;
+ if(!playSequence)return;
 
  if(sequenceIndex>=scenes.length){
   playSequence=false;
-  $("voiceStatus").textContent="✅ All scenes completed.";
+  setStatus("✅ All scenes completed.");
   return;
  }
 
- const current=sequenceIndex;
+ const index=sequenceIndex;
  sequenceIndex++;
 
- $("voiceStatus").textContent="Playing Scene "+(current+1);
- playSceneAudio(current);
+ setStatus("Playing Scene "+(index+1));
+
+ playSceneAudio(index,()=>{
+  if(playSequence)playNextScene();
+ });
 }
 
-function saveVoiceProfile(){
- const profile={
-  name:"UAAA Voice Profile",
-  language:$("language").value,
-  gender:$("gender").value,
-  voiceName:getSelectedVoice()?.name || "",
-  rate:Number($("rate").value),
-  pitch:Number($("pitch").value),
-  updatedAt:new Date().toISOString()
- };
-
- try{
-  const profiles=JSON.parse(localStorage.getItem(PROFILE_KEY)||"[]");
-  const list=Array.isArray(profiles)?profiles:[];
-  const index=list.findIndex(p=>p.name===profile.name);
-
-  if(index>=0) list[index]=profile;
-  else list.push(profile);
-
-  localStorage.setItem(PROFILE_KEY,JSON.stringify(list));
-  $("voiceStatus").textContent="✅ Voice Profile Saved.";
- }catch(e){
-  alert("Could not save voice profile.");
- }
-}
-
-function saveVoiceData(){
- if(!currentProject){
-  alert("Please load a project first.");
-  return;
- }
-
- projects=getProjects();
-
- const index=projects.findIndex(p=>
-  String(p.id)===String(currentProject.id)
- );
-
- if(index<0){
-  alert("Project not found in storage.");
-  return;
- }
-
- const updated={
-  ...projects[index],
-  scenes:JSON.parse(JSON.stringify(scenes)),
-  dialogues:scenes.map((s,i)=>({
-   sceneIndex:i,
-   text:s.dialogue,
-   audioKey:s.audioKey || ""
-  })),
-  voiceSettings:{
-   language:$("language").value,
-   gender:$("gender").value,
-   voiceName:getSelectedVoice()?.name || "",
-   rate:Number($("rate").value),
-   pitch:Number($("pitch").value)
-  },
-  updatedAt:new Date().toISOString()
- };
-
- projects[index]=updated;
-
- try{
-  localStorage.setItem(KEY,JSON.stringify(projects));
-  currentProject=updated;
-  $("saveStatus").textContent="✅ Voice settings and script saved.";
- }catch(e){
-  $("saveStatus").textContent="❌ Save failed. Browser storage may be full.";
- }
-}
-
-/* IndexedDB: uploaded audio storage */
-
-let dbPromise;
+/* IndexedDB Audio Storage */
 
 function openAudioDB(){
- if(dbPromise) return dbPromise;
+ if(dbPromise)return dbPromise;
 
  dbPromise=new Promise((resolve,reject)=>{
   const request=indexedDB.open("UAAA_Voice_Audio_DB",1);
 
   request.onupgradeneeded=()=>{
    const db=request.result;
+
    if(!db.objectStoreNames.contains("audio")){
     db.createObjectStore("audio");
    }
@@ -564,11 +625,26 @@ async function storeAudio(file,projectId,sceneId){
 
  return new Promise((resolve,reject)=>{
   const tx=db.transaction("audio","readwrite");
+
   tx.objectStore("audio").put(file,key);
 
   tx.oncomplete=()=>resolve(key);
   tx.onerror=()=>reject(tx.error);
  });
+}
+
+async function removeStoredAudio(key){
+ const db=await openAudioDB();
+
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction("audio","readwrite");
+
+  tx.objectStore("audio").delete(key);
+
+  tx.oncomplete=()=>resolve(true);
+  tx.onerror=()=>reject(tx.error);
+ });
+
 }
 
 async function playStoredAudio(key,onComplete){
@@ -578,53 +654,185 @@ async function playStoredAudio(key,onComplete){
   const blob=await new Promise((resolve,reject)=>{
    const tx=db.transaction("audio","readonly");
    const request=tx.objectStore("audio").get(key);
+
    request.onsuccess=()=>resolve(request.result);
    request.onerror=()=>reject(request.error);
   });
 
   if(!blob){
    alert("Uploaded audio not found.");
-   if(onComplete) onComplete();
+   if(onComplete)onComplete();
    return;
   }
 
   const url=URL.createObjectURL(blob);
   const audio=new Audio(url);
+
   activeAudio=audio;
+  activeAudioURL=url;
 
   audio.onended=()=>{
+   if(activeAudio===audio){
+    activeAudio=null;
+    activeAudioURL=null;
+   }
+
    URL.revokeObjectURL(url);
-   activeAudio=null;
-   if(onComplete) onComplete();
+
+   if(onComplete)onComplete();
   };
 
   audio.onerror=()=>{
+   if(activeAudio===audio){
+    activeAudio=null;
+    activeAudioURL=null;
+   }
+
    URL.revokeObjectURL(url);
-   activeAudio=null;
-   if(onComplete) onComplete();
+
+   if(onComplete)onComplete();
   };
 
   await audio.play();
 
+  setStatus("🔊 Uploaded Audio is playing...");
+
  }catch(error){
   alert("Unable to play uploaded audio.");
-  if(onComplete) onComplete();
+  if(onComplete)onComplete();
  }
 }
 
-$("language").addEventListener("change",updateVoiceOptions);
-$("gender").addEventListener("change",updateVoiceOptions);
+function saveVoiceProfile(){
+ const profile={
+  name:"UAAA Voice Profile",
+  language:$("language").value,
+  gender:$("gender").value,
+  voiceName:getSelectedVoice()?.name||"",
+  rate:Number($("rate").value),
+  pitch:Number($("pitch").value),
+  updatedAt:new Date().toISOString()
+ };
+
+ try{
+  const profiles=JSON.parse(localStorage.getItem(PROFILE_KEY)||"[]");
+  const list=Array.isArray(profiles)?profiles:[];
+  const index=list.findIndex(p=>p.name===profile.name);
+
+  if(index>=0)list[index]=profile;
+  else list.push(profile);
+
+  localStorage.setItem(PROFILE_KEY,JSON.stringify(list));
+
+  setStatus("✅ Voice Profile Saved.");
+
+ }catch(error){
+  alert("Could not save voice profile.");
+ }
+}
+
+async function saveVoiceData(){
+ if(!currentProject){
+  alert("Please load a project first.");
+  return false;
+ }
+
+ projects=getProjects();
+
+ const index=projects.findIndex(p=>
+  String(p.id)===String(currentProject.id)
+ );
+
+ if(index<0){
+  alert("Project not found in storage.");
+  return false;
+ }
+
+ const updated={
+  ...projects[index],
+
+  scenes:JSON.parse(JSON.stringify(scenes)),
+
+  dialogues:scenes.map((s,i)=>({
+   sceneIndex:i,
+   text:s.dialogue,
+   audioKey:s.audioKey||""
+  })),
+
+  visuals:scenes.map((s,i)=>({
+   sceneIndex:i,
+   description:s.visual||"",
+   subtitle:s.subtitle||""
+  })),
+
+  timeline:scenes.map((s,i)=>({
+   sceneIndex:i,
+   duration:Number(s.duration)||5
+  })),
+
+  voiceSettings:{
+   language:$("language").value,
+   gender:$("gender").value,
+   voiceName:getSelectedVoice()?.name||"",
+   rate:Number($("rate").value),
+   pitch:Number($("pitch").value)
+  },
+
+  updatedAt:new Date().toISOString()
+ };
+
+ projects[index]=updated;
+
+ try{
+  localStorage.setItem(KEY,JSON.stringify(projects));
+  currentProject=updated;
+
+  $("saveStatus").textContent="✅ Voice settings and audio selections saved.";
+  return true;
+
+ }catch(error){
+  $("saveStatus").textContent="❌ Save failed. Browser storage may be full.";
+  return false;
+ }
+}
+
+function scheduleAutosave(){
+ clearTimeout(autosaveTimer);
+
+ $("saveStatus").textContent="Changes detected. Auto-save pending...";
+
+ autosaveTimer=setTimeout(()=>{
+  if(currentProject){
+   saveVoiceData();
+  }
+ },1200);
+}
+
+/* Settings */
+
+$("language").addEventListener("change",()=>{
+ updateVoiceOptions();
+ scheduleAutosave();
+});
+
+$("gender").addEventListener("change",()=>{
+ updateVoiceOptions();
+ scheduleAutosave();
+});
+
+$("voiceSelect").addEventListener("change",()=>{
+ setStatus("Voice selected.");
+ scheduleAutosave();
+});
 
 $("rate").addEventListener("input",()=>{
  $("rateValue").textContent=$("rate").value;
+ scheduleAutosave();
 });
 
 $("pitch").addEventListener("input",()=>{
  $("pitchValue").textContent=$("pitch").value;
-});
-
-$("voiceSelect").addEventListener("change",()=>{
- $("voiceStatus").textContent="Voice selected.";
+ scheduleAutosave();
 });
 
 if("speechSynthesis" in window){
