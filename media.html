@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAAA AI Studio - Media Studio V1.0</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#fff;font-family:Arial,sans-serif}
+header{background:#17243a;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid #33445e}
+header h2{margin:0;color:#55c5ff}
+.container{max-width:1150px;margin:auto;padding:16px}
+.card{background:#19263b;border:1px solid #30435e;border-radius:12px;padding:18px;margin-bottom:16px}
+h3{color:#61c8ff;margin-top:0}
+label{display:block;margin:12px 0 6px;color:#cbd8e8;font-size:14px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #405574;border-radius:7px;background:#0e1929;color:white;font-size:15px}
+textarea{min-height:75px;resize:vertical}
+button{border:0;padding:11px 15px;border-radius:7px;margin:4px 3px 4px 0;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:#1689e8;color:white}
+.success{background:#16a36a;color:white}
+.danger{background:#d94b55;color:white}
+.secondary{background:#405574;color:white}
+.warning{background:#bd8125;color:white}
+.small{font-size:12px;color:#a9bdd4}
+.status{color:#6ee7a8;font-size:13px;margin-top:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scene{background:#111e30;border:1px solid #405574;padding:15px;border-radius:10px;margin:12px 0}
+.scene strong{color:#62caff}
+.actions{display:flex;flex-wrap:wrap;gap:5px}
+.preview{background:#0b1421;border:1px dashed #526783;border-radius:9px;min-height:150px;display:flex;align-items:center;justify-content:center;margin:12px 0;padding:10px;overflow:hidden}
+.preview img{max-width:100%;max-height:320px;object-fit:contain}
+.preview video{max-width:100%;max-height:320px}
+.badge{display:inline-block;background:#254665;color:#8bd6ff;padding:5px 9px;border-radius:20px;font-size:12px;margin:4px}
+.library-item{display:flex;align-items:center;gap:12px;background:#111e30;padding:10px;border-radius:8px;margin:8px 0;flex-wrap:wrap}
+.library-thumb{width:70px;height:55px;object-fit:cover;border-radius:5px;background:#26374b}
+.empty{color:#9fb1c7;text-align:center;padding:25px}
+.progress{height:6px;background:#34465c;border-radius:10px;overflow:hidden;margin-top:8px}
+.progress div{height:100%;background:#16a36a;width:0}
+@media(max-width:650px){
+.row{grid-template-columns:1fr}
+.container{padding:10px}
+.card{padding:13px}
+.library-item{align-items:flex-start}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>🎬 UAAA AI Studio</h2>
+<div>
+<button class="secondary" onclick="location.href='index.html'">Dashboard</button>
+<button class="secondary" onclick="location.href='script.html'">Script Studio</button>
+<button class="secondary" onclick="location.href='voice.html'">Voice Studio</button>
+<button class="secondary" onclick="location.href='editor.html'">Video Editor</button>
+</div>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>🎬 Media & Scene Management V1.0</h3>
+<p class="small">Upload, preview, replace and manage images and videos for every scene.</p>
+
+<label>Select Project</label>
+<select id="projectSelect">
+<option value="">-- Select Project --</option>
+</select>
+
+<button class="primary" onclick="loadProject()">Load Project</button>
+<p id="projectInfo" class="small">No project loaded.</p>
+</div>
+
+<div class="card">
+<h3>📊 Project Media Summary</h3>
+<div class="row">
+<div>
+<span class="badge">Total Scenes</span>
+<h2 id="totalScenes">0</h2>
+</div>
+<div>
+<span class="badge">Media Attached</span>
+<h2 id="mediaCount">0</h2>
+</div>
+</div>
+<div class="progress"><div id="mediaProgress"></div></div>
+<p id="summaryText" class="small">Load a project to view its media summary.</p>
+</div>
+
+<div class="card">
+<h3>🎞️ Scene Media Manager</h3>
+<div id="sceneList">
+<div class="empty">Please load a project first.</div>
+</div>
+</div>
+
+<div class="card">
+<h3>🗂️ Project Media Library</h3>
+<p class="small">All media currently attached to this project's scenes.</p>
+<div id="mediaLibrary">
+<div class="empty">No media available.</div>
+</div>
+</div>
+
+<div class="card">
+<h3>💾 Save Project</h3>
+<button class="primary" onclick="saveProject()">Save All Media & Scene Changes</button>
+<p id="saveStatus" class="status"></p>
+</div>
+
+</div>
+
+<script>
+const PROJECT_KEY="uaaaProjects";
+const DB_NAME="UAAA_Media_DB";
+const STORE_NAME="media";
+
+let projects=[];
+let currentProject=null;
+let scenes=[];
+let dbPromise=null;
+let saveTimer=null;
+let previewURLs=[];
+
+const $=id=>document.getElementById(id);
+
+function getProjects(){
+ try{
+  const data=JSON.parse(localStorage.getItem(PROJECT_KEY)||"[]");
+  return Array.isArray(data)?data:[];
+ }catch(e){return [];}
+}
+
+function makeId(){
+ return "scene_"+Date.now()+"_"+Math.random().toString(36).slice(2,8);
+}
+
+function openDB(){
+ if(dbPromise)return dbPromise;
+
+ dbPromise=new Promise((resolve,reject)=>{
+  const request=indexedDB.open(DB_NAME,1);
+
+  request.onupgradeneeded=()=>{
+   const db=request.result;
+   if(!db.objectStoreNames.contains(STORE_NAME)){
+    db.createObjectStore(STORE_NAME);
+   }
+  };
+
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
+
+ return dbPromise;
+}
+
+function dbRequest(mode,operation){
+ return openDB().then(db=>new Promise((resolve,reject)=>{
+  const tx=db.transaction(STORE_NAME,mode);
+  const store=tx.objectStore(STORE_NAME);
+  let request;
+
+  try{
+   request=operation(store);
+  }catch(error){
+   reject(error);
+   return;
+  }
+
+  if(request){
+   request.onsuccess=()=>resolve(request.result);
+   request.onerror=()=>reject(request.error);
+  }else{
+   tx.oncomplete=()=>resolve(true);
+   tx.onerror=()=>reject(tx.error);
+  }
+ }));
+}
+
+function putMedia(key,file){
+ return dbRequest("readwrite",store=>store.put(file,key));
+}
+
+function getMedia(key){
+ return dbRequest("readonly",store=>store.get(key));
+}
+
+function deleteMedia(key){
+ return dbRequest("readwrite",store=>store.delete(key));
+}
+
+function mediaKey(scene){
+ return String(currentProject.id)+"_"+String(scene.id);
+}
+
+function populateProjects(){
+ projects=getProjects();
+ const select=$("projectSelect");
+
+ select.innerHTML='<option value="">-- Select Project --</option>';
+
+ projects.forEach(p=>{
+  const option=document.createElement("option");
+  option.value=p.id;
+  option.textContent=p.name||p.title||"Untitled Project";
+  select.appendChild(option);
+ });
+}
+
+function normalizeScenes(project){
+ if(Array.isArray(project.scenes)&&project.scenes.length){
+  return project.scenes.map(s=>({
+   ...s,
+   id:s.id||makeId(),
+   dialogue:s.dialogue||"",
+   visual:s.visual||"",
+   subtitle:s.subtitle||"",
+   duration:Number(s.duration)||5,
+   mediaKey:s.mediaKey||"",
+   mediaType:s.mediaType||"",
+   mediaName:s.mediaName||""
+  }));
+ }
+
+ const dialogues=project.dialogues||[];
+ const visuals=project.visuals||[];
+ const timeline=project.timeline||[];
+
+ const count=Math.max(dialogues.length,visuals.length,timeline.length,1);
+
+ return Array.from({length:count},(_,i)=>({
+  id:makeId(),
+  dialogue:dialogues[i]?.text||"",
+  visual:visuals[i]?.description||"",
+  subtitle:visuals[i]?.subtitle||"",
+  duration:Number(timeline[i]?.duration)||5,
+  mediaKey:"",
+  mediaType:"",
+  mediaName:""
+ }));
+}
+
+async function loadProject(){
+ const id=$("projectSelect").value;
+
+ if(!id){
+  alert("Please select a project.");
+  return;
+ }
+
+ projects=getProjects();
+ currentProject=projects.find(p=>String(p.id)===String(id));
+
+ if(!currentProject){
+  alert("Project not found.");
+  return;
+ }
+
+ scenes=normalizeScenes(currentProject);
+
+ $("projectInfo").textContent="Loaded: "+(currentProject.name||currentProject.title||"Untitled Project");
+
+ renderScenes();
+ await renderLibrary();
+ updateSummary();
+
+ $("saveStatus").textContent="Project loaded successfully.";
+}
+
+function clearPreviewURLs(){
+ previewURLs.forEach(url=>URL.revokeObjectURL(url));
+ previewURLs=[];
+}
+
+async function renderScenes(){
+ const box=$("sceneList");
+ box.innerHTML="";
+
+ clearPreviewURLs();
+
+ for(let i=0;i<scenes.length;i++){
+  const scene=scenes[i];
+  const div=document.createElement("div");
+  div.className="scene";
+
+  const title=document.createElement("strong");
+  title.textContent="SCENE "+(i+1);
+  div.appendChild(title);
+
+  const durationLabel=document.createElement("label");
+  durationLabel.textContent="Scene Duration (seconds)";
+  div.appendChild(durationLabel);
+
+  const duration=document.createElement("input");
+  duration.type="number";
+  duration.min="1";
+  duration.max="300";
+  duration.value=scene.duration||5;
+
+  duration.onchange=()=>{
+   scenes[i].duration=Math.max(1,Number(duration.value)||5);
+   scheduleSave();
+   updateSummary();
+  };
+
+  div.appendChild(duration);
+
+  const dialogueLabel=document.createElement("label");
+  dialogueLabel.textContent="Scene Dialogue";
+  div.appendChild(dialogueLabel);
+
+  const dialogue=document.createElement("textarea");
+  dialogue.value=scene.dialogue||"";
+  dialogue.placeholder="Scene dialogue...";
+
+  dialogue.oninput=()=>{
+   scenes[i].dialogue=dialogue.value;
+   scheduleSave();
+  };
+
+  div.appendChild(dialogue);
+
+  const visualLabel=document.createElement("label");
+  visualLabel.textContent="Visual Description";
+  div.appendChild(visualLabel);
+
+  const visual=document.createElement("textarea");
+  visual.value=scene.visual||"";
+  visual.placeholder="Describe what should appear in this scene...";
+
+  visual.oninput=()=>{
+   scenes[i].visual=visual.value;
+   scheduleSave();
+  };
+
+  div.appendChild(visual);
+
+  const subtitleLabel=document.createElement("label");
+  subtitleLabel.textContent="Scene Subtitle";
+  div.appendChild(subtitleLabel);
+
+  const subtitle=document.createElement("input");
+  subtitle.value=scene.subtitle||"";
+  subtitle.placeholder="Subtitle text...";
+
+  subtitle.oninput=()=>{
+   scenes[i].subtitle=subtitle.value;
+   scheduleSave();
+  };
+
+  div.appendChild(subtitle);
+
+  const preview=document.createElement("div");
+  preview.className="preview";
+  preview.id="preview_"+i;
+
+  div.appendChild(preview);
+
+  const mediaInfo=document.createElement("p");
+  mediaInfo.className="small";
+  mediaInfo.textContent=scene.mediaKey
+   ?"Attached: "+(scene.mediaName||scene.mediaType||"Media")
+   :"No media uploaded for this scene.";
+
+  div.appendChild(mediaInfo);
+
+  const buttons=document.createElement("div");
+  buttons.className="actions";
+
+  const upload=document.createElement("button");
+  upload.className="primary";
+  upload.textContent=scene.mediaKey?"🔄 Replace Media":"📁 Upload Media";
+
+  const file=document.createElement("input");
+  file.type="file";
+  file.accept="image/*,video/mp4,video/webm,video/quicktime";
+  file.style.display="none";
+
+  upload.onclick=()=>file.click();
+
+  file.onchange=async()=>{
+   const selected=file.files[0];
+   if(!selected)return;
+
+   if(!selected.type.startsWith("image/")&&!selected.type.startsWith("video/")){
+    alert("Please select an image or video file.");
+    file.value="";
+    return;
+   }
+
+   if(selected.size>100*1024*1024){
+    alert("File size must be under 100 MB.");
+    file.value="";
+    return;
+   }
+
+   try{
+    const key=mediaKey(scene);
+    await putMedia(key,selected);
+
+    scenes[i].mediaKey=key;
+    scenes[i].mediaType=selected.type.startsWith("video/")?"video":"image";
+    scenes[i].mediaName=selected.name;
+
+    await saveProject();
+    await loadProject();
+
+    $("saveStatus").textContent="Media uploaded successfully.";
+   }catch(error){
+    console.error(error);
+    alert("Upload failed. Please try again.");
+   }
+
+   file.value="";
+  };
+
+  const remove=document.createElement("button");
+  remove.className="danger";
+  remove.textContent="❌ Remove Media";
+  remove.disabled=!scene.mediaKey;
+
+  remove.onclick=async()=>{
+   if(!confirm("Remove media from this scene?"))return;
+
+   try{
+    if(scene.mediaKey)await deleteMedia(scene.mediaKey);
+
+    scenes[i].mediaKey="";
+    scenes[i].mediaType="";
+    scenes[i].mediaName="";
+
+    await saveProject();
+    await loadProject();
+   }catch(error){
+    console.error(error);
+    alert("Could not remove media.");
+   }
+  };
+
+  const previewButton=document.createElement("button");
+  previewButton.className="success";
+  previewButton.textContent="▶ Preview Media";
+  previewButton.disabled=!scene.mediaKey;
+
+  previewButton.onclick=()=>showPreview(i);
+
+  const clearButton=document.createElement("button");
+  clearButton.className="secondary";
+  clearButton.textContent="Clear Preview";
+  clearButton.onclick=()=>{
+   preview.innerHTML="No preview selected.";
+  };
+
+  buttons.appendChild(upload);
+  buttons.appendChild(remove);
+  buttons.appendChild(previewButton);
+  buttons.appendChild(clearButton);
+  buttons.appendChild(file);
+
+  div.appendChild(buttons);
+
+  box.appendChild(div);
+
+  if(scene.mediaKey){
+   await showPreview(i);
+  }else{
+   preview.textContent="No media uploaded.";
+  }
+ }
+}
+
+async function showPreview(index){
+ const scene=scenes[index];
+ if(!scene||!scene.mediaKey)return;
+
+ try{
+  const blob=await getMedia(scene.mediaKey);
+
+  if(!blob){
+   alert("Media file not found in browser storage.");
+   return;
+  }
+
+  const url=URL.createObjectURL(blob);
+  previewURLs.push(url);
+
+  const preview=$("preview_"+index);
+  if(!preview)return;
+
+  preview.innerHTML="";
+
+  if(scene.mediaType==="video"||blob.type.startsWith("video/")){
+   const video=document.createElement("video");
+   video.src=url;
+   video.controls=true;
+   video.playsInline=true;
+   preview.appendChild(video);
+  }else{
+   const img=document.createElement("img");
+   img.src=url;
+   img.alt=scene.mediaName||"Scene image";
+   preview.appendChild(img);
+  }
+ }catch(error){
+  console.error(error);
+  alert("Unable to preview this media.");
+ }
+}
+
+async function renderLibrary(){
+ const box=$("mediaLibrary");
+ box.innerHTML="";
+
+ const attached=scenes.filter(s=>s.mediaKey);
+
+ if(!attached.length){
+  box.innerHTML='<div class="empty">No media uploaded yet.</div>';
+  return;
+ }
+
+ for(let i=0;i<scenes.length;i++){
+  const scene=scenes[i];
+  if(!scene.mediaKey)continue;
+
+  const item=document.createElement("div");
+  item.className="library-item";
+
+  const thumb=document.createElement("div");
+  thumb.className="library-thumb";
+  thumb.textContent=scene.mediaType==="video"?"🎥":"🖼️";
+  thumb.style.display="flex";
+  thumb.style.alignItems="center";
+  thumb.style.justifyContent="center";
+  thumb.style.fontSize="24px";
+
+  const info=document.createElement("div");
+  info.style.flex="1";
+
+  const name=document.createElement("strong");
+  name.textContent=scene.mediaName||"Uploaded Media";
+
+  const detail=document.createElement("p");
+  detail.className="small";
+  detail.textContent="Scene "+(i+1)+" • "+(scene.mediaType||"Media");
+
+  info.appendChild(name);
+  info.appendChild(detail);
+
+  const preview=document.createElement("button");
+  preview.className="success";
+  preview.textContent="Preview";
+  preview.onclick=()=>showPreview(i);
+
+  item.appendChild(thumb);
+  item.appendChild(info);
+  item.appendChild(preview);
+
+  box.appendChild(item);
+ }
+}
+
+function updateSummary(){
+ const total=scenes.length;
+ const attached=scenes.filter(s=>s.mediaKey).length;
+ const percentage=total?Math.round(attached/total*100):0;
+
+ $("totalScenes").textContent=total;
+ $("mediaCount").textContent=attached;
+ $("mediaProgress").style.width=percentage+"%";
+ $("summaryText").textContent=percentage+"% of scenes have media attached.";
+}
+
+async function saveProject(){
+ if(!currentProject){
+  $("saveStatus").textContent="Please load a project first.";
+  return false;
+ }
+
+ projects=getProjects();
+
+ const index=projects.findIndex(p=>
+  String(p.id)===String(currentProject.id)
+ );
+
+ if(index<0){
+  $("saveStatus").textContent="Project not found.";
+  return false;
+ }
+
+ const updated={
+  ...projects[index],
+  scenes:JSON.parse(JSON.stringify(scenes)),
+  dialogues:scenes.map((s,i)=>({
+   sceneIndex:i,
+   text:s.dialogue||""
+  })),
+  visuals:scenes.map((s,i)=>({
+   sceneIndex:i,
+   description:s.visual||"",
+   subtitle:s.subtitle||""
+  })),
+  timeline:scenes.map((s,i)=>({
+   sceneIndex:i,
+   duration:Number(s.duration)||5
+  })),
+  updatedAt:new Date().toISOString()
+ };
+
+ try{
+  localStorage.setItem(PROJECT_KEY,JSON.stringify(
+   projects.map((p,i)=>i===index?updated:p)
+  ));
+
+  currentProject=updated;
+  $("saveStatus").textContent="✅ Project saved successfully.";
+  updateSummary();
+  return true;
+
+ }catch(error){
+  console.error(error);
+  $("saveStatus").textContent="❌ Save failed. Browser storage may be full.";
+  return false;
+ }
+}
+
+function scheduleSave(){
+ clearTimeout(saveTimer);
+ $("saveStatus").textContent="Changes detected. Saving...";
+ saveTimer=setTimeout(saveProject,1000);
+}
+
+window.addEventListener("beforeunload",()=>{
+ clearPreviewURLs();
+});
+
+populateProjects();
+</script>
+
+</body>
+</html>
