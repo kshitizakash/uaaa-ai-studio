@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAAA AI Studio - Voice Studio</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#fff;font-family:Arial,sans-serif}
+header{background:#17243a;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-bottom:1px solid #33445e}
+header h2{margin:0;color:#55c5ff}
+.container{max-width:1100px;margin:auto;padding:16px}
+.card{background:#19263b;border:1px solid #30435e;border-radius:12px;padding:18px;margin-bottom:16px}
+h3{color:#61c8ff;margin-top:0}
+label{display:block;margin:12px 0 6px;color:#cbd8e8;font-size:14px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #405574;border-radius:7px;background:#0e1929;color:white;font-size:15px}
+textarea{min-height:100px;resize:vertical}
+button{border:0;padding:11px 15px;border-radius:7px;margin:4px 3px 4px 0;cursor:pointer;font-weight:bold}
+.primary{background:#1689e8;color:white}
+.success{background:#16a36a;color:white}
+.danger{background:#d94b55;color:white}
+.secondary{background:#405574;color:white}
+.scene{background:#111e30;border:1px solid #405574;padding:15px;border-radius:10px;margin:12px 0}
+.scene strong{color:#62caff}
+.small{font-size:12px;color:#a9bdd4}
+.status{color:#6ee7a8;font-size:13px;margin-top:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.actions{display:flex;flex-wrap:wrap;gap:5px}
+a{color:#66caff;text-decoration:none}
+@media(max-width:650px){.row{grid-template-columns:1fr}.container{padding:10px}.card{padding:13px}}
+</style>
+</head>
+
+<body>
+
+<header>
+ <h2>🎙️ UAAA AI Studio</h2>
+ <div>
+  <button class="secondary" onclick="location.href='index.html'">Dashboard</button>
+  <button class="secondary" onclick="location.href='script.html'">Script Studio</button>
+ </div>
+</header>
+
+<div class="container">
+
+<div class="card">
+ <h3>🎙️ Voice Studio V1.0</h3>
+ <p class="small">Create voice previews for your video scripts.</p>
+
+ <label>Select Saved Project</label>
+ <select id="projectSelect">
+  <option value="">-- Select Project --</option>
+ </select>
+ <button class="primary" onclick="loadSelectedProject()">Load Project</button>
+
+ <p id="projectInfo" class="small">No project loaded.</p>
+</div>
+
+<div class="card">
+ <h3>⚙️ Voice Settings</h3>
+
+ <div class="row">
+  <div>
+   <label>Language</label>
+   <select id="language">
+    <option value="hi-IN">Hindi (India)</option>
+    <option value="en-IN">English (India)</option>
+    <option value="en-US">English (US)</option>
+    <option value="bho-IN">Bhojpuri (if available)</option>
+   </select>
+  </div>
+
+  <div>
+   <label>Voice Type Preference</label>
+   <select id="gender">
+    <option value="all">All Available Voices</option>
+    <option value="male">Male (if identifiable)</option>
+    <option value="female">Female (if identifiable)</option>
+   </select>
+  </div>
+ </div>
+
+ <label>Select Available Browser Voice</label>
+ <select id="voiceSelect">
+  <option value="">Loading voices...</option>
+ </select>
+
+ <p class="small">Male/Female identification depends on your device and browser. Some voices may not provide gender information.</p>
+
+ <div class="row">
+  <div>
+   <label>Voice Speed: <span id="rateValue">1.0</span></label>
+   <input id="rate" type="range" min="0.6" max="1.5" step="0.1" value="1">
+  </div>
+  <div>
+   <label>Voice Pitch: <span id="pitchValue">1.0</span></label>
+   <input id="pitch" type="range" min="0.5" max="1.5" step="0.1" value="1">
+  </div>
+ </div>
+
+ <div class="actions">
+  <button class="primary" onclick="previewSample()">▶ Test Voice</button>
+  <button class="secondary" onclick="saveVoiceProfile()">Save Voice Profile</button>
+  <button class="danger" onclick="stopVoice()">■ Stop Voice</button>
+ </div>
+
+ <p id="voiceStatus" class="status">Voice Studio ready.</p>
+</div>
+
+<div class="card">
+ <h3>📝 Script & Scene Voice Preview</h3>
+
+ <div class="actions">
+  <button class="success" onclick="playAll()">▶ Play All Scenes</button>
+  <button class="danger" onclick="stopVoice()">■ Stop All</button>
+ </div>
+
+ <div id="sceneList">
+  <p class="small">Please load a project first.</p>
+ </div>
+</div>
+
+<div class="card">
+ <h3>💾 Voice Project</h3>
+ <p class="small">Your voice settings are saved locally in this browser.</p>
+ <button class="primary" onclick="saveVoiceData()">Save Voice Settings to Project</button>
+ <p id="saveStatus" class="status"></p>
+</div>
+
+</div>
+
+<script>
+const KEY = "uaaaProjects";
+const PROFILE_KEY = "uaaaVoiceProfiles";
+
+let projects = [];
+let currentProject = null;
+let scenes = [];
+let voices = [];
+let activeAudio = null;
+let playSequence = false;
+let sequenceIndex = 0;
+
+const $ = id => document.getElementById(id);
+
+function getProjects(){
+ try{
+  const data = JSON.parse(localStorage.getItem(KEY)||"[]");
+  return Array.isArray(data)?data:[];
+ }catch(e){return []}
+}
+
+function getVoices(){
+ if(!("speechSynthesis" in window)){
+  $("voiceStatus").textContent="Browser Speech Synthesis is not supported.";
+  return;
+ }
+
+ voices = speechSynthesis.getVoices();
+ updateVoiceOptions();
+}
+
+function updateVoiceOptions(){
+ const select = $("voiceSelect");
+ const lang = $("language").value;
+ const gender = $("gender").value;
+
+ const languageCode = lang.split("-")[0];
+
+ let filtered = voices.filter(v=>
+  v.lang.toLowerCase().startsWith(languageCode.toLowerCase())
+ );
+
+ if(gender !== "all"){
+  const words = gender==="male"
+   ? ["male","man","masculine"]
+   : ["female","woman","feminine"];
+
+  const identified = filtered.filter(v=>
+   words.some(w=>v.name.toLowerCase().includes(w))
+  );
+
+  if(identified.length) filtered=identified;
+  else {
+   select.innerHTML='<option value="">No clearly identified voice. Choose All Available Voices.</option>';
+   return;
+  }
+ }
+
+ select.innerHTML="";
+
+ if(!filtered.length){
+  select.innerHTML='<option value="">No matching browser voice found</option>';
+  return;
+ }
+
+ filtered.forEach(v=>{
+  const option=document.createElement("option");
+  option.value=voices.indexOf(v);
+  option.textContent=v.name+" ("+v.lang+")";
+  select.appendChild(option);
+ });
+}
+
+function getSelectedVoice(){
+ const index=Number($("voiceSelect").value);
+ return voices[index] || null;
+}
+
+function speak(text,onComplete){
+ if(!text || !text.trim()){
+  if(onComplete) onComplete();
+  return;
+ }
+
+ if(!("speechSynthesis" in window)){
+  alert("Speech Synthesis is not supported in this browser.");
+  return;
+ }
+
+ speechSynthesis.cancel();
+
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.lang=$("language").value;
+ utterance.rate=Number($("rate").value);
+ utterance.pitch=Number($("pitch").value);
+
+ const voice=getSelectedVoice();
+ if(voice) utterance.voice=voice;
+
+ utterance.onstart=()=>{
+  $("voiceStatus").textContent="🔊 Voice is playing...";
+ };
+
+ utterance.onend=()=>{
+  $("voiceStatus").textContent="Voice playback completed.";
+  if(onComplete) onComplete();
+ };
+
+ utterance.onerror=(event)=>{
+  $("voiceStatus").textContent="Voice playback error: "+event.error;
+  if(onComplete) onComplete();
+ };
+
+ speechSynthesis.speak(utterance);
+}
+
+function previewSample(){
+ const sample=$("language").value==="hi-IN"
+ ? "नमस्कार दोस्तों! आपका स्वागत है UAAA AI Studio में। आज हम आपके लिए लेकर आए हैं एक शानदार वीडियो।"
+ : "Hello friends! Welcome to UAAA AI Studio. Let's create an amazing video together.";
+
+ speak(sample);
+}
+
+function stopVoice(){
+ playSequence=false;
+ sequenceIndex=0;
+
+ if("speechSynthesis" in window) speechSynthesis.cancel();
+
+ if(activeAudio){
+  activeAudio.pause();
+  activeAudio=null;
+ }
+
+ $("voiceStatus").textContent="Playback stopped.";
+}
+
+function populateProjects(){
+ projects=getProjects();
+
+ const select=$("projectSelect");
+ select.innerHTML='<option value="">-- Select Project --</option>';
+
+ projects.forEach(project=>{
+  const option=document.createElement("option");
+  option.value=project.id;
+  option.textContent=project.name || project.title || "Untitled Project";
+  select.appendChild(option);
+ });
+}
+
+function normalizeScenes(project){
+ if(Array.isArray(project.scenes) && project.scenes.length){
+  return project.scenes.map(s=>({
+   ...s,
+   dialogue:s.dialogue || "",
+   visual:s.visual || "",
+   subtitle:s.subtitle || "",
+   duration:Number(s.duration)||5
+  }));
+ }
+
+ const dialogues=project.dialogues || [];
+ const visuals=project.visuals || [];
+ const timeline=project.timeline || [];
+
+ const count=Math.max(dialogues.length,visuals.length,timeline.length,1);
+
+ return Array.from({length:count},(_,i)=>({
+  id:"scene_"+i,
+  dialogue:dialogues[i]?.text || "",
+  visual:visuals[i]?.description || "",
+  subtitle:visuals[i]?.subtitle || "",
+  duration:Number(timeline[i]?.duration)||5
+ }));
+}
+
+function loadSelectedProject(){
+ const id=$("projectSelect").value;
+
+ if(!id){
+  alert("Please select a project.");
+  return;
+ }
+
+ projects=getProjects();
+
+ currentProject=projects.find(p=>String(p.id)===String(id));
+
+ if(!currentProject){
+  alert("Project not found.");
+  return;
+ }
+
+ scenes=normalizeScenes(currentProject);
+
+ $("projectInfo").textContent="Loaded: "+(currentProject.name || currentProject.title);
+ renderScenes();
+ $("saveStatus").textContent="Project loaded successfully.";
+}
+
+function renderScenes(){
+ const box=$("sceneList");
+ box.innerHTML="";
+
+ scenes.forEach((scene,index)=>{
+  const div=document.createElement("div");
+  div.className="scene";
+
+  const title=document.createElement("strong");
+  title.textContent="SCENE "+(index+1);
+  div.appendChild(title);
+
+  const dialogueLabel=document.createElement("p");
+  dialogueLabel.className="small";
+  dialogueLabel.textContent="Dialogue";
+  div.appendChild(dialogueLabel);
+
+  const dialogue=document.createElement("textarea");
+  dialogue.value=scene.dialogue || "";
+  dialogue.placeholder="Scene dialogue...";
+  dialogue.addEventListener("input",()=>{
+   scenes[index].dialogue=dialogue.value;
+  });
+  div.appendChild(dialogue);
+
+  const visual=document.createElement("p");
+  visual.className="small";
+  visual.textContent="Visual: "+(scene.visual || "No visual description");
+  div.appendChild(visual);
+
+  const buttons=document.createElement("div");
+  buttons.className="actions";
+
+  const play=document.createElement("button");
+  play.className="primary";
+  play.textContent="▶ Play Scene";
+  play.onclick=()=>{
+   stopVoice();
+   const audioKey=scene.audioKey;
+   playSceneAudio(index,audioKey);
+  };
+
+  const upload=document.createElement("button");
+  upload.className="secondary";
+  upload.textContent="Upload Scene Audio";
+
+  const file=document.createElement("input");
+  file.type="file";
+  file.accept="audio/*";
+  file.style.display="none";
+
+  upload.onclick=()=>file.click();
+
+  file.onchange=async()=>{
+   const selected=file.files[0];
+   if(!selected) return;
+
+   if(selected.size>15*1024*1024){
+    alert("Audio file must be under 15 MB.");
+    file.value="";
+    return;
+   }
+
+   const key=await storeAudio(selected,currentProject.id,scene.id || index);
+   scenes[index].audioKey=key;
+
+   saveVoiceData();
+   alert("Audio uploaded and saved for this scene.");
+   renderScenes();
+  };
+
+  const audioLabel=document.createElement("p");
+  audioLabel.className="small";
+  audioLabel.textContent=scene.audioKey
+   ?"✅ Uploaded audio available"
+   :"No uploaded audio";
+
+  buttons.appendChild(play);
+  buttons.appendChild(upload);
+  buttons.appendChild(file);
+
+  div.appendChild(buttons);
+  div.appendChild(audioLabel);
+
+  box.appendChild(div);
+ });
+}
+
+function playSceneAudio(index){
+ const scene=scenes[index];
+
+ if(scene.audioKey){
+  playStoredAudio(scene.audioKey,()=>{
+   if(playSequence) playNextScene();
+  });
+ }else{
+  speak(scene.dialogue,()=>{
+   if(playSequence) playNextScene();
+  });
+ }
+}
+
+function playAll(){
+ if(!scenes.length){
+  alert("Please load a project first.");
+  return;
+ }
+
+ stopVoice();
+ playSequence=true;
+ sequenceIndex=0;
+ playNextScene();
+}
+
+function playNextScene(){
+ if(!playSequence) return;
+
+ if(sequenceIndex>=scenes.length){
+  playSequence=false;
+  $("voiceStatus").textContent="✅ All scenes completed.";
+  return;
+ }
+
+ const current=sequenceIndex;
+ sequenceIndex++;
+
+ $("voiceStatus").textContent="Playing Scene "+(current+1);
+ playSceneAudio(current);
+}
+
+function saveVoiceProfile(){
+ const profile={
+  name:"UAAA Voice Profile",
+  language:$("language").value,
+  gender:$("gender").value,
+  voiceName:getSelectedVoice()?.name || "",
+  rate:Number($("rate").value),
+  pitch:Number($("pitch").value),
+  updatedAt:new Date().toISOString()
+ };
+
+ try{
+  const profiles=JSON.parse(localStorage.getItem(PROFILE_KEY)||"[]");
+  const list=Array.isArray(profiles)?profiles:[];
+  const index=list.findIndex(p=>p.name===profile.name);
+
+  if(index>=0) list[index]=profile;
+  else list.push(profile);
+
+  localStorage.setItem(PROFILE_KEY,JSON.stringify(list));
+  $("voiceStatus").textContent="✅ Voice Profile Saved.";
+ }catch(e){
+  alert("Could not save voice profile.");
+ }
+}
+
+function saveVoiceData(){
+ if(!currentProject){
+  alert("Please load a project first.");
+  return;
+ }
+
+ projects=getProjects();
+
+ const index=projects.findIndex(p=>
+  String(p.id)===String(currentProject.id)
+ );
+
+ if(index<0){
+  alert("Project not found in storage.");
+  return;
+ }
+
+ const updated={
+  ...projects[index],
+  scenes:JSON.parse(JSON.stringify(scenes)),
+  dialogues:scenes.map((s,i)=>({
+   sceneIndex:i,
+   text:s.dialogue,
+   audioKey:s.audioKey || ""
+  })),
+  voiceSettings:{
+   language:$("language").value,
+   gender:$("gender").value,
+   voiceName:getSelectedVoice()?.name || "",
+   rate:Number($("rate").value),
+   pitch:Number($("pitch").value)
+  },
+  updatedAt:new Date().toISOString()
+ };
+
+ projects[index]=updated;
+
+ try{
+  localStorage.setItem(KEY,JSON.stringify(projects));
+  currentProject=updated;
+  $("saveStatus").textContent="✅ Voice settings and script saved.";
+ }catch(e){
+  $("saveStatus").textContent="❌ Save failed. Browser storage may be full.";
+ }
+}
+
+/* IndexedDB: uploaded audio storage */
+
+let dbPromise;
+
+function openAudioDB(){
+ if(dbPromise) return dbPromise;
+
+ dbPromise=new Promise((resolve,reject)=>{
+  const request=indexedDB.open("UAAA_Voice_Audio_DB",1);
+
+  request.onupgradeneeded=()=>{
+   const db=request.result;
+   if(!db.objectStoreNames.contains("audio")){
+    db.createObjectStore("audio");
+   }
+  };
+
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
+
+ return dbPromise;
+}
+
+async function storeAudio(file,projectId,sceneId){
+ const db=await openAudioDB();
+ const key=String(projectId)+"_"+String(sceneId);
+
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction("audio","readwrite");
+  tx.objectStore("audio").put(file,key);
+
+  tx.oncomplete=()=>resolve(key);
+  tx.onerror=()=>reject(tx.error);
+ });
+}
+
+async function playStoredAudio(key,onComplete){
+ try{
+  const db=await openAudioDB();
+
+  const blob=await new Promise((resolve,reject)=>{
+   const tx=db.transaction("audio","readonly");
+   const request=tx.objectStore("audio").get(key);
+   request.onsuccess=()=>resolve(request.result);
+   request.onerror=()=>reject(request.error);
+  });
+
+  if(!blob){
+   alert("Uploaded audio not found.");
+   if(onComplete) onComplete();
+   return;
+  }
+
+  const url=URL.createObjectURL(blob);
+  const audio=new Audio(url);
+  activeAudio=audio;
+
+  audio.onended=()=>{
+   URL.revokeObjectURL(url);
+   activeAudio=null;
+   if(onComplete) onComplete();
+  };
+
+  audio.onerror=()=>{
+   URL.revokeObjectURL(url);
+   activeAudio=null;
+   if(onComplete) onComplete();
+  };
+
+  await audio.play();
+
+ }catch(error){
+  alert("Unable to play uploaded audio.");
+  if(onComplete) onComplete();
+ }
+}
+
+$("language").addEventListener("change",updateVoiceOptions);
+$("gender").addEventListener("change",updateVoiceOptions);
+
+$("rate").addEventListener("input",()=>{
+ $("rateValue").textContent=$("rate").value;
+});
+
+$("pitch").addEventListener("input",()=>{
+ $("pitchValue").textContent=$("pitch").value;
+});
+
+$("voiceSelect").addEventListener("change",()=>{
+ $("voiceStatus").textContent="Voice selected.";
+});
+
+if("speechSynthesis" in window){
+ getVoices();
+ speechSynthesis.onvoiceschanged=getVoices;
+}
+
+populateProjects();
+
+</script>
+
+</body>
+</html>
