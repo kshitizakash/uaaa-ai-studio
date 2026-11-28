@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UAAA AI Studio - Export V5.1</title>
+<title>UAAA AI Studio Export V5.2</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#101827;color:#fff;font-family:Arial,sans-serif}
-header{background:#17243a;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+body{margin:0;background:#101827;color:white;font-family:Arial}
+header{background:#17243a;padding:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
 h2,h3{color:#55c5ff}
 .container{max-width:1000px;margin:auto;padding:14px}
 .card{background:#19263b;border:1px solid #30435e;border-radius:12px;padding:16px;margin-bottom:15px}
-label{display:block;margin-top:12px;color:#cbd8e8;font-size:14px}
+label{display:block;margin-top:12px;color:#cbd8e8}
 input:not([type=checkbox]),select{width:100%;padding:11px;background:#0e1929;color:white;border:1px solid #405574;border-radius:7px;margin-top:6px}
 button{border:0;border-radius:7px;padding:12px 16px;margin:4px;cursor:pointer;font-weight:bold}
-button:disabled{opacity:.5;cursor:not-allowed}
+button:disabled{opacity:.5}
 .primary{background:#1689e8;color:white}
 .success{background:#16a36a;color:white}
 .danger{background:#d94b55;color:white}
@@ -24,27 +24,25 @@ canvas{width:100%;display:block;background:#000}
 .status{color:#6ee7a8;font-size:13px;margin-top:10px;line-height:1.6}
 .small{font-size:12px;color:#a9bdd4;line-height:1.6}
 progress{width:100%;height:20px;margin-top:12px}
-.actions{display:flex;flex-wrap:wrap;gap:5px}
 .checkrow{display:flex;align-items:center;gap:8px;margin-top:12px}
-.checkrow input{width:auto}
 </style>
 </head>
 <body>
 
 <header>
-<h2>🎬 UAAA AI Studio – Export V5.1</h2>
+<h2>🎬 UAAA AI Studio – Export V5.2</h2>
 <button class="secondary" onclick="location.href='index.html'">Dashboard</button>
 </header>
 
 <div class="container">
 
 <div class="card">
-<h3>1. Select Your Project</h3>
+<h3>1. Select Project</h3>
 <select id="projectSelect">
 <option value="">-- Select Project --</option>
 </select>
 <button class="primary" onclick="loadProject()">Load Project</button>
-<p id="projectStatus" class="status">Please select a project.</p>
+<p id="projectStatus" class="status">Select your project.</p>
 </div>
 
 <div class="card">
@@ -52,15 +50,15 @@ progress{width:100%;height:20px;margin-top:12px}
 
 <label>Video Format</label>
 <select id="aspect">
-<option value="16:9">Landscape – 16:9</option>
-<option value="9:16">Portrait / Shorts – 9:16</option>
-<option value="1:1">Square – 1:1</option>
+<option value="16:9">Landscape 16:9</option>
+<option value="9:16">Portrait 9:16</option>
+<option value="1:1">Square 1:1</option>
 </select>
 
-<label>Video Resolution</label>
+<label>Resolution</label>
 <select id="resolution">
-<option value="720">HD – 720p</option>
-<option value="1080">Full HD – 1080p</option>
+<option value="720">720p</option>
+<option value="1080">1080p</option>
 </select>
 
 <label>Frame Rate</label>
@@ -69,10 +67,10 @@ progress{width:100%;height:20px;margin-top:12px}
 <option value="30" selected>30 FPS</option>
 </select>
 
-<label>Export Quality</label>
+<label>Quality</label>
 <select id="quality">
 <option value="standard">Standard</option>
-<option value="high">High Quality</option>
+<option value="high">High</option>
 </select>
 
 <label class="checkrow">
@@ -81,8 +79,8 @@ Reduce Background Music During Voice
 </label>
 
 <p class="small">
-Export format: WebM. Uploaded voice audio and background music are supported.
-Browser Text-to-Speech is not included in this version.
+Uploaded Voice Audio is supported. Browser Text-to-Speech is not included.
+Export format: WebM.
 </p>
 </div>
 
@@ -91,31 +89,24 @@ Browser Text-to-Speech is not included in this version.
 <div class="preview">
 <canvas id="canvas" width="1280" height="720"></canvas>
 </div>
-<div class="actions">
 <button class="primary" id="previewBtn" onclick="previewProject()">▶ Preview Project</button>
-<button class="danger" id="stopPreviewBtn" onclick="stopPreview()" disabled>■ Stop Preview</button>
-</div>
+<button class="danger" id="stopPreviewBtn" onclick="stopPreview()" disabled>■ Stop</button>
 <p id="previewStatus" class="status">Preview not started.</p>
 </div>
 
 <div class="card">
 <h3>4. Export Video</h3>
-<p class="small">Keep this browser tab open until export finishes.</p>
 <button class="success" id="exportBtn" onclick="startExport()">⬇ Export & Download WebM</button>
 <button class="danger" id="cancelBtn" onclick="cancelExport()" disabled>Cancel Export</button>
 <progress id="progress" value="0" max="100"></progress>
-<p id="exportStatus" class="status">Ready to export.</p>
+<p id="exportStatus" class="status">Ready.</p>
 </div>
 
 <div class="card">
-<h3>5. Export Information</h3>
+<h3>5. Voice Status</h3>
+<p id="voiceStatus" class="status">Load a project to check voice files.</p>
 <p class="small">
-• All scenes play according to their duration.<br>
-• Uploaded voice audio is included.<br>
-• Global and Scene-wise background music are supported.<br>
-• Browser Text-to-Speech is not included.<br>
-• Original audio from uploaded video clips is muted.<br>
-• MP4 export is not yet available; this version exports WebM.
+Voice Studio Uploaded Audio is supported. TTS and MP4 export are not supported in this version.
 </p>
 </div>
 
@@ -123,8 +114,8 @@ Browser Text-to-Speech is not included in this version.
 
 <script>
 const PROJECT_KEY="uaaaProjects";
-const MEDIA_DB="UAAA_Media_DB";
 const VOICE_DB="UAAA_Voice_Audio_DB";
+const MEDIA_DB="UAAA_Media_DB";
 const EDITOR_DB="UAAA_Editor_DB";
 
 let projects=[];
@@ -133,14 +124,14 @@ let scenes=[];
 let loadedMedia=[];
 let loadedVoices=[];
 let loadedMusic=null;
-let loadedSceneMusic={};
+let loadedSceneMusic=[];
 
 let previewRunning=false;
 let previewToken=0;
 let previewAudio=[];
+let previewMusic=null;
 let previewVideo=null;
 let previewImage=null;
-let previewMusic=null;
 
 let exporting=false;
 let cancelRequested=false;
@@ -165,125 +156,202 @@ function init(){
  });
 }
 
-function openDB(name,store,version=1){
+function openDB(name,version=1){
  return new Promise((resolve,reject)=>{
   const req=indexedDB.open(name,version);
-  req.onupgradeneeded=()=>{
-   if(!req.result.objectStoreNames.contains(store)){
-    req.result.createObjectStore(store);
-   }
-  };
   req.onsuccess=()=>resolve(req.result);
   req.onerror=()=>reject(req.error);
+  req.onblocked=()=>reject(new Error("Database blocked"));
  });
 }
 
 async function getBlob(dbName,store,key,version=1){
  if(!key)return null;
- const db=await openDB(dbName,store,version);
+
+ const db=await openDB(dbName,version);
+
+ if(!db.objectStoreNames.contains(store)){
+  db.close();
+  return null;
+ }
+
  return new Promise((resolve,reject)=>{
-  const req=db.transaction(store,"readonly").objectStore(store).get(key);
-  req.onsuccess=()=>resolve(req.result||null);
-  req.onerror=()=>reject(req.error);
+  const tx=db.transaction(store,"readonly");
+  const req=tx.objectStore(store).get(key);
+
+  req.onsuccess=()=>{
+   const result=req.result||null;
+   db.close();
+   resolve(result);
+  };
+
+  req.onerror=()=>{
+   db.close();
+   reject(req.error);
+  };
  });
 }
 
 function normalizeScenes(p){
+ let result=[];
+
  if(Array.isArray(p.scenes)&&p.scenes.length){
-  return p.scenes.map(s=>({
+  result=p.scenes.map((s,i)=>({
    ...s,
+   id:s.id||("scene_"+i),
+   dialogue:s.dialogue||"",
+   visual:s.visual||"",
+   subtitle:s.subtitle||"",
    duration:Math.max(1,Number(s.duration)||5),
+   audioKey:s.audioKey||"",
    musicMode:s.musicMode||"global"
   }));
+ }else{
+  const d=p.dialogues||[];
+  const v=p.visuals||[];
+  const t=p.timeline||[];
+  const count=Math.max(d.length,v.length,t.length,1);
+
+  result=Array.from({length:count},(_,i)=>({
+   id:"scene_"+i,
+   dialogue:d[i]?.text||"",
+   visual:v[i]?.description||"",
+   subtitle:v[i]?.subtitle||"",
+   duration:Math.max(1,Number(t[i]?.duration)||5),
+   audioKey:d[i]?.audioKey||"",
+   musicMode:"global"
+  }));
  }
- const d=p.dialogues||[];
- const v=p.visuals||[];
- const t=p.timeline||[];
- const count=Math.max(d.length,v.length,t.length,1);
- return Array.from({length:count},(_,i)=>({
-  dialogue:d[i]?.text||"",
-  visual:v[i]?.description||"",
-  subtitle:v[i]?.subtitle||"",
-  duration:Number(t[i]?.duration)||5,
-  mediaKey:"",
-  mediaType:"",
-  audioKey:d[i]?.audioKey||"",
-  audioMode:d[i]?.audioMode||"tts",
-  musicMode:"global"
- }));
+
+ // Also recover audioKey from the project's dialogue records.
+ const dialogues=p.dialogues||[];
+
+ result.forEach((s,i)=>{
+  if(!s.audioKey&&dialogues[i]?.audioKey){
+   s.audioKey=dialogues[i].audioKey;
+  }
+
+  // Voice Studio uses projectId_sceneId as its IndexedDB key.
+  if(!s.audioKey&&s.id){
+   s.audioKey=String(p.id)+"_"+String(s.id);
+  }
+ });
+
+ return result;
 }
 
 async function loadProject(){
  stopPreview();
+
  const id=$("projectSelect").value;
- if(!id){alert("Please select a project.");return}
+ if(!id){alert("Select a project first.");return}
 
  projects=readProjects();
  project=projects.find(p=>String(p.id)===String(id));
+
  if(!project){alert("Project not found.");return}
 
  scenes=normalizeScenes(project);
- $("projectStatus").textContent="Loading project...";
 
- try{
-  await preloadAssets();
-  $("projectStatus").textContent=
-  "✅ Project Loaded: "+(project.name||project.title||"Untitled")+
-  " | Total Scenes: "+scenes.length;
-  setupCanvas();
-  drawScene(0);
- }catch(e){
-  $("projectStatus").textContent="Project loaded, but some assets could not be loaded.";
-  console.error(e);
- }
+ $("projectStatus").textContent="Loading project and audio...";
+
+ await preloadAssets();
+
+ let count=loadedVoices.filter(Boolean).length;
+
+ $("projectStatus").textContent=
+ "✅ Project loaded | Scenes: "+scenes.length;
+
+ $("voiceStatus").textContent=
+ "Uploaded Voice Found: "+count+" / "+scenes.length+" Scenes";
+
+ setupCanvas();
+ drawScene(0);
 }
 
 async function preloadAssets(){
  loadedMedia=[];
  loadedVoices=[];
  loadedMusic=null;
- loadedSceneMusic={};
+ loadedSceneMusic=[];
 
  for(let i=0;i<scenes.length;i++){
   const s=scenes[i];
-  let media=null,voice=null,music=null;
 
+  // Media
+  let media=null;
   if(s.mediaKey){
-   try{media=await getBlob(MEDIA_DB,"media",s.mediaKey)}catch(e){}
+   try{
+    media=await getBlob(MEDIA_DB,"media",s.mediaKey);
+   }catch(e){}
+  }
+  loadedMedia[i]=media;
+
+  // VOICE FIX: Use audioKey directly.
+  let voice=null;
+
+  if(s.audioKey){
+   try{
+    voice=await getBlob(
+     VOICE_DB,
+     "audio",
+     String(s.audioKey),
+     1
+    );
+   }catch(e){
+    console.log("Voice load error",e);
+   }
   }
 
-  if(s.audioMode==="uploaded"&&s.audioKey){
-   try{voice=await getBlob(VOICE_DB,"audio",s.audioKey)}catch(e){}
-  }
+  loadedVoices[i]=voice;
+
+  // Scene music
+  let music=null;
 
   if(s.musicMode==="scene"&&s.sceneMusicKey){
-   try{music=await getBlob(EDITOR_DB,"sceneMusic",s.sceneMusicKey,2)}catch(e){}
+   try{
+    music=await getBlob(
+     EDITOR_DB,
+     "sceneMusic",
+     s.sceneMusicKey,
+     2
+    );
+   }catch(e){}
   }
 
-  loadedMedia[i]=media;
-  loadedVoices[i]=voice;
   loadedSceneMusic[i]=music;
  }
 
  try{
-  loadedMusic=await getBlob(EDITOR_DB,"music",String(project.id),2);
+  loadedMusic=await getBlob(
+   EDITOR_DB,
+   "music",
+   String(project.id),
+   2
+  );
  }catch(e){}
 }
 
 function dimensions(){
  const aspect=$("aspect").value;
  const res=Number($("resolution").value);
- if(aspect==="9:16")return res===1080?{w:1080,h:1920}:{w:720,h:1280};
- if(aspect==="1:1")return res===1080?{w:1080,h:1080}:{w:720,h:720};
+
+ if(aspect==="9:16"){
+  return res===1080?{w:1080,h:1920}:{w:720,h:1280};
+ }
+
+ if(aspect==="1:1"){
+  return res===1080?{w:1080,h:1080}:{w:720,h:720};
+ }
+
  return res===1080?{w:1920,h:1080}:{w:1280,h:720};
 }
 
 function setupCanvas(){
  const d=dimensions();
- const c=$("canvas");
- c.width=d.w;
- c.height=d.h;
- return c;
+ $("canvas").width=d.w;
+ $("canvas").height=d.h;
+ return $("canvas");
 }
 
 function drawBackground(ctx,w,h){
@@ -294,168 +362,239 @@ function drawBackground(ctx,w,h){
 function drawFit(ctx,source,w,h){
  const sw=source.videoWidth||source.naturalWidth||source.width;
  const sh=source.videoHeight||source.naturalHeight||source.height;
+
  if(!sw||!sh)return;
+
  const scale=Math.min(w/sw,h/sh);
- const dw=sw*scale,dh=sh*scale;
+ const dw=sw*scale;
+ const dh=sh*scale;
+
  ctx.drawImage(source,(w-dw)/2,(h-dh)/2,dw,dh);
 }
 
-function wrapText(ctx,text,x,y,maxWidth,lineHeight){
- const words=String(text).split(/\s+/);
- let lines=[],line="";
+function getLines(ctx,text,maxWidth){
+ const words=String(text||"").split(/\s+/);
+ const lines=[];
+ let line="";
+
  words.forEach(word=>{
   const test=line?line+" "+word:word;
+
   if(ctx.measureText(test).width>maxWidth&&line){
-   lines.push(line);line=word;
-  }else line=test;
+   lines.push(line);
+   line=word;
+  }else{
+   line=test;
+  }
  });
+
  if(line)lines.push(line);
- if(typeof y==="number"){
-  lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight));
- }
  return lines;
 }
 
 function drawScene(index){
- if(!scenes[index])return;
+ const s=scenes[index];
+ if(!s)return;
+
  const c=$("canvas");
  const ctx=c.getContext("2d");
  const w=c.width,h=c.height;
- const s=scenes[index];
+
  drawBackground(ctx,w,h);
 
  const media=loadedMedia[index];
 
- if(media){
-  if(media.type&&media.type.startsWith("image/")){
-   if(!previewImage||previewImage.dataset.scene!==String(index)){
-    previewImage=new Image();
-    previewImage.dataset.scene=String(index);
-    previewImage.src=URL.createObjectURL(media);
-   }
-   if(previewImage.complete&&previewImage.naturalWidth){
-    drawFit(ctx,previewImage,w,h);
-   }
-  }else if(media.type&&media.type.startsWith("video/")){
-   if(!previewVideo||previewVideo.dataset.scene!==String(index)){
-    if(previewVideo){previewVideo.pause();previewVideo.src=""}
-    previewVideo=document.createElement("video");
-    previewVideo.dataset.scene=String(index);
-    previewVideo.src=URL.createObjectURL(media);
-    previewVideo.muted=true;
-    previewVideo.playsInline=true;
-    previewVideo.loop=true;
-    previewVideo.play().catch(()=>{});
-   }
-   if(previewVideo.readyState>=2)drawFit(ctx,previewVideo,w,h);
+ if(media&&media.type?.startsWith("image/")){
+  if(!previewImage||previewImage.dataset.scene!==String(index)){
+   previewImage=new Image();
+   previewImage.dataset.scene=String(index);
+   previewImage.src=URL.createObjectURL(media);
   }
+
+  if(previewImage.complete&&previewImage.naturalWidth){
+   drawFit(ctx,previewImage,w,h);
+  }
+
+ }else if(media&&media.type?.startsWith("video/")){
+  if(!previewVideo||previewVideo.dataset.scene!==String(index)){
+   if(previewVideo){
+    previewVideo.pause();
+    previewVideo.src="";
+   }
+
+   previewVideo=document.createElement("video");
+   previewVideo.dataset.scene=String(index);
+   previewVideo.src=URL.createObjectURL(media);
+   previewVideo.muted=true;
+   previewVideo.playsInline=true;
+   previewVideo.loop=true;
+   previewVideo.play().catch(()=>{});
+  }
+
+  if(previewVideo.readyState>=2){
+   drawFit(ctx,previewVideo,w,h);
+  }
+
  }else{
   ctx.fillStyle="#243b56";
   ctx.fillRect(0,0,w,h);
   ctx.fillStyle="#fff";
   ctx.textAlign="center";
-  ctx.font="bold "+Math.max(24,Math.round(w*.035))+"px Arial";
-  const lineHeight=Math.max(32,Math.round(w*.045));
-  const lines=wrapText(ctx,s.visual||"UAAA AI Studio",0,0,w*.82,lineHeight);
-  const startY=(h-lines.length*lineHeight)/2;
-  lines.forEach((line,i)=>ctx.fillText(line,w/2,startY+i*lineHeight));
+
+  const size=Math.max(24,Math.round(w*.035));
+  ctx.font="bold "+size+"px Arial";
+
+  const lines=getLines(ctx,s.visual||"UAAA AI Studio",w*.82);
+  const lineHeight=size*1.4;
+  const start=(h-lines.length*lineHeight)/2;
+
+  lines.forEach((line,i)=>{
+   ctx.fillText(line,w/2,start+i*lineHeight);
+  });
  }
 
  if(s.subtitle){
-  const fontSize=Math.max(24,Math.round(w*.032));
-  ctx.font="bold "+fontSize+"px Arial";
+  const size=Math.max(24,Math.round(w*.032));
+  ctx.font="bold "+size+"px Arial";
   ctx.textAlign="center";
-  const lineHeight=fontSize*1.3;
-  const lines=wrapText(ctx,s.subtitle,0,0,w*.88,lineHeight);
-  const boxHeight=lines.length*lineHeight+24;
+
+  const lines=getLines(ctx,s.subtitle,w*.88);
+  const lineHeight=size*1.3;
   const y=h*.84;
-  ctx.fillStyle="rgba(0,0,0,.58)";
+  const boxHeight=lines.length*lineHeight+24;
+
+  ctx.fillStyle="rgba(0,0,0,.65)";
   ctx.fillRect(w*.04,y-boxHeight+lineHeight*.2,w*.92,boxHeight);
+
   ctx.fillStyle="#fff";
-  lines.forEach((line,i)=>ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight));
+
+  lines.forEach((line,i)=>{
+   ctx.fillText(
+    line,
+    w/2,
+    y-(lines.length-1-i)*lineHeight
+   );
+  });
  }
 }
 
 function clearPreviewAudio(){
  previewAudio.forEach(a=>{
-  try{a.pause();a.currentTime=0;a.src=""}catch(e){}
+  try{
+   a.pause();
+   a.currentTime=0;
+   a.src="";
+  }catch(e){}
  });
+
  previewAudio=[];
+
  if(previewMusic){
-  try{previewMusic.pause();previewMusic.src=""}catch(e){}
+  try{
+   previewMusic.pause();
+   previewMusic.src="";
+  }catch(e){}
   previewMusic=null;
  }
+
  if(previewVideo){
-  try{previewVideo.pause();previewVideo.src=""}catch(e){}
+  try{
+   previewVideo.pause();
+   previewVideo.src="";
+  }catch(e){}
   previewVideo=null;
  }
 }
 
 function playBlob(blob,loop=false,volume=1){
  if(!blob)return null;
+
  const url=URL.createObjectURL(blob);
  const audio=new Audio(url);
+
  audio.loop=loop;
  audio.volume=volume;
- audio.play().catch(e=>console.log("Audio playback:",e));
+
+ audio.onended=()=>{
+  URL.revokeObjectURL(url);
+ };
+
+ audio.play().catch(e=>{
+  console.log("Audio playback error:",e);
+ });
+
  previewAudio.push(audio);
  return audio;
 }
 
-async function previewSceneMusic(index){
- const s=scenes[index];
- const mode=s.musicMode||"global";
- if(mode==="scene"){
-  if(loadedSceneMusic[index])playBlob(loadedSceneMusic[index],true,.8);
- }else if(mode==="global"&&loadedMusic){
-  previewMusic=playBlob(loadedMusic,true,.35);
- }
-}
-
-function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
-
 async function previewProject(){
  if(!project||!scenes.length){
-  alert("Load a project first.");return;
+  alert("Load project first.");
+  return;
  }
+
  stopPreview();
+
  previewRunning=true;
  const token=++previewToken;
+
  $("previewBtn").disabled=true;
  $("stopPreviewBtn").disabled=false;
- clearPreviewAudio();
+
  previewImage=null;
 
  for(let i=0;i<scenes.length;i++){
   if(!previewRunning||token!==previewToken)break;
 
   clearPreviewAudio();
+
   const s=scenes[i];
   const duration=Math.max(1,Number(s.duration)||5);
 
   drawScene(i);
+
   $("previewStatus").textContent=
-  "▶ Playing Scene "+(i+1)+" of "+scenes.length+
-  " | Duration: "+duration+" seconds";
+   "▶ Scene "+(i+1)+" / "+scenes.length;
 
-  await previewSceneMusic(i);
+  // Background music
+  if(s.musicMode==="scene"){
+   if(loadedSceneMusic[i]){
+    playBlob(loadedSceneMusic[i],true,.8);
+   }
+  }else if(loadedMusic){
+   previewMusic=playBlob(loadedMusic,true,.35);
+  }
 
+  // VOICE FIX: Play audioKey file.
   if(loadedVoices[i]){
    playBlob(loadedVoices[i],false,1);
+   $("voiceStatus").textContent=
+    "🔊 Voice playing: Scene "+(i+1);
+  }else{
+   $("voiceStatus").textContent=
+    "⚠ No uploaded voice found: Scene "+(i+1);
   }
 
   const start=Date.now();
+
   while(Date.now()-start<duration*1000){
    if(!previewRunning||token!==previewToken)break;
-   if(loadedMedia[i]?.type?.startsWith("video/"))drawScene(i);
-   await sleep(100);
+
+   if(loadedMedia[i]?.type?.startsWith("video/")){
+    drawScene(i);
+   }
+
+   await new Promise(r=>setTimeout(r,100));
   }
  }
 
  if(token===previewToken){
   previewRunning=false;
   clearPreviewAudio();
-  $("previewStatus").textContent="✅ Preview completed. All scenes played.";
+
+  $("previewStatus").textContent=
+   "✅ Preview completed.";
+
   $("previewBtn").disabled=false;
   $("stopPreviewBtn").disabled=true;
  }
@@ -465,22 +604,32 @@ function stopPreview(){
  previewRunning=false;
  previewToken++;
  clearPreviewAudio();
+
  $("previewBtn").disabled=false;
  $("stopPreviewBtn").disabled=true;
- if($("previewStatus"))$("previewStatus").textContent="Preview stopped.";
 }
 
 function supportedMime(){
  if(!window.MediaRecorder)return "";
- const types=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+
+ const types=[
+  "video/webm;codecs=vp9,opus",
+  "video/webm;codecs=vp8,opus",
+  "video/webm"
+ ];
+
  return types.find(t=>MediaRecorder.isTypeSupported(t))||"";
 }
 
 function loadImage(blob){
  return new Promise(resolve=>{
-  if(!blob||!blob.type.startsWith("image/")){resolve(null);return}
+  if(!blob||!blob.type.startsWith("image/")){
+   resolve(null);return;
+  }
+
   const img=new Image();
   const url=URL.createObjectURL(blob);
+
   img.onload=()=>resolve(img);
   img.onerror=()=>resolve(null);
   img.src=url;
@@ -489,73 +638,112 @@ function loadImage(blob){
 
 function loadVideo(blob){
  return new Promise(resolve=>{
-  if(!blob||!blob.type.startsWith("video/")){resolve(null);return}
-  const v=document.createElement("video");
+  if(!blob||!blob.type.startsWith("video/")){
+   resolve(null);return;
+  }
+
+  const video=document.createElement("video");
   const url=URL.createObjectURL(blob);
-  v.src=url;v.muted=true;v.playsInline=true;v.preload="auto";
-  v.onloadeddata=()=>resolve({video:v,url});
-  v.onerror=()=>resolve(null);
-  v.load();
+
+  video.src=url;
+  video.muted=true;
+  video.playsInline=true;
+  video.preload="auto";
+
+  video.onloadeddata=()=>resolve({video,url});
+  video.onerror=()=>resolve(null);
+  video.load();
  });
 }
 
 function drawExportFrame(ctx,w,h,scene,asset){
  drawBackground(ctx,w,h);
- if(asset?.image)drawFit(ctx,asset.image,w,h);
- if(asset?.video&&asset.video.readyState>=2)drawFit(ctx,asset.video,w,h);
 
- if(!asset){
+ if(asset?.image){
+  drawFit(ctx,asset.image,w,h);
+ }else if(asset?.video&&asset.video.readyState>=2){
+  drawFit(ctx,asset.video,w,h);
+ }else if(!asset){
   ctx.fillStyle="#243b56";
   ctx.fillRect(0,0,w,h);
+
   ctx.fillStyle="#fff";
   ctx.textAlign="center";
-  ctx.font="bold "+Math.max(24,Math.round(w*.035))+"px Arial";
-  const lineHeight=Math.max(32,Math.round(w*.045));
-  const lines=wrapText(ctx,scene.visual||"UAAA AI Studio",0,0,w*.82,lineHeight);
-  const startY=(h-lines.length*lineHeight)/2;
-  lines.forEach((line,i)=>ctx.fillText(line,w/2,startY+i*lineHeight));
+
+  const size=Math.max(24,Math.round(w*.035));
+  ctx.font="bold "+size+"px Arial";
+
+  const lines=getLines(ctx,scene.visual||"UAAA AI Studio",w*.82);
+  const lineHeight=size*1.4;
+  const start=(h-lines.length*lineHeight)/2;
+
+  lines.forEach((line,i)=>{
+   ctx.fillText(line,w/2,start+i*lineHeight);
+  });
  }
 
  if(scene.subtitle){
-  const fontSize=Math.max(24,Math.round(w*.032));
-  ctx.font="bold "+fontSize+"px Arial";
+  const size=Math.max(24,Math.round(w*.032));
+  ctx.font="bold "+size+"px Arial";
   ctx.textAlign="center";
-  const lineHeight=fontSize*1.3;
-  const lines=wrapText(ctx,scene.subtitle,0,0,w*.88,lineHeight);
-  const boxHeight=lines.length*lineHeight+24;
+
+  const lines=getLines(ctx,scene.subtitle,w*.88);
+  const lineHeight=size*1.3;
   const y=h*.84;
-  ctx.fillStyle="rgba(0,0,0,.58)";
+  const boxHeight=lines.length*lineHeight+24;
+
+  ctx.fillStyle="rgba(0,0,0,.65)";
   ctx.fillRect(w*.04,y-boxHeight+lineHeight*.2,w*.92,boxHeight);
+
   ctx.fillStyle="#fff";
-  lines.forEach((line,i)=>ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight));
+
+  lines.forEach((line,i)=>{
+   ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight);
+  });
  }
 }
 
 async function startExport(){
- if(!project||!scenes.length){alert("Load a project first.");return}
+ if(!project||!scenes.length){
+  alert("Load a project first.");
+  return;
+ }
+
  if(exporting)return;
+
  stopPreview();
 
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){
-  alert("Your browser does not support video export. Please try updated Chrome.");return;
+  alert("Browser video export not supported.");
+  return;
  }
 
  const mime=supportedMime();
- if(!mime){alert("WebM recording is not supported.");return}
+
+ if(!mime){
+  alert("WebM not supported.");
+  return;
+ }
 
  exporting=true;
  cancelRequested=false;
+
  $("exportBtn").disabled=true;
  $("cancelBtn").disabled=false;
  $("progress").value=0;
- $("exportStatus").textContent="Preparing export...";
 
- let audioContext=null,recorder=null,stream=null,raf=0;
- let audioSources=[],videoAssets=[],objectURLs=[];
+ let audioContext=null;
+ let recorder=null;
+ let stream=null;
+ let raf=0;
+ let sources=[];
+ let videos=[];
+ let urls=[];
 
  try{
   const canvas=setupCanvas();
   const ctx=canvas.getContext("2d");
+
   const fps=Number($("fps").value)||30;
   const bitrate=$("quality").value==="high"?6500000:3500000;
 
@@ -563,39 +751,55 @@ async function startExport(){
   await audioContext.resume();
 
   const destination=audioContext.createMediaStreamDestination();
+
   const master=audioContext.createGain();
+  master.gain.value=1;
   master.connect(destination);
 
   const globalGain=audioContext.createGain();
   globalGain.gain.value=0;
   globalGain.connect(master);
 
-  const totalDuration=scenes.reduce((sum,s)=>sum+Math.max(1,Number(s.duration)||5),0);
+  const totalDuration=scenes.reduce(
+   (sum,s)=>sum+Math.max(1,Number(s.duration)||5),0
+  );
+
   const startAt=audioContext.currentTime+.5;
 
+  // Global music
   if(loadedMusic){
-   const buffer=await audioContext.decodeAudioData(await loadedMusic.arrayBuffer());
-   const src=audioContext.createBufferSource();
-   src.buffer=buffer;src.loop=true;
-   src.connect(globalGain);src.start(startAt);
-   audioSources.push(src);
+   const buffer=await audioContext.decodeAudioData(
+    await loadedMusic.arrayBuffer()
+   );
+
+   const source=audioContext.createBufferSource();
+   source.buffer=buffer;
+   source.loop=true;
+   source.connect(globalGain);
+   source.start(startAt);
+   sources.push(source);
   }
 
+  // Load scene visual assets
   const assets=[];
+
   for(let i=0;i<scenes.length;i++){
-   const blob=loadedMedia[i];
    let asset=null;
+   const blob=loadedMedia[i];
+
    if(blob?.type?.startsWith("image/")){
     const img=await loadImage(blob);
     if(img)asset={image:img};
    }else if(blob?.type?.startsWith("video/")){
-    const v=await loadVideo(blob);
-    if(v){
-     asset={video:v.video,url:v.url};
-     objectURLs.push(v.url);
-     videoAssets.push(v.video);
+    const result=await loadVideo(blob);
+
+    if(result){
+     asset={video:result.video};
+     videos.push(result.video);
+     urls.push(result.url);
     }
    }
+
    assets.push(asset);
   }
 
@@ -606,51 +810,100 @@ async function startExport(){
    const duration=Math.max(1,Number(s.duration)||5);
    const sceneStart=startAt+offset;
    const sceneEnd=sceneStart+duration;
+
    const mode=s.musicMode||"global";
-   const hasVoice=!!loadedVoices[i];
+   const voiceBlob=loadedVoices[i];
 
-   globalGain.gain.setValueAtTime(
-    mode==="global"&&loadedMusic?1:0,sceneStart
-   );
+   let sceneMusicGain=null;
 
-   if(mode==="scene"&&loadedSceneMusic[i]){
-    const b=await audioContext.decodeAudioData(await loadedSceneMusic[i].arrayBuffer());
-    const src=audioContext.createBufferSource();
-    const gain=audioContext.createGain();
-    src.buffer=b;src.loop=true;
-    src.connect(gain);gain.connect(master);
-    src.start(sceneStart);src.stop(sceneEnd);
-    audioSources.push(src);
+   if(mode==="global"){
+    globalGain.gain.setValueAtTime(
+     loadedMusic?1:0,
+     sceneStart
+    );
+   }else{
+    globalGain.gain.setValueAtTime(0,sceneStart);
    }
 
-   if(hasVoice){
+   // Scene-wise music
+   if(mode==="scene"&&loadedSceneMusic[i]){
+    const musicBuffer=await audioContext.decodeAudioData(
+     await loadedSceneMusic[i].arrayBuffer()
+    );
+
+    const musicSource=audioContext.createBufferSource();
+    sceneMusicGain=audioContext.createGain();
+
+    musicSource.buffer=musicBuffer;
+    musicSource.loop=true;
+
+    musicSource.connect(sceneMusicGain);
+    sceneMusicGain.connect(master);
+
+    musicSource.start(sceneStart);
+    musicSource.stop(sceneEnd);
+
+    sources.push(musicSource);
+   }
+
+   // VOICE FIX: Decode and schedule audioKey voice.
+   if(voiceBlob){
     try{
-     const voiceBuffer=await audioContext.decodeAudioData(await loadedVoices[i].arrayBuffer());
+     const voiceBuffer=await audioContext.decodeAudioData(
+      await voiceBlob.arrayBuffer()
+     );
+
      const voiceSource=audioContext.createBufferSource();
      const voiceGain=audioContext.createGain();
-     voiceSource.buffer=voiceBuffer;
-     voiceSource.connect(voiceGain);voiceGain.connect(master);
-     voiceSource.start(sceneStart);
-     voiceSource.stop(sceneEnd);
-     audioSources.push(voiceSource);
 
-     if(mode==="global"&&loadedMusic&&$("musicDucking").checked){
-      globalGain.gain.setValueAtTime(.12,sceneStart);
-      globalGain.gain.setValueAtTime(1,Math.min(sceneEnd,sceneStart+voiceBuffer.duration));
+     voiceSource.buffer=voiceBuffer;
+     voiceGain.gain.value=1;
+
+     voiceSource.connect(voiceGain);
+     voiceGain.connect(master);
+
+     voiceSource.start(sceneStart);
+
+     // Voice must not overlap the next scene.
+     voiceSource.stop(sceneEnd);
+
+     sources.push(voiceSource);
+
+     // Duck music during voice.
+     if($("musicDucking").checked){
+      const duckEnd=Math.min(
+       sceneEnd,
+       sceneStart+voiceBuffer.duration
+      );
+
+      if(mode==="global"&&loadedMusic){
+       globalGain.gain.setValueAtTime(.12,sceneStart);
+       globalGain.gain.setValueAtTime(1,duckEnd);
+      }
+
+      if(sceneMusicGain){
+       sceneMusicGain.gain.setValueAtTime(.12,sceneStart);
+       sceneMusicGain.gain.setValueAtTime(1,duckEnd);
+      }
      }
-    }catch(e){console.log("Voice audio error",e)}
+
+    }catch(e){
+     console.log("Voice export error Scene "+(i+1),e);
+    }
    }
 
    offset+=duration;
   }
 
   const canvasStream=canvas.captureStream(fps);
+
   stream=new MediaStream([
    ...canvasStream.getVideoTracks(),
    ...destination.stream.getAudioTracks()
   ]);
 
   const chunks=[];
+
   recorder=new MediaRecorder(stream,{
    mimeType:mime,
    videoBitsPerSecond:bitrate,
@@ -661,91 +914,142 @@ async function startExport(){
    if(e.data&&e.data.size)chunks.push(e.data);
   };
 
-  const recordingDone=new Promise((resolve,reject)=>{
+  const finished=new Promise((resolve,reject)=>{
    recorder.onstop=resolve;
    recorder.onerror=e=>reject(e.error||new Error("Recording error"));
   });
 
   recorder.start(1000);
-  $("exportStatus").textContent="🔴 Recording started...";
 
-  let lastScene=-1;
+  $("exportStatus").textContent="Recording started...";
+
   const totalMs=totalDuration*1000;
   const exportStart=performance.now();
 
-  function finishRecording(){
-   if(recorder&&recorder.state!=="inactive")recorder.stop();
+  let lastScene=-1;
+
+  function finish(){
+   if(recorder&&recorder.state!=="inactive"){
+    recorder.stop();
+   }
   }
 
   function renderFrame(){
-   if(cancelRequested){finishRecording();return}
+   if(cancelRequested){
+    finish();
+    return;
+   }
 
    const elapsed=performance.now()-exportStart;
-   let acc=0,idx=scenes.length-1;
+
+   let accumulated=0;
+   let index=scenes.length-1;
 
    for(let i=0;i<scenes.length;i++){
-    const dur=Math.max(1,Number(scenes[i].duration)||5)*1000;
-    if(elapsed<acc+dur){idx=i;break}
-    acc+=dur;
+    const duration=Math.max(1,Number(scenes[i].duration)||5)*1000;
+
+    if(elapsed<accumulated+duration){
+     index=i;
+     break;
+    }
+
+    accumulated+=duration;
    }
 
-   if(idx!==lastScene){
-    if(lastScene>=0&&assets[lastScene]?.video)assets[lastScene].video.pause();
-    lastScene=idx;
-    const v=assets[idx]?.video;
-    if(v){v.currentTime=0;v.play().catch(()=>{})}
+   if(index!==lastScene){
+    if(lastScene>=0&&assets[lastScene]?.video){
+     assets[lastScene].video.pause();
+    }
+
+    lastScene=index;
+
+    if(assets[index]?.video){
+     assets[index].video.currentTime=0;
+     assets[index].video.play().catch(()=>{});
+    }
    }
 
-   drawExportFrame(ctx,canvas.width,canvas.height,scenes[idx],assets[idx]);
+   drawExportFrame(
+    ctx,
+    canvas.width,
+    canvas.height,
+    scenes[index],
+    assets[index]
+   );
 
-   const percent=Math.min(100,(elapsed/totalMs)*100);
+   const percent=Math.min(100,elapsed/totalMs*100);
    $("progress").value=percent;
+
    $("exportStatus").textContent=
-   "Exporting Scene "+(idx+1)+" of "+scenes.length+" – "+Math.round(percent)+"%";
+    "Exporting Scene "+(index+1)+" / "+scenes.length+
+    " – "+Math.round(percent)+"%";
 
    if(elapsed<totalMs&&!cancelRequested){
     raf=requestAnimationFrame(renderFrame);
    }else{
-    finishRecording();
+    finish();
    }
   }
 
   raf=requestAnimationFrame(renderFrame);
-  await recordingDone;
+
+  await finished;
 
   if(cancelRequested){
    $("exportStatus").textContent="Export cancelled.";
   }else{
    const blob=new Blob(chunks,{type:mime});
+
    if(!blob.size)throw new Error("Empty export file.");
 
    const url=URL.createObjectURL(blob);
    const a=document.createElement("a");
+
    a.href=url;
-   a.download=(project.name||project.title||"UAAA-Video").replace(/[^\w\-]+/g,"_")+".webm";
+   a.download=(project.name||project.title||"UAAA-Video")
+    .replace(/[^\w\-]+/g,"_")+".webm";
+
    document.body.appendChild(a);
    a.click();
    a.remove();
+
    setTimeout(()=>URL.revokeObjectURL(url),60000);
 
    $("progress").value=100;
    $("exportStatus").textContent=
-   "✅ Export completed! File size: "+(blob.size/1024/1024).toFixed(2)+" MB";
+    "✅ Export completed. File size: "+
+    (blob.size/1024/1024).toFixed(2)+" MB";
   }
 
  }catch(error){
-  $("exportStatus").textContent="❌ Export error: "+(error.message||"Unknown error");
+  $("exportStatus").textContent=
+   "❌ Export error: "+(error.message||"Unknown error");
+
   alert("Export failed: "+(error.message||"Please try again."));
+
  }finally{
   cancelAnimationFrame(raf);
+
   if(recorder&&recorder.state!=="inactive"){
    try{recorder.stop()}catch(e){}
   }
+
   if(stream)stream.getTracks().forEach(t=>t.stop());
-  audioSources.forEach(s=>{try{s.stop()}catch(e){}});
-  videoAssets.forEach(v=>{try{v.pause();v.src=""}catch(e){}});
-  objectURLs.forEach(u=>URL.revokeObjectURL(u));
-  if(audioContext){try{await audioContext.close()}catch(e){}}
+
+  sources.forEach(s=>{
+   try{s.stop()}catch(e){}
+  });
+
+  videos.forEach(v=>{
+   try{v.pause();v.src=""}catch(e){}
+  });
+
+  urls.forEach(u=>URL.revokeObjectURL(u));
+
+  if(audioContext){
+   try{await audioContext.close()}catch(e){}
+  }
+
   exporting=false;
   $("exportBtn").disabled=false;
   $("cancelBtn").disabled=true;
