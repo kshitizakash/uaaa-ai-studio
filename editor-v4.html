@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UAAA AI Studio - Video Editor V4.0</title>
+<title>UAAA AI Studio - Video Editor V4.1</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101827;color:white;font-family:Arial,sans-serif}
@@ -13,6 +13,7 @@ h2{color:#55c5ff;margin:0}
 .card{background:#19263b;border:1px solid #30435e;border-radius:12px;padding:16px;margin-bottom:15px}
 h3{color:#61c8ff;margin-top:0}
 button{border:0;border-radius:7px;padding:10px 13px;margin:3px;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.4;cursor:not-allowed}
 .primary{background:#1689e8;color:white}
 .success{background:#16a36a;color:white}
 .danger{background:#d94b55;color:white}
@@ -25,9 +26,8 @@ label{display:block;margin-top:10px;color:#cbd8e8;font-size:13px}
 .preview{background:#050b13;border:1px solid #405574;border-radius:10px;min-height:230px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
 .preview img,.preview video{width:100%;max-height:480px;object-fit:contain}
 .preview video{background:#000}
-.subtitle{position:absolute;bottom:15px;left:5%;width:90%;text-align:center;font-size:22px;font-weight:bold;color:white;text-shadow:2px 2px 4px black, -1px -1px 3px black;pointer-events:none}
+.subtitle{position:absolute;bottom:15px;left:5%;width:90%;text-align:center;font-size:22px;font-weight:bold;color:white;text-shadow:2px 2px 4px black,-1px -1px 3px black;pointer-events:none}
 .scene{background:#111e30;border:1px solid #405574;padding:12px;border-radius:9px;margin:9px 0}
-.scene.active{border:2px solid #22a6f0}
 .badge{display:inline-block;background:#254665;color:#8bd6ff;padding:5px 9px;border-radius:20px;font-size:12px;margin:3px}
 .actions{display:flex;flex-wrap:wrap;gap:4px}
 .timeline{display:flex;gap:8px;overflow-x:auto;padding:12px 3px}
@@ -41,7 +41,7 @@ input[type=range]{padding:0}
 <body>
 
 <header>
-<h2>🎬 UAAA AI Studio – Editor V4.0</h2>
+<h2>🎬 UAAA AI Studio – Editor V4.1</h2>
 <div>
 <button class="secondary" onclick="location.href='index.html'">Dashboard</button>
 <button class="secondary" onclick="location.href='script.html'">Script</button>
@@ -68,7 +68,7 @@ input[type=range]{padding:0}
 <p id="previewStatus" class="status">Ready.</p>
 <div class="actions">
 <button class="success" onclick="playAll()">▶ Play All Scenes</button>
-<button class="danger" onclick="stopAll()">■ Stop</button>
+<button class="danger" onclick="stopAll()">■ Stop Preview</button>
 <button class="primary" onclick="playSelected()">▶ Play Selected Scene</button>
 </div>
 </div>
@@ -90,11 +90,15 @@ input[type=range]{padding:0}
 <h3>🎵 Background Music</h3>
 <label>Upload Background Music</label>
 <input id="musicFile" type="file" accept="audio/*">
+
 <div class="actions">
 <button class="primary" onclick="uploadMusic()">Upload / Replace Music</button>
-<button class="success" onclick="playMusicTest()">▶ Test Music</button>
+<button class="success" onclick="playMusicTest()">▶ Play Music</button>
+<button class="warning" onclick="pauseMusic()">⏸ Pause Music</button>
+<button class="danger" onclick="stopMusic()">■ Stop Music</button>
 <button class="danger" onclick="removeMusic()">Remove Music</button>
 </div>
+
 <div class="row">
 <div>
 <label>Music Volume: <span id="musicVolLabel">20%</span></label>
@@ -105,7 +109,12 @@ input[type=range]{padding:0}
 <input id="voiceVol" type="range" min="0" max="100" value="100">
 </div>
 </div>
-<label><input id="musicDucking" type="checkbox" checked style="width:auto"> Lower music while voice is playing</label>
+
+<label>
+<input id="musicDucking" type="checkbox" checked style="width:auto">
+Lower music while voice is playing
+</label>
+
 <p id="musicStatus" class="status">No background music uploaded.</p>
 </div>
 
@@ -259,7 +268,6 @@ async function dbDelete(kind,key){
 async function loadProject(){
  const id=$("projectSelect").value;
  if(!id){alert("Please select a project.");return}
-
  projects=readProjects();
  project=projects.find(p=>String(p.id)===String(id));
  if(!project){alert("Project not found.");return}
@@ -279,7 +287,6 @@ async function loadProject(){
 function renderTimeline(){
  const box=$("timeline");
  box.innerHTML="";
-
  scenes.forEach((s,i)=>{
   const item=document.createElement("div");
   item.className="timeline-item"+(i===selected?" active":"");
@@ -309,12 +316,14 @@ function renderEditor(){
   l.textContent=text;
   box.appendChild(l);
  }
+
  function addInput(value,onchange){
   const x=document.createElement("input");
   x.value=value||"";
   x.oninput=()=>{onchange(x.value);scheduleSave()};
   box.appendChild(x);
  }
+
  function addArea(value,onchange){
   const x=document.createElement("textarea");
   x.value=value||"";
@@ -346,7 +355,7 @@ function renderEditor(){
 
  const info=document.createElement("p");
  info.className="small";
- info.textContent="Media: "+(s.mediaName||s.mediaType|| (s.mediaKey?"Attached":"Not attached"))+" | Audio: "+(s.audioMode==="uploaded"&&s.audioKey?"Uploaded Audio":"Text-to-Speech");
+ info.textContent="Media: "+(s.mediaName||s.mediaType||(s.mediaKey?"Attached":"Not attached"))+" | Audio: "+(s.audioMode==="uploaded"&&s.audioKey?"Uploaded Audio":"Text-to-Speech");
  box.appendChild(info);
 
  const actions=document.createElement("div");
@@ -388,20 +397,29 @@ function moveScene(direction){
  if(target<0||target>=scenes.length)return;
  [scenes[selected],scenes[target]]=[scenes[target],scenes[selected]];
  selected=target;
- renderTimeline();renderEditor();renderPreview();scheduleSave();
+ renderTimeline();
+ renderEditor();
+ renderPreview();
+ scheduleSave();
 }
 
 function duplicateScene(){
  const copy={...scenes[selected],id:makeId(),mediaKey:"",audioKey:"",audioMode:"tts",mediaName:"",mediaType:""};
  scenes.splice(selected+1,0,copy);
  selected++;
- renderTimeline();renderEditor();renderPreview();scheduleSave();
+ renderTimeline();
+ renderEditor();
+ renderPreview();
+ scheduleSave();
 }
 
 function addScene(){
  scenes.push({id:makeId(),dialogue:"",visual:"",subtitle:"",duration:5,mediaKey:"",mediaType:"",audioKey:"",audioMode:"tts"});
  selected=scenes.length-1;
- renderTimeline();renderEditor();renderPreview();scheduleSave();
+ renderTimeline();
+ renderEditor();
+ renderPreview();
+ scheduleSave();
 }
 
 async function deleteScene(){
@@ -409,7 +427,10 @@ async function deleteScene(){
  if(!confirm("Delete this scene from the project?"))return;
  scenes.splice(selected,1);
  selected=Math.min(selected,scenes.length-1);
- renderTimeline();renderEditor();await renderPreview();scheduleSave();
+ renderTimeline();
+ renderEditor();
+ await renderPreview();
+ scheduleSave();
 }
 
 async function renderPreview(){
@@ -461,8 +482,15 @@ function stopAll(){
  playing=false;
  playToken++;
  if("speechSynthesis" in window)speechSynthesis.cancel();
- if(currentAudio){currentAudio.pause();currentAudio=null}
- if(musicAudio){musicAudio.pause();musicAudio=null}
+ if(currentAudio){
+  currentAudio.pause();
+  currentAudio=null;
+ }
+ if(musicAudio){
+  musicAudio.pause();
+  musicAudio.currentTime=0;
+  musicAudio=null;
+ }
  $("previewStatus").textContent="Playback stopped.";
 }
 
@@ -474,13 +502,31 @@ function setMusicVolume(value){
 
 function startMusic(){
  if(!musicBlob)return;
- if(musicAudio){musicAudio.pause();musicAudio=null}
+ if(musicAudio){
+  musicAudio.pause();
+  musicAudio=null;
+ }
  if(musicURL)URL.revokeObjectURL(musicURL);
  musicURL=URL.createObjectURL(musicBlob);
  musicAudio=new Audio(musicURL);
  musicAudio.loop=true;
  musicAudio.volume=Number($("musicVol").value)/100;
  musicAudio.play().catch(()=>{});
+}
+
+function pauseMusic(){
+ if(musicAudio){
+  musicAudio.pause();
+  $("musicStatus").textContent="⏸ Background music paused.";
+ }
+}
+
+function stopMusic(){
+ if(musicAudio){
+  musicAudio.pause();
+  musicAudio.currentTime=0;
+  $("musicStatus").textContent="■ Background music stopped.";
+ }
 }
 
 function updateMusicDucking(active){
@@ -497,6 +543,7 @@ function playAudioBlob(blob,token){
   const audio=new Audio(url);
   currentAudio=audio;
   audio.volume=Number($("voiceVol").value)/100;
+
   let done=false;
   const finish=()=>{
    if(done)return;
@@ -506,6 +553,7 @@ function playAudioBlob(blob,token){
    updateMusicDucking(false);
    resolve();
   };
+
   audio.onended=finish;
   audio.onerror=finish;
   updateMusicDucking(true);
@@ -517,16 +565,23 @@ function speakText(text,token){
  return new Promise(resolve=>{
   if(!text||!window.speechSynthesis){resolve();return}
   if(token!==playToken){resolve();return}
+
   const u=new SpeechSynthesisUtterance(text);
   u.lang=project?.voiceSettings?.language||"hi-IN";
   u.rate=Number(project?.voiceSettings?.rate)||1;
   u.pitch=Number(project?.voiceSettings?.pitch)||1;
+
+  // Voice volume control: 0.0 to 1.0
+  u.volume=Math.max(0,Math.min(1,Number($("voiceVol").value)/100));
+
   const savedName=project?.voiceSettings?.voiceName;
   const available=speechSynthesis.getVoices();
   const voice=available.find(v=>v.name===savedName);
   if(voice)u.voice=voice;
+
   u.onend=()=>{updateMusicDucking(false);resolve()};
   u.onerror=()=>{updateMusicDucking(false);resolve()};
+
   updateMusicDucking(true);
   speechSynthesis.speak(u);
  });
@@ -565,7 +620,6 @@ async function playOne(index,token){
  await Promise.all([audioPromise,timerPromise]);
 
  if(token!==playToken)return;
-
  const remaining=duration-(Date.now()-start);
  if(remaining>0)await new Promise(resolve=>setTimeout(resolve,remaining));
 }
@@ -584,7 +638,10 @@ async function playAll(){
 
  if(token===playToken){
   playing=false;
-  if(musicAudio){musicAudio.pause();musicAudio=null}
+  if(musicAudio){
+   musicAudio.pause();
+   musicAudio=null;
+  }
   $("previewStatus").textContent="✅ Full project preview completed.";
  }
 }
@@ -596,9 +653,13 @@ async function playSelected(){
  playing=true;
  startMusic();
  await playOne(selected,token);
+
  if(token===playToken){
   playing=false;
-  if(musicAudio){musicAudio.pause();musicAudio=null}
+  if(musicAudio){
+   musicAudio.pause();
+   musicAudio=null;
+  }
   $("previewStatus").textContent="Selected scene preview completed.";
  }
 }
@@ -618,9 +679,11 @@ async function uploadMusic(){
  const file=$("musicFile").files[0];
  if(!file){alert("Select an audio file first.");return}
  if(file.size>30*1024*1024){alert("Music file must be under 30 MB.");return}
+
  try{
   await dbPut("editor",String(project.id),file);
   musicBlob=file;
+  stopMusic();
   $("musicStatus").textContent="✅ Music uploaded: "+file.name;
  }catch(e){
   alert("Music upload failed.");
@@ -630,9 +693,10 @@ async function uploadMusic(){
 async function removeMusic(){
  if(!project)return;
  if(!confirm("Remove background music?"))return;
+
+ stopMusic();
  await dbDelete("editor",String(project.id));
  musicBlob=null;
- if(musicAudio){musicAudio.pause();musicAudio=null}
  $("musicStatus").textContent="Background music removed.";
 }
 
@@ -676,11 +740,19 @@ function scheduleSave(){
 }
 
 $("musicVol").oninput=()=>{
- $("musicVolLabel").textContent=$("musicVol").value+"%";
- setMusicVolume($("musicVol").value);
+ const value=Number($("musicVol").value);
+ $("musicVolLabel").textContent=value+"%";
+ setMusicVolume(value);
 };
+
 $("voiceVol").oninput=()=>{
- $("voiceVolLabel").textContent=$("voiceVol").value+"%";
+ const value=Number($("voiceVol").value);
+ $("voiceVolLabel").textContent=value+"%";
+
+ // Uploaded audio: apply volume immediately during playback
+ if(currentAudio){
+  currentAudio.volume=value/100;
+ }
 };
 
 window.addEventListener("beforeunload",()=>{
