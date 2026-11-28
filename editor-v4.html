@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UAAA AI Studio - Editor V4.2</title>
+<title>UAAA AI Studio - Editor V4.3</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101827;color:white;font-family:Arial,sans-serif}
@@ -13,32 +13,27 @@ h2{color:#55c5ff;margin:0}
 .card{background:#19263b;border:1px solid #30435e;border-radius:12px;padding:16px;margin-bottom:15px}
 h3{color:#61c8ff;margin-top:0}
 button{border:0;border-radius:7px;padding:10px 13px;margin:3px;cursor:pointer;font-weight:bold}
-.primary{background:#1689e8;color:white}
-.success{background:#16a36a;color:white}
-.danger{background:#d94b55;color:white}
-.secondary{background:#405574;color:white}
+.primary{background:#1689e8;color:white}.success{background:#16a36a;color:white}
+.danger{background:#d94b55;color:white}.secondary{background:#405574;color:white}
 .warning{background:#bd8125;color:white}
 input,select,textarea{width:100%;padding:10px;background:#0e1929;color:white;border:1px solid #405574;border-radius:7px;margin:5px 0}
 label{display:block;margin-top:10px;color:#cbd8e8;font-size:13px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .preview{background:#050b13;border:1px solid #405574;border-radius:10px;min-height:230px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
 .preview img,.preview video{width:100%;max-height:480px;object-fit:contain}
-.preview video{background:#000}
-.subtitle{position:absolute;bottom:15px;left:5%;width:90%;text-align:center;font-size:22px;font-weight:bold;color:white;text-shadow:2px 2px 4px black,-1px -1px 3px black;pointer-events:none}
-.small{font-size:12px;color:#a9bdd4}
-.status{color:#6ee7a8;font-size:13px;margin-top:8px}
+.subtitle{position:absolute;bottom:15px;left:5%;width:90%;text-align:center;font-size:22px;font-weight:bold;color:white;text-shadow:2px 2px 4px black;pointer-events:none}
+.small{font-size:12px;color:#a9bdd4}.status{color:#6ee7a8;font-size:13px;margin-top:8px}
 .actions{display:flex;flex-wrap:wrap;gap:4px}
 .timeline{display:flex;gap:8px;overflow-x:auto;padding:12px 3px}
 .timeline-item{min-width:105px;background:#253b55;padding:12px;border-radius:8px;text-align:center;cursor:pointer}
 .timeline-item.active{outline:3px solid #24a5ec}
 input[type=range]{padding:0}
-@media(max-width:650px){.row{grid-template-columns:1fr}.container{padding:8px}.preview{min-height:180px}.subtitle{font-size:17px}}
+.music-box{background:#101d30;border:1px solid #405574;border-radius:9px;padding:12px;margin-top:12px}
+@media(max-width:650px){.container{padding:8px}.preview{min-height:180px}.subtitle{font-size:17px}}
 </style>
 </head>
 <body>
-
 <header>
-<h2>🎬 UAAA AI Studio – Editor V4.2</h2>
+<h2>🎬 UAAA AI Studio – Editor V4.3</h2>
 <div>
 <button class="secondary" onclick="location.href='index.html'">Dashboard</button>
 <button class="secondary" onclick="location.href='script.html'">Script</button>
@@ -48,7 +43,6 @@ input[type=range]{padding:0}
 </header>
 
 <div class="container">
-
 <div class="card">
 <h3>📁 Load Project</h3>
 <select id="projectSelect"><option value="">-- Select Project --</option></select>
@@ -58,9 +52,7 @@ input[type=range]{padding:0}
 
 <div class="card">
 <h3>🎞️ Video Preview</h3>
-<div class="preview" id="preview">
-<span class="small">Load a project to start preview.</span>
-</div>
+<div class="preview" id="preview"><span class="small">Load a project to start preview.</span></div>
 <p id="previewStatus" class="status">Ready.</p>
 <div class="actions">
 <button class="success" onclick="playAll()">▶ Play All Scenes</button>
@@ -81,35 +73,27 @@ input[type=range]{padding:0}
 
 <div class="card">
 <h3>🔊 Audio Mixing Controls</h3>
-
 <label>Original Video Volume: <span id="videoVolLabel">100%</span></label>
 <input id="videoVol" type="range" min="0" max="100" value="100">
 
 <label>Voice Volume: <span id="voiceVolLabel">100%</span></label>
 <input id="voiceVol" type="range" min="0" max="100" value="100">
 
-<label>Background Music Volume: <span id="musicVolLabel">20%</span></label>
+<label>Global Background Music Volume: <span id="musicVolLabel">20%</span></label>
 <input id="musicVol" type="range" min="0" max="100" value="20">
 
-<label>
-<input id="musicDucking" type="checkbox" checked style="width:auto">
-Lower background music during voice-over
-</label>
-
-<label>
-<input id="videoDucking" type="checkbox" checked style="width:auto">
-Lower original video audio during voice-over
-</label>
-
-<p class="small">Voice-over चलते समय Original Video Audio और Background Music अपने आप कम होंगे। Voice-over खत्म होने पर दोनों अपने निर्धारित वॉल्यूम पर वापस आएँगे।</p>
+<label><input id="musicDucking" type="checkbox" checked style="width:auto"> Lower background music during voice-over</label>
+<label><input id="videoDucking" type="checkbox" checked style="width:auto"> Lower original video audio during voice-over</label>
+<p class="small">Voice-over चलते समय Music और Original Video Audio अपने आप कम होंगे।</p>
 </div>
 
 <div class="card">
-<h3>🎵 Background Music</h3>
-<label>Upload Background Music</label>
+<h3>🎵 Global Background Music</h3>
+<p class="small">यह म्यूजिक पूरे वीडियो में लगातार चलेगा। Scene-wise Music चुनने पर यह उस सीन के लिए रुकेगा और बाद के Global Music सीन में वहीं से जारी होगा।</p>
+<label>Upload Global Background Music</label>
 <input id="musicFile" type="file" accept="audio/*">
 <div class="actions">
-<button class="primary" onclick="uploadMusic()">Upload / Replace Music</button>
+<button class="primary" onclick="uploadMusic()">Upload / Replace Global Music</button>
 <button class="success" onclick="playMusicTest()">▶ Play Music</button>
 <button class="warning" onclick="pauseMusic()">⏸ Pause Music</button>
 <button class="danger" onclick="stopMusic()">■ Stop Music</button>
@@ -123,7 +107,6 @@ Lower original video audio during voice-over
 <button class="primary" onclick="saveProject()">Save All Changes</button>
 <p id="saveStatus" class="status"></p>
 </div>
-
 </div>
 
 <script>
@@ -132,21 +115,15 @@ const MEDIA_DB="UAAA_Media_DB";
 const VOICE_DB="UAAA_Voice_Audio_DB";
 const EDITOR_DB="UAAA_Editor_DB";
 
-let projects=[];
-let project=null;
-let scenes=[];
-let selected=0;
-let playing=false;
-let playToken=0;
-let currentAudio=null;
-let currentVideo=null;
-let musicAudio=null;
-let musicBlob=null;
-let musicURL=null;
-let mediaURL=null;
-let autoTimer=null;
+let projects=[],project=null,scenes=[],selected=0;
+let playing=false,playToken=0,autoTimer=null;
+let currentAudio=null,currentVideo=null;
+let musicAudio=null,sceneMusicAudio=null,musicBlob=null;
+let mediaURL=null,musicURL=null,sceneMusicURL=null;
+let globalPaused=false;
 
 const $=id=>document.getElementById(id);
+const makeId=()=> "scene_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
 
 function readProjects(){
  try{
@@ -160,102 +137,106 @@ function populateProjects(){
  $("projectSelect").innerHTML='<option value="">-- Select Project --</option>';
  projects.forEach(p=>{
   const o=document.createElement("option");
-  o.value=p.id;
-  o.textContent=p.name||p.title||"Untitled Project";
+  o.value=p.id;o.textContent=p.name||p.title||"Untitled Project";
   $("projectSelect").appendChild(o);
  });
-}
-
-function makeId(){
- return "scene_"+Date.now()+"_"+Math.random().toString(36).slice(2,7);
 }
 
 function normalizeScenes(p){
  if(Array.isArray(p.scenes)&&p.scenes.length){
   return p.scenes.map(s=>({
-   ...s,
-   id:s.id||makeId(),
-   dialogue:s.dialogue||"",
-   visual:s.visual||"",
-   subtitle:s.subtitle||"",
+   ...s,id:s.id||makeId(),dialogue:s.dialogue||"",
+   visual:s.visual||"",subtitle:s.subtitle||"",
    duration:Number(s.duration)||5,
-   mediaKey:s.mediaKey||"",
-   mediaType:s.mediaType||"",
+   mediaKey:s.mediaKey||"",mediaType:s.mediaType||"",
    audioKey:s.audioKey||"",
-   audioMode:s.audioMode||(s.audioKey?"uploaded":"tts")
+   audioMode:s.audioMode||(s.audioKey?"uploaded":"tts"),
+   musicMode:s.musicMode||"global",
+   sceneMusicKey:s.sceneMusicKey||"",
+   sceneMusicName:s.sceneMusicName||""
   }));
  }
-
- const d=p.dialogues||[];
- const v=p.visuals||[];
- const t=p.timeline||[];
+ const d=p.dialogues||[],v=p.visuals||[],t=p.timeline||[];
  const count=Math.max(d.length,v.length,t.length,1);
-
  return Array.from({length:count},(_,i)=>({
-  id:makeId(),
-  dialogue:d[i]?.text||"",
-  visual:v[i]?.description||"",
-  subtitle:v[i]?.subtitle||"",
+  id:makeId(),dialogue:d[i]?.text||"",
+  visual:v[i]?.description||"",subtitle:v[i]?.subtitle||"",
   duration:Number(t[i]?.duration)||5,
-  mediaKey:"",
-  mediaType:"",
+  mediaKey:"",mediaType:"",
   audioKey:d[i]?.audioKey||"",
-  audioMode:d[i]?.audioMode||(d[i]?.audioKey?"uploaded":"tts")
+  audioMode:d[i]?.audioMode||(d[i]?.audioKey?"uploaded":"tts"),
+  musicMode:"global",sceneMusicKey:"",sceneMusicName:""
  }));
 }
 
-function openDB(name,store){
+/* IndexedDB: version 2 adds sceneMusic without deleting old music */
+function openDB(name){
  return new Promise((resolve,reject)=>{
-  const req=indexedDB.open(name,1);
+  const req=indexedDB.open(name,2);
   req.onupgradeneeded=()=>{
-   if(!req.result.objectStoreNames.contains(store))
-    req.result.createObjectStore(store);
+   const db=req.result;
+   if(!db.objectStoreNames.contains("music"))db.createObjectStore("music");
+   if(!db.objectStoreNames.contains("sceneMusic"))db.createObjectStore("sceneMusic");
   };
   req.onsuccess=()=>resolve(req.result);
   req.onerror=()=>reject(req.error);
  });
 }
-
-const dbPromises={};
-function getDB(kind){
- const config={
-  media:[MEDIA_DB,"media"],
-  voice:[VOICE_DB,"audio"],
-  editor:[EDITOR_DB,"music"]
- };
- if(!dbPromises[kind]){
-  dbPromises[kind]=openDB(config[kind][0],config[kind][1]);
- }
- return dbPromises[kind];
+let editorDBPromise=null;
+function getEditorDB(){
+ if(!editorDBPromise)editorDBPromise=openDB(EDITOR_DB);
+ return editorDBPromise;
 }
-
-async function dbGet(kind,key){
- const db=await getDB(kind);
- const storeName={media:"media",voice:"audio",editor:"music"}[kind];
+async function dbAction(store,action,key,value){
+ const db=await getEditorDB();
  return new Promise((resolve,reject)=>{
-  const req=db.transaction(storeName,"readonly").objectStore(storeName).get(key);
+  const tx=db.transaction(store,action==="get"?"readonly":"readwrite");
+  const os=tx.objectStore(store);
+  let req;
+  if(action==="get")req=os.get(key);
+  if(action==="put")req=os.put(value,key);
+  if(action==="delete")req=os.delete(key);
+  if(action==="get"){
+   req.onsuccess=()=>resolve(req.result);
+   req.onerror=()=>reject(req.error);
+  }else{
+   tx.oncomplete=()=>resolve(true);
+   tx.onerror=()=>reject(tx.error);
+  }
+ });
+}
+function openOtherDB(name,store){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(name,1);
+  req.onupgradeneeded=()=>{
+   if(!req.result.objectStoreNames.contains(store))req.result.createObjectStore(store);
+  };
   req.onsuccess=()=>resolve(req.result);
   req.onerror=()=>reject(req.error);
  });
 }
-
-async function dbPut(kind,key,value){
- const db=await getDB(kind);
- const storeName={media:"media",voice:"audio",editor:"music"}[kind];
+async function dbGetOther(name,store,key){
+ const db=await openOtherDB(name,store);
  return new Promise((resolve,reject)=>{
-  const tx=db.transaction(storeName,"readwrite");
-  tx.objectStore(storeName).put(value,key);
+  const req=db.transaction(store,"readonly").objectStore(store).get(key);
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error);
+ });
+}
+async function dbPutOther(name,store,key,value){
+ const db=await openOtherDB(name,store);
+ return new Promise((resolve,reject)=>{
+  const tx=db.transaction(store,"readwrite");
+  tx.objectStore(store).put(value,key);
   tx.oncomplete=()=>resolve(true);
   tx.onerror=()=>reject(tx.error);
  });
 }
-
-async function dbDelete(kind,key){
- const db=await getDB(kind);
- const storeName={media:"media",voice:"audio",editor:"music"}[kind];
+async function dbDeleteOther(name,store,key){
+ const db=await openOtherDB(name,store);
  return new Promise((resolve,reject)=>{
-  const tx=db.transaction(storeName,"readwrite");
-  tx.objectStore(storeName).delete(key);
+  const tx=db.transaction(store,"readwrite");
+  tx.objectStore(store).delete(key);
   tx.oncomplete=()=>resolve(true);
   tx.onerror=()=>reject(tx.error);
  });
@@ -267,32 +248,22 @@ async function loadProject(){
  projects=readProjects();
  project=projects.find(p=>String(p.id)===String(id));
  if(!project){alert("Project not found.");return}
-
  stopAll();
- scenes=normalizeScenes(project);
- selected=0;
-
+ scenes=normalizeScenes(project);selected=0;
  await loadMusic();
- renderTimeline();
- renderEditor();
- await renderPreview();
-
+ renderTimeline();renderEditor();await renderPreview();
  $("projectStatus").textContent="Loaded: "+(project.name||project.title||"Untitled Project");
 }
 
 function renderTimeline(){
- const box=$("timeline");
- box.innerHTML="";
+ const box=$("timeline");box.innerHTML="";
  scenes.forEach((s,i)=>{
   const item=document.createElement("div");
   item.className="timeline-item"+(i===selected?" active":"");
-  item.innerHTML="<strong>Scene "+(i+1)+"</strong><br><span class='small'>"+(Number(s.duration)||5)+" sec</span><br><span class='small'>"+(s.mediaKey?"🎬 Media":"No Media")+"</span>";
+  const musicLabel=s.musicMode==="none"?"🔇 No Music":s.musicMode==="scene"?"🎵 Scene Music":"🎼 Global Music";
+  item.innerHTML="<strong>Scene "+(i+1)+"</strong><br><span class='small'>"+(Number(s.duration)||5)+" sec</span><br><span class='small'>"+(s.mediaKey?"🎬 Media":"No Media")+"</span><br><span class='small'>"+musicLabel+"</span>";
   item.onclick=async()=>{
-   stopAll();
-   selected=i;
-   renderTimeline();
-   renderEditor();
-   await renderPreview();
+   stopAll();selected=i;renderTimeline();renderEditor();await renderPreview();
   };
   box.appendChild(item);
  });
@@ -300,64 +271,85 @@ function renderTimeline(){
 
 function renderEditor(){
  const box=$("sceneEditor");
- if(!scenes[selected]){
-  box.innerHTML="<p>No scene selected.</p>";
-  return;
+ if(!scenes[selected]){box.innerHTML="<p>No scene selected.</p>";return}
+ const s=scenes[selected];box.innerHTML="";
+ function label(t){const l=document.createElement("label");l.textContent=t;box.appendChild(l)}
+ function area(v,fn){
+  const x=document.createElement("textarea");x.value=v||"";
+  x.oninput=()=>{fn(x.value);scheduleSave()};box.appendChild(x);
+ }
+ function input(v,fn){
+  const x=document.createElement("input");x.value=v||"";
+  x.oninput=()=>{fn(x.value);scheduleSave()};box.appendChild(x);
  }
 
- const s=scenes[selected];
- box.innerHTML="";
-
- function addLabel(text){
-  const l=document.createElement("label");
-  l.textContent=text;
-  box.appendChild(l);
- }
-
- function addArea(value,onchange){
-  const x=document.createElement("textarea");
-  x.value=value||"";
-  x.oninput=()=>{onchange(x.value);scheduleSave()};
-  box.appendChild(x);
- }
-
- function addInput(value,onchange){
-  const x=document.createElement("input");
-  x.value=value||"";
-  x.oninput=()=>{onchange(x.value);scheduleSave()};
-  box.appendChild(x);
- }
-
- addLabel("Dialogue / Voice Text");
- addArea(s.dialogue,v=>s.dialogue=v);
-
- addLabel("Visual Description");
- addArea(s.visual,v=>s.visual=v);
-
- addLabel("Subtitle");
- addInput(s.subtitle,v=>s.subtitle=v);
-
- addLabel("Scene Duration (seconds)");
+ label("Dialogue / Voice Text");area(s.dialogue,v=>s.dialogue=v);
+ label("Visual Description");area(s.visual,v=>s.visual=v);
+ label("Subtitle");input(s.subtitle,v=>s.subtitle=v);
+ label("Scene Duration (seconds)");
  const duration=document.createElement("input");
- duration.type="number";
- duration.min="1";
- duration.max="300";
- duration.value=s.duration||5;
- duration.onchange=()=>{
-  s.duration=Math.max(1,Number(duration.value)||5);
-  renderTimeline();
-  scheduleSave();
- };
+ duration.type="number";duration.min="1";duration.max="300";duration.value=s.duration||5;
+ duration.onchange=()=>{s.duration=Math.max(1,Number(duration.value)||5);renderTimeline();scheduleSave()};
  box.appendChild(duration);
 
- const info=document.createElement("p");
- info.className="small";
+ const info=document.createElement("p");info.className="small";
  info.textContent="Media: "+(s.mediaName||s.mediaType||(s.mediaKey?"Attached":"Not attached"))+" | Audio: "+(s.audioMode==="uploaded"&&s.audioKey?"Uploaded Audio":"Text-to-Speech");
  box.appendChild(info);
 
- const actions=document.createElement("div");
- actions.className="actions";
+ const musicBox=document.createElement("div");musicBox.className="music-box";
+ const heading=document.createElement("h3");heading.textContent="🎵 Scene "+(selected+1)+" Music Settings";musicBox.appendChild(heading);
+ const modeLabel=document.createElement("label");modeLabel.textContent="Music Mode";musicBox.appendChild(modeLabel);
+ const select=document.createElement("select");
+ [
+  ["global","Global Music – Continue main music"],
+  ["scene","Scene-wise Music – Play separate music"],
+  ["none","No Music – Mute music in this scene"]
+ ].forEach(([v,t])=>{
+  const o=document.createElement("option");o.value=v;o.textContent=t;select.appendChild(o);
+ });
+ select.value=s.musicMode||"global";
+ select.onchange=()=>{
+  s.musicMode=select.value;
+  if(s.musicMode!=="scene")s.sceneMusicKey="";
+  renderEditor();renderTimeline();scheduleSave();
+ };
+ musicBox.appendChild(select);
 
+ if(s.musicMode==="scene"){
+  const uploadLabel=document.createElement("label");uploadLabel.textContent="Upload music for this scene";musicBox.appendChild(uploadLabel);
+  const file=document.createElement("input");file.type="file";file.accept="audio/*";musicBox.appendChild(file);
+  const upload=document.createElement("button");upload.className="primary";upload.textContent="Upload / Replace Scene Music";
+  upload.onclick=async()=>{
+   const f=file.files[0];
+   if(!f){alert("Select an audio file first.");return}
+   if(f.size>30*1024*1024){alert("Audio file must be under 30 MB.");return}
+   try{
+    const key=String(project.id)+"_"+s.id;
+    await dbAction("sceneMusic","put",key,f);
+    s.sceneMusicKey=key;s.sceneMusicName=f.name;
+    $("sceneMusicStatus").textContent="✅ Uploaded: "+f.name;
+    scheduleSave();renderTimeline();
+   }catch(e){alert("Scene music upload failed.");}
+  };
+  musicBox.appendChild(upload);
+  const status=document.createElement("p");status.id="sceneMusicStatus";status.className="status";
+  status.textContent=s.sceneMusicKey?"Saved scene music: "+(s.sceneMusicName||"Audio file"):"No scene music uploaded.";
+  musicBox.appendChild(status);
+  if(s.sceneMusicKey){
+   const remove=document.createElement("button");remove.className="danger";remove.textContent="Remove Scene Music";
+   remove.onclick=async()=>{
+    await dbAction("sceneMusic","delete",s.sceneMusicKey);
+    s.sceneMusicKey="";s.sceneMusicName="";
+    renderEditor();renderTimeline();scheduleSave();
+   };
+   musicBox.appendChild(remove);
+  }
+ }
+ const note=document.createElement("p");note.className="small";
+ note.textContent="Global चुनने पर मुख्य म्यूजिक जारी रहेगा। Scene-wise चुनने पर इस सीन का अलग म्यूजिक बजेगा। अगले Global सीन में मुख्य म्यूजिक वहीं से फिर शुरू होगा।";
+ musicBox.appendChild(note);box.appendChild(musicBox);
+
+ const actions=document.createElement("div");actions.className="actions";
  const buttons=[
   ["↑ Move Up","secondary",()=>moveScene(-1),selected===0],
   ["↓ Move Down","secondary",()=>moveScene(1),selected===scenes.length-1],
@@ -365,446 +357,135 @@ function renderEditor(){
   ["+ Add Scene","success",addScene,false],
   ["Delete Scene","danger",deleteScene,false]
  ];
-
- buttons.forEach(([text,cls,fn,disabled])=>{
-  const b=document.createElement("button");
-  b.textContent=text;b.className=cls;b.disabled=disabled;b.onclick=fn;
-  actions.appendChild(b);
+ buttons.forEach(([t,c,fn,disabled])=>{
+  const b=document.createElement("button");b.textContent=t;b.className=c;b.disabled=disabled;b.onclick=fn;actions.appendChild(b);
  });
  box.appendChild(actions);
 }
 
-function moveScene(direction){
- const target=selected+direction;
- if(target<0||target>=scenes.length)return;
+function moveScene(d){
+ const target=selected+d;if(target<0||target>=scenes.length)return;
  [scenes[selected],scenes[target]]=[scenes[target],scenes[selected]];
- selected=target;
- renderTimeline();renderEditor();renderPreview();scheduleSave();
+ selected=target;renderTimeline();renderEditor();renderPreview();scheduleSave();
 }
-
 function duplicateScene(){
- const copy={...scenes[selected],id:makeId(),mediaKey:"",audioKey:"",audioMode:"tts",mediaName:"",mediaType:""};
- scenes.splice(selected+1,0,copy);
- selected++;
+ const copy={...scenes[selected],id:makeId(),mediaKey:"",audioKey:"",audioMode:"tts",mediaName:"",mediaType:"",sceneMusicKey:"",sceneMusicName:"",musicMode:"global"};
+ scenes.splice(selected+1,0,copy);selected++;
  renderTimeline();renderEditor();renderPreview();scheduleSave();
 }
-
 function addScene(){
- scenes.push({id:makeId(),dialogue:"",visual:"",subtitle:"",duration:5,mediaKey:"",mediaType:"",audioKey:"",audioMode:"tts"});
- selected=scenes.length-1;
- renderTimeline();renderEditor();renderPreview();scheduleSave();
+ scenes.push({id:makeId(),dialogue:"",visual:"",subtitle:"",duration:5,mediaKey:"",mediaType:"",audioKey:"",audioMode:"tts",musicMode:"global",sceneMusicKey:"",sceneMusicName:""});
+ selected=scenes.length-1;renderTimeline();renderEditor();renderPreview();scheduleSave();
 }
-
 function deleteScene(){
  if(scenes.length<=1){alert("At least one scene is required.");return}
  if(!confirm("Delete this scene?"))return;
- scenes.splice(selected,1);
+ const old=scenes.splice(selected,1)[0];
+ if(old.sceneMusicKey)dbAction("sceneMusic","delete",old.sceneMusicKey);
  selected=Math.min(selected,scenes.length-1);
  renderTimeline();renderEditor();renderPreview();scheduleSave();
 }
 
 async function renderPreview(){
- const box=$("preview");
- box.innerHTML="";
- currentVideo=null;
-
+ const box=$("preview");box.innerHTML="";currentVideo=null;
  if(mediaURL){URL.revokeObjectURL(mediaURL);mediaURL=null}
- const s=scenes[selected];
- if(!s)return;
-
+ const s=scenes[selected];if(!s)return;
  if(s.mediaKey){
   try{
-   const blob=await dbGet("media",s.mediaKey);
+   const blob=await dbGetOther(MEDIA_DB,"media",s.mediaKey);
    if(blob){
     mediaURL=URL.createObjectURL(blob);
     if(s.mediaType==="video"||blob.type.startsWith("video/")){
      const video=document.createElement("video");
-     video.src=mediaURL;
-     video.controls=true;
-     video.playsInline=true;
-     video.preload="auto";
-     video.muted=false;
-     video.volume=Number($("videoVol").value)/100;
-     video.style.width="100%";
-     video.addEventListener("ended",()=>{
-      $("previewStatus").textContent="Video clip ended.";
-     });
-     box.appendChild(video);
-     currentVideo=video;
+     video.src=mediaURL;video.controls=true;video.playsInline=true;video.preload="auto";
+     video.volume=Number($("videoVol").value)/100;video.style.width="100%";
+     box.appendChild(video);currentVideo=video;
     }else{
-     const img=document.createElement("img");
-     img.src=mediaURL;
-     img.alt="Scene media";
-     box.appendChild(img);
+     const img=document.createElement("img");img.src=mediaURL;img.alt="Scene media";box.appendChild(img);
     }
-   }else{
-    box.textContent="Media file not found.";
-   }
-  }catch(e){
-   box.textContent="Unable to load media.";
-  }
+   }else box.textContent="Media file not found.";
+  }catch(e){box.textContent="Unable to load media."}
  }else{
-  const text=document.createElement("span");
-  text.className="small";
-  text.textContent=s.visual||"No media attached to this scene.";
-  box.appendChild(text);
+  const text=document.createElement("span");text.className="small";
+  text.textContent=s.visual||"No media attached to this scene.";box.appendChild(text);
  }
-
  if(s.subtitle){
-  const sub=document.createElement("div");
-  sub.className="subtitle";
-  sub.textContent=s.subtitle;
-  box.appendChild(sub);
+  const sub=document.createElement("div");sub.className="subtitle";sub.textContent=s.subtitle;box.appendChild(sub);
  }
  $("previewStatus").textContent="Previewing Scene "+(selected+1)+" of "+scenes.length;
 }
 
+function stopSceneMusic(){
+ if(sceneMusicAudio){sceneMusicAudio.pause();sceneMusicAudio.currentTime=0;sceneMusicAudio=null}
+ if(sceneMusicURL){URL.revokeObjectURL(sceneMusicURL);sceneMusicURL=null}
+}
 function stopAll(){
- playing=false;
- playToken++;
-
- if("speechSynthesis" in window)speechSynthesis.cancel();
-
- if(currentAudio){
-  currentAudio.pause();
-  currentAudio=null;
- }
-
- if(currentVideo){
-  currentVideo.pause();
-  try{currentVideo.currentTime=0}catch(e){}
- }
-
- if(musicAudio){
-  musicAudio.pause();
-  musicAudio.currentTime=0;
-  musicAudio=null;
- }
-
+ playing=false;playToken++;
+ if("speechSynthesis"in window)speechSynthesis.cancel();
+ if(currentAudio){currentAudio.pause();currentAudio=null}
+ if(currentVideo){currentVideo.pause();try{currentVideo.currentTime=0}catch(e){}}
+ if(musicAudio){musicAudio.pause();musicAudio.currentTime=0;musicAudio=null}
+ stopSceneMusic();
+ globalPaused=false;
  $("previewStatus").textContent="Playback stopped.";
 }
 
 function updateAudioMix(voiceActive){
  const videoBase=Number($("videoVol").value)/100;
  const musicBase=Number($("musicVol").value)/100;
-
  if(currentVideo){
-  currentVideo.volume=voiceActive&&$("videoDucking").checked
-   ?videoBase*0.15:videoBase;
+  currentVideo.volume=voiceActive&&$("videoDucking").checked?videoBase*.15:videoBase;
  }
-
  if(musicAudio){
-  musicAudio.volume=voiceActive&&$("musicDucking").checked
-   ?Math.min(musicBase,0.08):musicBase;
+  musicAudio.volume=voiceActive&&$("musicDucking").checked?Math.min(musicBase,.08):musicBase;
+ }
+ if(sceneMusicAudio){
+  sceneMusicAudio.volume=voiceActive&&$("musicDucking").checked?Math.min(musicBase,.08):musicBase;
  }
 }
 
 function playAudioBlob(blob,token){
  return new Promise(resolve=>{
   if(token!==playToken){resolve();return}
-  const url=URL.createObjectURL(blob);
-  const audio=new Audio(url);
-  currentAudio=audio;
-  audio.volume=Number($("voiceVol").value)/100;
-
+  const url=URL.createObjectURL(blob),audio=new Audio(url);
+  currentAudio=audio;audio.volume=Number($("voiceVol").value)/100;
   let done=false;
   const finish=()=>{
-   if(done)return;
-   done=true;
-   URL.revokeObjectURL(url);
+   if(done)return;done=true;URL.revokeObjectURL(url);
    if(currentAudio===audio)currentAudio=null;
-   updateAudioMix(false);
-   resolve();
+   updateAudioMix(false);resolve();
   };
-
-  audio.onended=finish;
-  audio.onerror=finish;
-  updateAudioMix(true);
-  audio.play().catch(finish);
+  audio.onended=finish;audio.onerror=finish;
+  updateAudioMix(true);audio.play().catch(finish);
  });
 }
-
 function speakText(text,token){
  return new Promise(resolve=>{
-  if(!text||!window.speechSynthesis||token!==playToken){
-   resolve();return;
-  }
-
+  if(!text||!window.speechSynthesis||token!==playToken){resolve();return}
   const u=new SpeechSynthesisUtterance(text);
   u.lang=project?.voiceSettings?.language||"hi-IN";
   u.rate=Number(project?.voiceSettings?.rate)||1;
   u.pitch=Number(project?.voiceSettings?.pitch)||1;
   u.volume=Math.max(0,Math.min(1,Number($("voiceVol").value)/100));
-
   const savedName=project?.voiceSettings?.voiceName;
   const voice=speechSynthesis.getVoices().find(v=>v.name===savedName);
   if(voice)u.voice=voice;
-
   let done=false;
-  const finish=()=>{
-   if(done)return;
-   done=true;
-   updateAudioMix(false);
-   resolve();
-  };
-
-  u.onend=finish;
-  u.onerror=finish;
-
-  updateAudioMix(true);
-  speechSynthesis.speak(u);
+  const finish=()=>{if(done)return;done=true;updateAudioMix(false);resolve()};
+  u.onend=finish;u.onerror=finish;
+  updateAudioMix(true);speechSynthesis.speak(u);
  });
 }
 
 async function playVideoForScene(token){
  if(token!==playToken||!currentVideo)return;
-
- currentVideo.pause();
- try{currentVideo.currentTime=0}catch(e){}
-
+ currentVideo.pause();try{currentVideo.currentTime=0}catch(e){}
  currentVideo.volume=Number($("videoVol").value)/100;
- currentVideo.muted=false;
-
- try{
-  await currentVideo.play();
-  $("previewStatus").textContent="▶ Video playing – Scene "+(selected+1);
- }catch(e){
-  $("previewStatus").textContent="Browser blocked automatic video playback. Tap the video Play button.";
- }
+ try{await currentVideo.play();$("previewStatus").textContent="▶ Video playing – Scene "+(selected+1)}
+ catch(e){$("previewStatus").textContent="Browser blocked automatic video playback. Tap the video Play button."}
 }
 
-async function playOne(index,token){
- if(token!==playToken)return;
- const s=scenes[index];
- if(!s)return;
-
- selected=index;
- renderTimeline();
- renderEditor();
- await renderPreview();
-
- if(token!==playToken)return;
-
- const duration=Math.max(1,Number(s.duration)||5)*1000;
- const start=Date.now();
-
- // Start the video automatically when the scene begins.
- if(currentVideo){
-  await playVideoForScene(token);
- }
-
- let audioPromise=Promise.resolve();
-
- if(s.audioMode==="uploaded"&&s.audioKey){
-  try{
-   const blob=await dbGet("voice",s.audioKey);
-   if(token!==playToken)return;
-   if(blob)audioPromise=playAudioBlob(blob,token);
-   else audioPromise=speakText(s.dialogue,token);
-  }catch(e){
-   audioPromise=speakText(s.dialogue,token);
-  }
- }else{
-  audioPromise=speakText(s.dialogue,token);
- }
-
- await Promise.all([
-  audioPromise,
-  new Promise(resolve=>setTimeout(resolve,duration))
- ]);
-
- if(token!==playToken)return;
-
- const remaining=duration-(Date.now()-start);
- if(remaining>0)await new Promise(resolve=>setTimeout(resolve,remaining));
-
- if(currentVideo)currentVideo.pause();
- updateAudioMix(false);
-}
-
-async function playAll(){
- if(!project||!scenes.length){alert("Load a project first.");return}
- stopAll();
- const token=playToken;
- playing=true;
- startMusic();
-
- for(let i=0;i<scenes.length;i++){
-  if(!playing||token!==playToken)break;
-  await playOne(i,token);
- }
-
- if(token===playToken){
-  playing=false;
-  if(musicAudio){musicAudio.pause();musicAudio=null}
-  $("previewStatus").textContent="✅ Full project preview completed.";
- }
-}
-
-async function playSelected(){
- if(!project||!scenes.length)return;
- stopAll();
- const token=playToken;
- playing=true;
- startMusic();
- await playOne(selected,token);
-
- if(token===playToken){
-  playing=false;
-  if(musicAudio){musicAudio.pause();musicAudio=null}
-  $("previewStatus").textContent="Selected scene preview completed.";
- }
-}
-
-async function loadMusic(){
- try{
-  musicBlob=await dbGet("editor",String(project.id));
-  $("musicStatus").textContent=musicBlob
-   ?"Background music is saved for this project."
-   :"No background music uploaded.";
- }catch(e){
-  musicBlob=null;
-  $("musicStatus").textContent="No background music uploaded.";
- }
-}
-
-async function uploadMusic(){
- if(!project){alert("Load a project first.");return}
- const file=$("musicFile").files[0];
- if(!file){alert("Select an audio file first.");return}
- if(file.size>30*1024*1024){alert("Music file must be under 30 MB.");return}
-
- try{
-  stopMusic();
-  await dbPut("editor",String(project.id),file);
-  musicBlob=file;
-  $("musicStatus").textContent="✅ Music uploaded: "+file.name;
- }catch(e){
-  alert("Music upload failed.");
- }
-}
-
-function startMusic(){
- if(!musicBlob)return;
- if(musicAudio){
-  musicAudio.pause();
-  musicAudio=null;
- }
- if(musicURL)URL.revokeObjectURL(musicURL);
- musicURL=URL.createObjectURL(musicBlob);
- musicAudio=new Audio(musicURL);
- musicAudio.loop=true;
- musicAudio.volume=Number($("musicVol").value)/100;
- musicAudio.play().catch(()=>{
-  $("musicStatus").textContent="Tap Play Music to start playback.";
- });
-}
-
-function playMusicTest(){
- if(!musicBlob){alert("Upload background music first.");return}
- if(!musicAudio){
-  startMusic();
- }else{
-  musicAudio.play().catch(()=>{});
- }
- $("musicStatus").textContent="Background music playing.";
-}
-
-function pauseMusic(){
- if(musicAudio){
-  musicAudio.pause();
-  $("musicStatus").textContent="⏸ Background music paused.";
- }
-}
-
-function stopMusic(){
- if(musicAudio){
-  musicAudio.pause();
-  musicAudio.currentTime=0;
-  $("musicStatus").textContent="■ Background music stopped.";
- }
-}
-
-async function removeMusic(){
- if(!project)return;
- if(!confirm("Remove background music?"))return;
- stopMusic();
- await dbDelete("editor",String(project.id));
- musicBlob=null;
- $("musicStatus").textContent="Background music removed.";
-}
-
-function saveProject(){
- if(!project){alert("Load a project first.");return}
- projects=readProjects();
- const index=projects.findIndex(p=>String(p.id)===String(project.id));
- if(index<0){alert("Project not found.");return}
-
- const updated={
-  ...projects[index],
-  scenes:JSON.parse(JSON.stringify(scenes)),
-  dialogues:scenes.map((s,i)=>({
-   sceneIndex:i,text:s.dialogue,
-   audioKey:s.audioKey||"",audioMode:s.audioMode||"tts"
-  })),
-  visuals:scenes.map((s,i)=>({
-   sceneIndex:i,description:s.visual||"",subtitle:s.subtitle||""
-  })),
-  timeline:scenes.map((s,i)=>({
-   sceneIndex:i,duration:Number(s.duration)||5
-  })),
-  updatedAt:new Date().toISOString()
- };
-
- try{
-  projects[index]=updated;
-  localStorage.setItem(PROJECT_KEY,JSON.stringify(projects));
-  project=updated;
-  $("saveStatus").textContent="✅ Project saved successfully.";
-  return true;
- }catch(e){
-  $("saveStatus").textContent="❌ Save failed. Browser storage may be full.";
-  return false;
- }
-}
-
-function scheduleSave(){
- clearTimeout(autoTimer);
- $("saveStatus").textContent="Changes detected. Auto-saving...";
- autoTimer=setTimeout(saveProject,1200);
-}
-
-$("videoVol").oninput=()=>{
- const value=Number($("videoVol").value);
- $("videoVolLabel").textContent=value+"%";
- updateAudioMix(!!currentAudio);
- if(currentVideo&&!currentAudio){
-  currentVideo.volume=value/100;
- }
-};
-
-$("voiceVol").oninput=()=>{
- const value=Number($("voiceVol").value);
- $("voiceVolLabel").textContent=value+"%";
- if(currentAudio)currentAudio.volume=value/100;
-};
-
-$("musicVol").oninput=()=>{
- const value=Number($("musicVol").value);
- $("musicVolLabel").textContent=value+"%";
- updateAudioMix(!!currentAudio);
-};
-
-$("videoDucking").onchange=()=>updateAudioMix(!!currentAudio);
-$("musicDucking").onchange=()=>updateAudioMix(!!currentAudio);
-
-window.addEventListener("beforeunload",()=>{
- stopAll();
- if(mediaURL)URL.revokeObjectURL(mediaURL);
- if(musicURL)URL.revokeObjectURL(musicURL);
-});
-
-populateProjects();
-</script>
-</body>
-</html>
+/* Switch between global and scene music without resetting global track position */
+async function setMusicForScene(s){
+ if(s.musicMode==="none"){
+  if(music
