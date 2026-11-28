@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UAAA AI Studio Export V5.3</title>
+<title>UAAA AI Studio Export V5.4</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101827;color:white;font-family:Arial}
@@ -33,7 +33,7 @@ progress{width:100%;height:20px;margin-top:12px}
 <body>
 
 <header>
-<h2>🎬 UAAA AI Studio – Export V5.3</h2>
+<h2>🎬 UAAA AI Studio – Export V5.4</h2>
 <button class="secondary" onclick="location.href='index.html'">Dashboard</button>
 </header>
 
@@ -320,7 +320,6 @@ async function preloadAssets(){
    media=await getBlob(MEDIA_DB,"media",s.mediaKey,1);
   }
 
-  // Fallback to the standard Media Studio key.
   if(!media&&s.id){
    media=await getBlob(
     MEDIA_DB,"media",
@@ -329,7 +328,6 @@ async function preloadAssets(){
   }
 
   loadedMedia[i]=media;
-
   loadedVoices[i]=await findVoice(s,i);
 
   let sceneMusic=null;
@@ -761,6 +759,12 @@ async function startExport(){
    const sceneEnd=sceneStart+duration;
    const voiceBuffer=voiceBuffers[i];
 
+   // FIX: voiceEnd is defined at scene level.
+   // Both voice audio and video ducking can now use it safely.
+   const voiceEnd=voiceBuffer
+    ?Math.min(sceneEnd,sceneStart+voiceBuffer.duration)
+    :sceneEnd;
+
    // Scene music
    if(s.musicMode==="scene"&&sceneMusicBuffers[i]){
     const source=audioContext.createBufferSource();
@@ -786,8 +790,6 @@ async function startExport(){
     source.start(sceneStart);
     source.stop(sceneEnd);
     sources.push(source);
-
-    const voiceEnd=Math.min(sceneEnd,sceneStart+voiceBuffer.duration);
 
     if($("musicDucking").checked){
      musicGain.gain.setValueAtTime(.12,sceneStart);
@@ -1006,3 +1008,14 @@ init();
 </script>
 </body>
 </html>
+
+अब ये करें:
+
+1. GitHub Editor में पुराना पूरा कोड हटाएँ।
+2. ऊपर दिया पूरा V5.4 कोड Paste करें।
+3. Commit changes करें।
+4. मुझे "Committed" लिखकर बताएं।
+
+फिर हम एक ही बार में तीनों Scenes का Export जाँचेंगे—Voice Audio, दोनों मोबाइल Videos की Original Audio और Background Music।
+
+ध्यान दें: यह WebM Export है, MP4 नहीं। Original Video Audio का Export Android Chrome में "captureStream()" सपोर्ट पर निर्भर करेगा।
