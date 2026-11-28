@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UAAA AI Studio Export V5.2</title>
+<title>UAAA AI Studio Export V5.3</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#101827;color:white;font-family:Arial}
@@ -13,6 +13,7 @@ h2,h3{color:#55c5ff}
 .card{background:#19263b;border:1px solid #30435e;border-radius:12px;padding:16px;margin-bottom:15px}
 label{display:block;margin-top:12px;color:#cbd8e8}
 input:not([type=checkbox]),select{width:100%;padding:11px;background:#0e1929;color:white;border:1px solid #405574;border-radius:7px;margin-top:6px}
+input[type=range]{width:100%}
 button{border:0;border-radius:7px;padding:12px 16px;margin:4px;cursor:pointer;font-weight:bold}
 button:disabled{opacity:.5}
 .primary{background:#1689e8;color:white}
@@ -25,12 +26,14 @@ canvas{width:100%;display:block;background:#000}
 .small{font-size:12px;color:#a9bdd4;line-height:1.6}
 progress{width:100%;height:20px;margin-top:12px}
 .checkrow{display:flex;align-items:center;gap:8px;margin-top:12px}
+.checkrow input{width:auto}
+@media(max-width:600px){.container{padding:8px}.card{padding:12px}}
 </style>
 </head>
 <body>
 
 <header>
-<h2>🎬 UAAA AI Studio – Export V5.2</h2>
+<h2>🎬 UAAA AI Studio – Export V5.3</h2>
 <button class="secondary" onclick="location.href='index.html'">Dashboard</button>
 </header>
 
@@ -73,13 +76,28 @@ progress{width:100%;height:20px;margin-top:12px}
 <option value="high">High</option>
 </select>
 
+<label>Voice Volume: <span id="voiceLabel">100%</span></label>
+<input type="range" id="voiceVolume" min="0" max="100" value="100">
+
+<label>Original Video Volume: <span id="videoLabel">100%</span></label>
+<input type="range" id="videoVolume" min="0" max="100" value="100">
+
+<label>Background Music Volume: <span id="musicLabel">25%</span></label>
+<input type="range" id="musicVolume" min="0" max="100" value="25">
+
 <label class="checkrow">
 <input type="checkbox" id="musicDucking" checked>
 Reduce Background Music During Voice
 </label>
 
+<label class="checkrow">
+<input type="checkbox" id="videoDucking" checked>
+Reduce Original Video Audio During Voice
+</label>
+
 <p class="small">
-Uploaded Voice Audio is supported. Browser Text-to-Speech is not included.
+Uploaded Voice Audio and Original Video Audio are supported.
+Browser Text-to-Speech recording is not supported in this version.
 Export format: WebM.
 </p>
 </div>
@@ -103,11 +121,10 @@ Export format: WebM.
 </div>
 
 <div class="card">
-<h3>5. Voice Status</h3>
-<p id="voiceStatus" class="status">Load a project to check voice files.</p>
-<p class="small">
-Voice Studio Uploaded Audio is supported. TTS and MP4 export are not supported in this version.
-</p>
+<h3>5. Audio Detection Status</h3>
+<p id="voiceStatus" class="status">Load a project to check audio.</p>
+<p id="videoStatus" class="status">Video audio not checked.</p>
+<p id="musicStatus" class="status">Background music not checked.</p>
 </div>
 
 </div>
@@ -129,7 +146,6 @@ let loadedSceneMusic=[];
 let previewRunning=false;
 let previewToken=0;
 let previewAudio=[];
-let previewMusic=null;
 let previewVideo=null;
 let previewImage=null;
 
@@ -140,8 +156,8 @@ const $=id=>document.getElementById(id);
 
 function readProjects(){
  try{
-  const p=JSON.parse(localStorage.getItem(PROJECT_KEY)||"[]");
-  return Array.isArray(p)?p:[];
+  const data=JSON.parse(localStorage.getItem(PROJECT_KEY)||"[]");
+  return Array.isArray(data)?data:[];
  }catch(e){return []}
 }
 
@@ -156,7 +172,7 @@ function init(){
  });
 }
 
-function openDB(name,version=1){
+function openDB(name,version){
  return new Promise((resolve,reject)=>{
   const req=indexedDB.open(name,version);
   req.onsuccess=()=>resolve(req.result);
@@ -166,30 +182,29 @@ function openDB(name,version=1){
 }
 
 async function getBlob(dbName,store,key,version=1){
- if(!key)return null;
+ if(key===undefined||key===null||key==="")return null;
 
- const db=await openDB(dbName,version);
+ let db;
+ try{
+  db=await openDB(dbName,version);
+  if(!db.objectStoreNames.contains(store)){
+   db.close();
+   return null;
+  }
 
- if(!db.objectStoreNames.contains(store)){
-  db.close();
+  return await new Promise((resolve,reject)=>{
+   const tx=db.transaction(store,"readonly");
+   const req=tx.objectStore(store).get(key);
+   req.onsuccess=()=>resolve(req.result||null);
+   req.onerror=()=>reject(req.error);
+   tx.oncomplete=()=>db.close();
+   tx.onerror=()=>{db.close();reject(tx.error)};
+  });
+ }catch(e){
+  if(db)db.close();
+  console.log("DB read error:",dbName,store,key,e);
   return null;
  }
-
- return new Promise((resolve,reject)=>{
-  const tx=db.transaction(store,"readonly");
-  const req=tx.objectStore(store).get(key);
-
-  req.onsuccess=()=>{
-   const result=req.result||null;
-   db.close();
-   resolve(result);
-  };
-
-  req.onerror=()=>{
-   db.close();
-   reject(req.error);
-  };
- });
 }
 
 function normalizeScenes(p){
@@ -204,6 +219,7 @@ function normalizeScenes(p){
    subtitle:s.subtitle||"",
    duration:Math.max(1,Number(s.duration)||5),
    audioKey:s.audioKey||"",
+   mediaKey:s.mediaKey||"",
    musicMode:s.musicMode||"global"
   }));
  }else{
@@ -213,31 +229,45 @@ function normalizeScenes(p){
   const count=Math.max(d.length,v.length,t.length,1);
 
   result=Array.from({length:count},(_,i)=>({
-   id:"scene_"+i,
+   id:d[i]?.sceneId||"scene_"+i,
    dialogue:d[i]?.text||"",
    visual:v[i]?.description||"",
    subtitle:v[i]?.subtitle||"",
    duration:Math.max(1,Number(t[i]?.duration)||5),
    audioKey:d[i]?.audioKey||"",
+   mediaKey:"",
    musicMode:"global"
   }));
  }
 
- // Also recover audioKey from the project's dialogue records.
  const dialogues=p.dialogues||[];
 
  result.forEach((s,i)=>{
   if(!s.audioKey&&dialogues[i]?.audioKey){
    s.audioKey=dialogues[i].audioKey;
   }
-
-  // Voice Studio uses projectId_sceneId as its IndexedDB key.
-  if(!s.audioKey&&s.id){
-   s.audioKey=String(p.id)+"_"+String(s.id);
-  }
  });
 
  return result;
+}
+
+async function findVoice(scene,index){
+ const keys=[];
+
+ if(scene.audioKey)keys.push(scene.audioKey);
+ if(scene.id)keys.push(String(project.id)+"_"+String(scene.id));
+ keys.push(String(project.id)+"_scene_"+index);
+ keys.push(String(project.id)+"_"+index);
+
+ for(const key of [...new Set(keys)]){
+  const blob=await getBlob(VOICE_DB,"audio",String(key),1);
+  if(blob instanceof Blob && blob.size>0){
+   console.log("Voice found:",key);
+   return blob;
+  }
+ }
+
+ return null;
 }
 
 async function loadProject(){
@@ -252,18 +282,25 @@ async function loadProject(){
  if(!project){alert("Project not found.");return}
 
  scenes=normalizeScenes(project);
-
- $("projectStatus").textContent="Loading project and audio...";
+ $("projectStatus").textContent="Loading project and audio files...";
 
  await preloadAssets();
 
- let count=loadedVoices.filter(Boolean).length;
+ const voiceCount=loadedVoices.filter(Boolean).length;
+ const videoCount=loadedMedia.filter(m=>m&&m.type&&m.type.startsWith("video/")).length;
 
  $("projectStatus").textContent=
  "✅ Project loaded | Scenes: "+scenes.length;
 
  $("voiceStatus").textContent=
- "Uploaded Voice Found: "+count+" / "+scenes.length+" Scenes";
+ "Uploaded Voice Found: "+voiceCount+" / "+scenes.length+" Scenes";
+
+ $("videoStatus").textContent=
+ "Video Files Found: "+videoCount+" / "+scenes.length+
+ " Scenes. Original video audio will be included where available.";
+
+ $("musicStatus").textContent=
+ loadedMusic?"Background music found.":"No global background music found.";
 
  setupCanvas();
  drawScene(0);
@@ -278,58 +315,35 @@ async function preloadAssets(){
  for(let i=0;i<scenes.length;i++){
   const s=scenes[i];
 
-  // Media
   let media=null;
   if(s.mediaKey){
-   try{
-    media=await getBlob(MEDIA_DB,"media",s.mediaKey);
-   }catch(e){}
+   media=await getBlob(MEDIA_DB,"media",s.mediaKey,1);
   }
+
+  // Fallback to the standard Media Studio key.
+  if(!media&&s.id){
+   media=await getBlob(
+    MEDIA_DB,"media",
+    String(project.id)+"_"+String(s.id),1
+   );
+  }
+
   loadedMedia[i]=media;
 
-  // VOICE FIX: Use audioKey directly.
-  let voice=null;
+  loadedVoices[i]=await findVoice(s,i);
 
-  if(s.audioKey){
-   try{
-    voice=await getBlob(
-     VOICE_DB,
-     "audio",
-     String(s.audioKey),
-     1
-    );
-   }catch(e){
-    console.log("Voice load error",e);
-   }
-  }
-
-  loadedVoices[i]=voice;
-
-  // Scene music
-  let music=null;
-
+  let sceneMusic=null;
   if(s.musicMode==="scene"&&s.sceneMusicKey){
-   try{
-    music=await getBlob(
-     EDITOR_DB,
-     "sceneMusic",
-     s.sceneMusicKey,
-     2
-    );
-   }catch(e){}
+   sceneMusic=await getBlob(
+    EDITOR_DB,"sceneMusic",s.sceneMusicKey,2
+   );
   }
-
-  loadedSceneMusic[i]=music;
+  loadedSceneMusic[i]=sceneMusic;
  }
 
- try{
-  loadedMusic=await getBlob(
-   EDITOR_DB,
-   "music",
-   String(project.id),
-   2
-  );
- }catch(e){}
+ loadedMusic=await getBlob(
+  EDITOR_DB,"music",String(project.id),2
+ );
 }
 
 function dimensions(){
@@ -339,11 +353,9 @@ function dimensions(){
  if(aspect==="9:16"){
   return res===1080?{w:1080,h:1920}:{w:720,h:1280};
  }
-
  if(aspect==="1:1"){
   return res===1080?{w:1080,h:1080}:{w:720,h:720};
  }
-
  return res===1080?{w:1920,h:1080}:{w:1280,h:720};
 }
 
@@ -362,13 +374,11 @@ function drawBackground(ctx,w,h){
 function drawFit(ctx,source,w,h){
  const sw=source.videoWidth||source.naturalWidth||source.width;
  const sh=source.videoHeight||source.naturalHeight||source.height;
-
  if(!sw||!sh)return;
 
  const scale=Math.min(w/sw,h/sh);
  const dw=sw*scale;
  const dh=sh*scale;
-
  ctx.drawImage(source,(w-dw)/2,(h-dh)/2,dw,dh);
 }
 
@@ -379,17 +389,35 @@ function getLines(ctx,text,maxWidth){
 
  words.forEach(word=>{
   const test=line?line+" "+word:word;
-
   if(ctx.measureText(test).width>maxWidth&&line){
    lines.push(line);
    line=word;
-  }else{
-   line=test;
-  }
+  }else line=test;
  });
 
  if(line)lines.push(line);
  return lines;
+}
+
+function drawText(ctx,s,w,h){
+ if(!s.subtitle)return;
+
+ const size=Math.max(24,Math.round(w*.032));
+ ctx.font="bold "+size+"px Arial";
+ ctx.textAlign="center";
+
+ const lines=getLines(ctx,s.subtitle,w*.88);
+ const lineHeight=size*1.3;
+ const y=h*.84;
+ const boxHeight=lines.length*lineHeight+24;
+
+ ctx.fillStyle="rgba(0,0,0,.65)";
+ ctx.fillRect(w*.04,y-boxHeight+lineHeight*.2,w*.92,boxHeight);
+
+ ctx.fillStyle="#fff";
+ lines.forEach((line,i)=>{
+  ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight);
+ });
 }
 
 function drawScene(index){
@@ -404,125 +432,70 @@ function drawScene(index){
 
  const media=loadedMedia[index];
 
- if(media&&media.type?.startsWith("image/")){
+ if(media&&media.type&&media.type.startsWith("image/")){
   if(!previewImage||previewImage.dataset.scene!==String(index)){
    previewImage=new Image();
    previewImage.dataset.scene=String(index);
    previewImage.src=URL.createObjectURL(media);
   }
-
   if(previewImage.complete&&previewImage.naturalWidth){
    drawFit(ctx,previewImage,w,h);
   }
-
- }else if(media&&media.type?.startsWith("video/")){
+ }else if(media&&media.type&&media.type.startsWith("video/")){
   if(!previewVideo||previewVideo.dataset.scene!==String(index)){
    if(previewVideo){
     previewVideo.pause();
     previewVideo.src="";
    }
-
    previewVideo=document.createElement("video");
    previewVideo.dataset.scene=String(index);
    previewVideo.src=URL.createObjectURL(media);
-   previewVideo.muted=true;
+   previewVideo.muted=false;
+   previewVideo.volume=Number($("videoVolume").value)/100;
    previewVideo.playsInline=true;
    previewVideo.loop=true;
    previewVideo.play().catch(()=>{});
   }
-
   if(previewVideo.readyState>=2){
    drawFit(ctx,previewVideo,w,h);
   }
-
  }else{
   ctx.fillStyle="#243b56";
   ctx.fillRect(0,0,w,h);
   ctx.fillStyle="#fff";
   ctx.textAlign="center";
-
   const size=Math.max(24,Math.round(w*.035));
   ctx.font="bold "+size+"px Arial";
-
   const lines=getLines(ctx,s.visual||"UAAA AI Studio",w*.82);
   const lineHeight=size*1.4;
   const start=(h-lines.length*lineHeight)/2;
-
-  lines.forEach((line,i)=>{
-   ctx.fillText(line,w/2,start+i*lineHeight);
-  });
+  lines.forEach((line,i)=>ctx.fillText(line,w/2,start+i*lineHeight));
  }
 
- if(s.subtitle){
-  const size=Math.max(24,Math.round(w*.032));
-  ctx.font="bold "+size+"px Arial";
-  ctx.textAlign="center";
-
-  const lines=getLines(ctx,s.subtitle,w*.88);
-  const lineHeight=size*1.3;
-  const y=h*.84;
-  const boxHeight=lines.length*lineHeight+24;
-
-  ctx.fillStyle="rgba(0,0,0,.65)";
-  ctx.fillRect(w*.04,y-boxHeight+lineHeight*.2,w*.92,boxHeight);
-
-  ctx.fillStyle="#fff";
-
-  lines.forEach((line,i)=>{
-   ctx.fillText(
-    line,
-    w/2,
-    y-(lines.length-1-i)*lineHeight
-   );
-  });
- }
+ drawText(ctx,s,w,h);
 }
 
 function clearPreviewAudio(){
  previewAudio.forEach(a=>{
-  try{
-   a.pause();
-   a.currentTime=0;
-   a.src="";
-  }catch(e){}
+  try{a.pause();a.currentTime=0;a.src=""}catch(e){}
  });
-
  previewAudio=[];
 
- if(previewMusic){
-  try{
-   previewMusic.pause();
-   previewMusic.src="";
-  }catch(e){}
-  previewMusic=null;
- }
-
  if(previewVideo){
-  try{
-   previewVideo.pause();
-   previewVideo.src="";
-  }catch(e){}
+  try{previewVideo.pause();previewVideo.src=""}catch(e){}
   previewVideo=null;
  }
 }
 
-function playBlob(blob,loop=false,volume=1){
+function playBlob(blob,volume=1,loop=false){
  if(!blob)return null;
 
  const url=URL.createObjectURL(blob);
  const audio=new Audio(url);
-
+ audio.volume=Math.max(0,Math.min(1,volume));
  audio.loop=loop;
- audio.volume=volume;
-
- audio.onended=()=>{
-  URL.revokeObjectURL(url);
- };
-
- audio.play().catch(e=>{
-  console.log("Audio playback error:",e);
- });
-
+ audio.onended=()=>URL.revokeObjectURL(url);
+ audio.play().catch(e=>console.log("Audio play:",e));
  previewAudio.push(audio);
  return audio;
 }
@@ -537,7 +510,6 @@ async function previewProject(){
 
  previewRunning=true;
  const token=++previewToken;
-
  $("previewBtn").disabled=true;
  $("stopPreviewBtn").disabled=false;
 
@@ -554,29 +526,22 @@ async function previewProject(){
   drawScene(i);
 
   $("previewStatus").textContent=
-   "▶ Scene "+(i+1)+" / "+scenes.length;
+   "▶ Playing Scene "+(i+1)+" / "+scenes.length;
 
-  // Background music
-  if(s.musicMode==="scene"){
-   if(loadedSceneMusic[i]){
-    playBlob(loadedSceneMusic[i],true,.8);
-   }
-  }else if(loadedMusic){
-   previewMusic=playBlob(loadedMusic,true,.35);
+  if(loadedVoices[i]){
+   playBlob(
+    loadedVoices[i],
+    Number($("voiceVolume").value)/100
+   );
   }
 
-  // VOICE FIX: Play audioKey file.
-  if(loadedVoices[i]){
-   playBlob(loadedVoices[i],false,1);
-   $("voiceStatus").textContent=
-    "🔊 Voice playing: Scene "+(i+1);
-  }else{
-   $("voiceStatus").textContent=
-    "⚠ No uploaded voice found: Scene "+(i+1);
+  if(s.musicMode==="scene"&&loadedSceneMusic[i]){
+   playBlob(loadedSceneMusic[i],Number($("musicVolume").value)/100,true);
+  }else if((s.musicMode||"global")==="global"&&loadedMusic){
+   playBlob(loadedMusic,Number($("musicVolume").value)/100,true);
   }
 
   const start=Date.now();
-
   while(Date.now()-start<duration*1000){
    if(!previewRunning||token!==previewToken)break;
 
@@ -584,17 +549,14 @@ async function previewProject(){
     drawScene(i);
    }
 
-   await new Promise(r=>setTimeout(r,100));
+   await new Promise(r=>setTimeout(r,80));
   }
  }
 
  if(token===previewToken){
   previewRunning=false;
   clearPreviewAudio();
-
-  $("previewStatus").textContent=
-   "✅ Preview completed.";
-
+  $("previewStatus").textContent="✅ Preview completed.";
   $("previewBtn").disabled=false;
   $("stopPreviewBtn").disabled=true;
  }
@@ -604,33 +566,25 @@ function stopPreview(){
  previewRunning=false;
  previewToken++;
  clearPreviewAudio();
-
  $("previewBtn").disabled=false;
  $("stopPreviewBtn").disabled=true;
 }
 
 function supportedMime(){
  if(!window.MediaRecorder)return "";
-
  const types=[
   "video/webm;codecs=vp9,opus",
   "video/webm;codecs=vp8,opus",
   "video/webm"
  ];
-
  return types.find(t=>MediaRecorder.isTypeSupported(t))||"";
 }
 
 function loadImage(blob){
  return new Promise(resolve=>{
-  if(!blob||!blob.type.startsWith("image/")){
-   resolve(null);return;
-  }
-
   const img=new Image();
   const url=URL.createObjectURL(blob);
-
-  img.onload=()=>resolve(img);
+  img.onload=()=>resolve({image:img,url});
   img.onerror=()=>resolve(null);
   img.src=url;
  });
@@ -638,18 +592,12 @@ function loadImage(blob){
 
 function loadVideo(blob){
  return new Promise(resolve=>{
-  if(!blob||!blob.type.startsWith("video/")){
-   resolve(null);return;
-  }
-
   const video=document.createElement("video");
   const url=URL.createObjectURL(blob);
-
   video.src=url;
   video.muted=true;
   video.playsInline=true;
   video.preload="auto";
-
   video.onloadeddata=()=>resolve({video,url});
   video.onerror=()=>resolve(null);
   video.load();
@@ -663,44 +611,20 @@ function drawExportFrame(ctx,w,h,scene,asset){
   drawFit(ctx,asset.image,w,h);
  }else if(asset?.video&&asset.video.readyState>=2){
   drawFit(ctx,asset.video,w,h);
- }else if(!asset){
+ }else{
   ctx.fillStyle="#243b56";
   ctx.fillRect(0,0,w,h);
-
   ctx.fillStyle="#fff";
   ctx.textAlign="center";
-
   const size=Math.max(24,Math.round(w*.035));
   ctx.font="bold "+size+"px Arial";
-
   const lines=getLines(ctx,scene.visual||"UAAA AI Studio",w*.82);
   const lineHeight=size*1.4;
   const start=(h-lines.length*lineHeight)/2;
-
-  lines.forEach((line,i)=>{
-   ctx.fillText(line,w/2,start+i*lineHeight);
-  });
+  lines.forEach((line,i)=>ctx.fillText(line,w/2,start+i*lineHeight));
  }
 
- if(scene.subtitle){
-  const size=Math.max(24,Math.round(w*.032));
-  ctx.font="bold "+size+"px Arial";
-  ctx.textAlign="center";
-
-  const lines=getLines(ctx,scene.subtitle,w*.88);
-  const lineHeight=size*1.3;
-  const y=h*.84;
-  const boxHeight=lines.length*lineHeight+24;
-
-  ctx.fillStyle="rgba(0,0,0,.65)";
-  ctx.fillRect(w*.04,y-boxHeight+lineHeight*.2,w*.92,boxHeight);
-
-  ctx.fillStyle="#fff";
-
-  lines.forEach((line,i)=>{
-   ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight);
-  });
- }
+ drawText(ctx,scene,w,h);
 }
 
 async function startExport(){
@@ -708,20 +632,18 @@ async function startExport(){
   alert("Load a project first.");
   return;
  }
-
  if(exporting)return;
 
  stopPreview();
 
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){
-  alert("Browser video export not supported.");
+  alert("Video export is not supported by this browser.");
   return;
  }
 
  const mime=supportedMime();
-
  if(!mime){
-  alert("WebM not supported.");
+  alert("WebM is not supported.");
   return;
  }
 
@@ -739,11 +661,11 @@ async function startExport(){
  let sources=[];
  let videos=[];
  let urls=[];
+ let videoAudioNodes=[];
 
  try{
   const canvas=setupCanvas();
   const ctx=canvas.getContext("2d");
-
   const fps=Number($("fps").value)||30;
   const bitrate=$("quality").value==="high"?6500000:3500000;
 
@@ -751,144 +673,166 @@ async function startExport(){
   await audioContext.resume();
 
   const destination=audioContext.createMediaStreamDestination();
-
   const master=audioContext.createGain();
   master.gain.value=1;
   master.connect(destination);
 
-  const globalGain=audioContext.createGain();
-  globalGain.gain.value=0;
-  globalGain.connect(master);
+  const musicGain=audioContext.createGain();
+  musicGain.gain.value=Number($("musicVolume").value)/100;
+  musicGain.connect(master);
 
   const totalDuration=scenes.reduce(
    (sum,s)=>sum+Math.max(1,Number(s.duration)||5),0
   );
 
-  const startAt=audioContext.currentTime+.5;
-
-  // Global music
-  if(loadedMusic){
-   const buffer=await audioContext.decodeAudioData(
-    await loadedMusic.arrayBuffer()
-   );
-
-   const source=audioContext.createBufferSource();
-   source.buffer=buffer;
-   source.loop=true;
-   source.connect(globalGain);
-   source.start(startAt);
-   sources.push(source);
-  }
-
-  // Load scene visual assets
+  // Load all visual assets before scheduling audio.
   const assets=[];
-
   for(let i=0;i<scenes.length;i++){
    let asset=null;
    const blob=loadedMedia[i];
 
    if(blob?.type?.startsWith("image/")){
-    const img=await loadImage(blob);
-    if(img)asset={image:img};
+    const result=await loadImage(blob);
+    if(result){
+     asset={image:result.image};
+     urls.push(result.url);
+    }
    }else if(blob?.type?.startsWith("video/")){
     const result=await loadVideo(blob);
-
     if(result){
      asset={video:result.video};
      videos.push(result.video);
      urls.push(result.url);
     }
    }
-
    assets.push(asset);
   }
 
+  // Decode voice and music before the recording starts.
+  const voiceBuffers=[];
+  for(let i=0;i<scenes.length;i++){
+   let buffer=null;
+   if(loadedVoices[i]){
+    try{
+     buffer=await audioContext.decodeAudioData(
+      await loadedVoices[i].arrayBuffer()
+     );
+    }catch(e){
+     console.log("Voice decode failed:",i,e);
+    }
+   }
+   voiceBuffers[i]=buffer;
+  }
+
+  const globalMusicBuffer=loadedMusic?
+   await audioContext.decodeAudioData(await loadedMusic.arrayBuffer())
+   .catch(()=>null):null;
+
+  const sceneMusicBuffers=[];
+  for(let i=0;i<scenes.length;i++){
+   const blob=loadedSceneMusic[i];
+   let b=null;
+   if(blob){
+    try{
+     b=await audioContext.decodeAudioData(await blob.arrayBuffer());
+    }catch(e){}
+   }
+   sceneMusicBuffers[i]=b;
+  }
+
+  // Start timeline only after preloading is complete.
+  const startAt=audioContext.currentTime+.5;
   let offset=0;
+
+  // Continuous global music.
+  if(globalMusicBuffer){
+   const source=audioContext.createBufferSource();
+   source.buffer=globalMusicBuffer;
+   source.loop=true;
+   source.connect(musicGain);
+   source.start(startAt);
+   sources.push(source);
+  }
 
   for(let i=0;i<scenes.length;i++){
    const s=scenes[i];
    const duration=Math.max(1,Number(s.duration)||5);
    const sceneStart=startAt+offset;
    const sceneEnd=sceneStart+duration;
+   const voiceBuffer=voiceBuffers[i];
 
-   const mode=s.musicMode||"global";
-   const voiceBlob=loadedVoices[i];
-
-   let sceneMusicGain=null;
-
-   if(mode==="global"){
-    globalGain.gain.setValueAtTime(
-     loadedMusic?1:0,
-     sceneStart
-    );
-   }else{
-    globalGain.gain.setValueAtTime(0,sceneStart);
+   // Scene music
+   if(s.musicMode==="scene"&&sceneMusicBuffers[i]){
+    const source=audioContext.createBufferSource();
+    const gain=audioContext.createGain();
+    source.buffer=sceneMusicBuffers[i];
+    source.loop=true;
+    gain.gain.value=Number($("musicVolume").value)/100;
+    source.connect(gain);
+    gain.connect(master);
+    source.start(sceneStart);
+    source.stop(sceneEnd);
+    sources.push(source);
    }
 
-   // Scene-wise music
-   if(mode==="scene"&&loadedSceneMusic[i]){
-    const musicBuffer=await audioContext.decodeAudioData(
-     await loadedSceneMusic[i].arrayBuffer()
-    );
+   // Voice audio
+   if(voiceBuffer){
+    const source=audioContext.createBufferSource();
+    const gain=audioContext.createGain();
+    source.buffer=voiceBuffer;
+    gain.gain.value=Number($("voiceVolume").value)/100;
+    source.connect(gain);
+    gain.connect(master);
+    source.start(sceneStart);
+    source.stop(sceneEnd);
+    sources.push(source);
 
-    const musicSource=audioContext.createBufferSource();
-    sceneMusicGain=audioContext.createGain();
+    const voiceEnd=Math.min(sceneEnd,sceneStart+voiceBuffer.duration);
 
-    musicSource.buffer=musicBuffer;
-    musicSource.loop=true;
-
-    musicSource.connect(sceneMusicGain);
-    sceneMusicGain.connect(master);
-
-    musicSource.start(sceneStart);
-    musicSource.stop(sceneEnd);
-
-    sources.push(musicSource);
-   }
-
-   // VOICE FIX: Decode and schedule audioKey voice.
-   if(voiceBlob){
-    try{
-     const voiceBuffer=await audioContext.decodeAudioData(
-      await voiceBlob.arrayBuffer()
+    if($("musicDucking").checked){
+     musicGain.gain.setValueAtTime(.12,sceneStart);
+     musicGain.gain.setValueAtTime(
+      Number($("musicVolume").value)/100,voiceEnd
      );
+    }
+   }
 
-     const voiceSource=audioContext.createBufferSource();
-     const voiceGain=audioContext.createGain();
+   // Original video audio through captureStream.
+   if(assets[i]?.video){
+    const video=assets[i].video;
+    video.muted=false;
+    video.volume=1;
 
-     voiceSource.buffer=voiceBuffer;
-     voiceGain.gain.value=1;
+    const capture=video.captureStream?
+     video.captureStream():
+     (video.mozCaptureStream?video.mozCaptureStream():null);
 
-     voiceSource.connect(voiceGain);
-     voiceGain.connect(master);
+    if(capture){
+     const audioTracks=capture.getAudioTracks();
+     if(audioTracks.length){
+      const audioStream=new MediaStream(audioTracks);
+      const source=audioContext.createMediaStreamSource(audioStream);
+      const gain=audioContext.createGain();
+      gain.gain.value=Number($("videoVolume").value)/100;
 
-     voiceSource.start(sceneStart);
+      source.connect(gain);
+      gain.connect(master);
 
-     // Voice must not overlap the next scene.
-     voiceSource.stop(sceneEnd);
+      videoAudioNodes.push({source,gain,sceneIndex:i});
 
-     sources.push(voiceSource);
-
-     // Duck music during voice.
-     if($("musicDucking").checked){
-      const duckEnd=Math.min(
-       sceneEnd,
-       sceneStart+voiceBuffer.duration
-      );
-
-      if(mode==="global"&&loadedMusic){
-       globalGain.gain.setValueAtTime(.12,sceneStart);
-       globalGain.gain.setValueAtTime(1,duckEnd);
+      if($("videoDucking").checked&&voiceBuffer){
+       gain.gain.setValueAtTime(.12,sceneStart);
+       gain.gain.setValueAtTime(
+        Number($("videoVolume").value)/100,voiceEnd
+       );
       }
-
-      if(sceneMusicGain){
-       sceneMusicGain.gain.setValueAtTime(.12,sceneStart);
-       sceneMusicGain.gain.setValueAtTime(1,duckEnd);
-      }
+     }else{
+      $("videoStatus").textContent=
+       "⚠ Some video files have no accessible audio track.";
      }
-
-    }catch(e){
-     console.log("Voice export error Scene "+(i+1),e);
+    }else{
+     $("videoStatus").textContent=
+      "⚠ This browser cannot capture original video audio.";
     }
    }
 
@@ -896,14 +840,12 @@ async function startExport(){
   }
 
   const canvasStream=canvas.captureStream(fps);
-
   stream=new MediaStream([
    ...canvasStream.getVideoTracks(),
    ...destination.stream.getAudioTracks()
   ]);
 
   const chunks=[];
-
   recorder=new MediaRecorder(stream,{
    mimeType:mime,
    videoBitsPerSecond:bitrate,
@@ -925,7 +867,6 @@ async function startExport(){
 
   const totalMs=totalDuration*1000;
   const exportStart=performance.now();
-
   let lastScene=-1;
 
   function finish(){
@@ -941,19 +882,16 @@ async function startExport(){
    }
 
    const elapsed=performance.now()-exportStart;
-
    let accumulated=0;
    let index=scenes.length-1;
 
    for(let i=0;i<scenes.length;i++){
-    const duration=Math.max(1,Number(scenes[i].duration)||5)*1000;
-
-    if(elapsed<accumulated+duration){
+    const d=Math.max(1,Number(scenes[i].duration)||5)*1000;
+    if(elapsed<accumulated+d){
      index=i;
      break;
     }
-
-    accumulated+=duration;
+    accumulated+=d;
    }
 
    if(index!==lastScene){
@@ -964,22 +902,18 @@ async function startExport(){
     lastScene=index;
 
     if(assets[index]?.video){
-     assets[index].video.currentTime=0;
-     assets[index].video.play().catch(()=>{});
+     const v=assets[index].video;
+     v.currentTime=0;
+     v.play().catch(()=>{});
     }
    }
 
    drawExportFrame(
-    ctx,
-    canvas.width,
-    canvas.height,
-    scenes[index],
-    assets[index]
+    ctx,canvas.width,canvas.height,scenes[index],assets[index]
    );
 
    const percent=Math.min(100,elapsed/totalMs*100);
    $("progress").value=percent;
-
    $("exportStatus").textContent=
     "Exporting Scene "+(index+1)+" / "+scenes.length+
     " – "+Math.round(percent)+"%";
@@ -992,19 +926,16 @@ async function startExport(){
   }
 
   raf=requestAnimationFrame(renderFrame);
-
   await finished;
 
   if(cancelRequested){
    $("exportStatus").textContent="Export cancelled.";
   }else{
    const blob=new Blob(chunks,{type:mime});
-
    if(!blob.size)throw new Error("Empty export file.");
 
    const url=URL.createObjectURL(blob);
    const a=document.createElement("a");
-
    a.href=url;
    a.download=(project.name||project.title||"UAAA-Video")
     .replace(/[^\w\-]+/g,"_")+".webm";
@@ -1014,7 +945,6 @@ async function startExport(){
    a.remove();
 
    setTimeout(()=>URL.revokeObjectURL(url),60000);
-
    $("progress").value=100;
    $("exportStatus").textContent=
     "✅ Export completed. File size: "+
@@ -1022,11 +952,10 @@ async function startExport(){
   }
 
  }catch(error){
+  console.error(error);
   $("exportStatus").textContent=
    "❌ Export error: "+(error.message||"Unknown error");
-
   alert("Export failed: "+(error.message||"Please try again."));
-
  }finally{
   cancelAnimationFrame(raf);
 
@@ -1062,8 +991,18 @@ function cancelExport(){
  $("exportStatus").textContent="Cancelling export...";
 }
 
+$("voiceVolume").oninput=()=>{
+ $("voiceLabel").textContent=$("voiceVolume").value+"%";
+};
+$("videoVolume").oninput=()=>{
+ $("videoLabel").textContent=$("videoVolume").value+"%";
+ if(previewVideo)previewVideo.volume=Number($("videoVolume").value)/100;
+};
+$("musicVolume").oninput=()=>{
+ $("musicLabel").textContent=$("musicVolume").value+"%";
+};
+
 init();
 </script>
-
 </body>
 </html>
