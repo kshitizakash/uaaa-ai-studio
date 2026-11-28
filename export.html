@@ -12,7 +12,7 @@ h2,h3{color:#55c5ff}
 .container{max-width:1000px;margin:auto;padding:14px}
 .card{background:#19263b;border:1px solid #30435e;border-radius:12px;padding:16px;margin-bottom:15px}
 label{display:block;margin-top:12px;color:#cbd8e8;font-size:14px}
-input,select{width:100%;padding:11px;background:#0e1929;color:white;border:1px solid #405574;border-radius:7px;margin-top:6px}
+input:not([type=checkbox]),select{width:100%;padding:11px;background:#0e1929;color:white;border:1px solid #405574;border-radius:7px;margin-top:6px}
 button{border:0;border-radius:7px;padding:12px 16px;margin:4px;cursor:pointer;font-weight:bold}
 button:disabled{opacity:.5;cursor:not-allowed}
 .primary{background:#1689e8;color:white}
@@ -25,6 +25,8 @@ canvas{width:100%;display:block;background:#000}
 .small{font-size:12px;color:#a9bdd4;line-height:1.6}
 progress{width:100%;height:20px;margin-top:12px}
 .actions{display:flex;flex-wrap:wrap;gap:5px}
+.checkrow{display:flex;align-items:center;gap:8px;margin-top:12px}
+.checkrow input{width:auto}
 </style>
 </head>
 <body>
@@ -47,6 +49,7 @@ progress{width:100%;height:20px;margin-top:12px}
 
 <div class="card">
 <h3>2. Export Settings</h3>
+
 <label>Video Format</label>
 <select id="aspect">
 <option value="16:9">Landscape – 16:9</option>
@@ -72,6 +75,11 @@ progress{width:100%;height:20px;margin-top:12px}
 <option value="high">High Quality</option>
 </select>
 
+<label class="checkrow">
+<input type="checkbox" id="musicDucking" checked>
+Reduce Background Music During Voice
+</label>
+
 <p class="small">
 Export format: WebM. Uploaded voice audio and background music are supported.
 Browser Text-to-Speech is not included in this version.
@@ -92,9 +100,7 @@ Browser Text-to-Speech is not included in this version.
 
 <div class="card">
 <h3>4. Export Video</h3>
-<p class="small">
-Keep this browser tab open until export finishes.
-</p>
+<p class="small">Keep this browser tab open until export finishes.</p>
 <button class="success" id="exportBtn" onclick="startExport()">⬇ Export & Download WebM</button>
 <button class="danger" id="cancelBtn" onclick="cancelExport()" disabled>Cancel Export</button>
 <progress id="progress" value="0" max="100"></progress>
@@ -104,7 +110,7 @@ Keep this browser tab open until export finishes.
 <div class="card">
 <h3>5. Export Information</h3>
 <p class="small">
-• All scenes are played according to their duration.<br>
+• All scenes play according to their duration.<br>
 • Uploaded voice audio is included.<br>
 • Global and Scene-wise background music are supported.<br>
 • Browser Text-to-Speech is not included.<br>
@@ -209,25 +215,21 @@ function normalizeScenes(p){
 
 async function loadProject(){
  stopPreview();
-
  const id=$("projectSelect").value;
  if(!id){alert("Please select a project.");return}
 
  projects=readProjects();
  project=projects.find(p=>String(p.id)===String(id));
-
  if(!project){alert("Project not found.");return}
 
  scenes=normalizeScenes(project);
-
- $("projectStatus").textContent=
- "Loading "+(project.name||project.title||"Project")+"...";
+ $("projectStatus").textContent="Loading project...";
 
  try{
   await preloadAssets();
   $("projectStatus").textContent=
   "✅ Project Loaded: "+(project.name||project.title||"Untitled")+
-  " | Total Scenes: "+scenes.length+" | Assets loaded.";
+  " | Total Scenes: "+scenes.length;
   setupCanvas();
   drawScene(0);
  }catch(e){
@@ -271,13 +273,8 @@ async function preloadAssets(){
 function dimensions(){
  const aspect=$("aspect").value;
  const res=Number($("resolution").value);
-
- if(aspect==="9:16"){
-  return res===1080?{w:1080,h:1920}:{w:720,h:1280};
- }
- if(aspect==="1:1"){
-  return res===1080?{w:1080,h:1080}:{w:720,h:720};
- }
+ if(aspect==="9:16")return res===1080?{w:1080,h:1920}:{w:720,h:1280};
+ if(aspect==="1:1")return res===1080?{w:1080,h:1080}:{w:720,h:720};
  return res===1080?{w:1920,h:1080}:{w:1280,h:720};
 }
 
@@ -306,17 +303,13 @@ function drawFit(ctx,source,w,h){
 function wrapText(ctx,text,x,y,maxWidth,lineHeight){
  const words=String(text).split(/\s+/);
  let lines=[],line="";
-
  words.forEach(word=>{
   const test=line?line+" "+word:word;
   if(ctx.measureText(test).width>maxWidth&&line){
-   lines.push(line);
-   line=word;
+   lines.push(line);line=word;
   }else line=test;
  });
-
  if(line)lines.push(line);
-
  if(typeof y==="number"){
   lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineHeight));
  }
@@ -325,12 +318,10 @@ function wrapText(ctx,text,x,y,maxWidth,lineHeight){
 
 function drawScene(index){
  if(!scenes[index])return;
-
  const c=$("canvas");
  const ctx=c.getContext("2d");
  const w=c.width,h=c.height;
  const s=scenes[index];
-
  drawBackground(ctx,w,h);
 
  const media=loadedMedia[index];
@@ -347,22 +338,16 @@ function drawScene(index){
    }
   }else if(media.type&&media.type.startsWith("video/")){
    if(!previewVideo||previewVideo.dataset.scene!==String(index)){
-    if(previewVideo){
-     previewVideo.pause();
-     previewVideo.src="";
-    }
+    if(previewVideo){previewVideo.pause();previewVideo.src=""}
     previewVideo=document.createElement("video");
     previewVideo.dataset.scene=String(index);
     previewVideo.src=URL.createObjectURL(media);
     previewVideo.muted=true;
     previewVideo.playsInline=true;
     previewVideo.loop=true;
-    previewVideo.preload="auto";
     previewVideo.play().catch(()=>{});
    }
-   if(previewVideo.readyState>=2){
-    drawFit(ctx,previewVideo,w,h);
-   }
+   if(previewVideo.readyState>=2)drawFit(ctx,previewVideo,w,h);
   }
  }else{
   ctx.fillStyle="#243b56";
@@ -370,32 +355,24 @@ function drawScene(index){
   ctx.fillStyle="#fff";
   ctx.textAlign="center";
   ctx.font="bold "+Math.max(24,Math.round(w*.035))+"px Arial";
-  const lines=wrapText(ctx,s.visual||"UAAA AI Studio",0,0,w*.82,Math.max(32,Math.round(w*.045)));
   const lineHeight=Math.max(32,Math.round(w*.045));
-  const startY=(h-(lines.length*lineHeight))/2;
-  lines.forEach((line,i)=>{
-   ctx.fillText(line,w/2,startY+i*lineHeight);
-  });
+  const lines=wrapText(ctx,s.visual||"UAAA AI Studio",0,0,w*.82,lineHeight);
+  const startY=(h-lines.length*lineHeight)/2;
+  lines.forEach((line,i)=>ctx.fillText(line,w/2,startY+i*lineHeight));
  }
 
  if(s.subtitle){
   const fontSize=Math.max(24,Math.round(w*.032));
-  const maxWidth=w*.88;
   ctx.font="bold "+fontSize+"px Arial";
   ctx.textAlign="center";
-
-  const lines=wrapText(ctx,s.subtitle,0,0,maxWidth,fontSize*1.3);
   const lineHeight=fontSize*1.3;
+  const lines=wrapText(ctx,s.subtitle,0,0,w*.88,lineHeight);
   const boxHeight=lines.length*lineHeight+24;
   const y=h*.84;
-
   ctx.fillStyle="rgba(0,0,0,.58)";
   ctx.fillRect(w*.04,y-boxHeight+lineHeight*.2,w*.92,boxHeight);
-
   ctx.fillStyle="#fff";
-  lines.forEach((line,i)=>{
-   ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight);
-  });
+  lines.forEach((line,i)=>ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight));
  }
 }
 
@@ -404,12 +381,10 @@ function clearPreviewAudio(){
   try{a.pause();a.currentTime=0;a.src=""}catch(e){}
  });
  previewAudio=[];
-
  if(previewMusic){
   try{previewMusic.pause();previewMusic.src=""}catch(e){}
   previewMusic=null;
  }
-
  if(previewVideo){
   try{previewVideo.pause();previewVideo.src=""}catch(e){}
   previewVideo=null;
@@ -430,85 +405,49 @@ function playBlob(blob,loop=false,volume=1){
 async function previewSceneMusic(index){
  const s=scenes[index];
  const mode=s.musicMode||"global";
-
  if(mode==="scene"){
-  if(loadedSceneMusic[index]){
-   playBlob(loadedSceneMusic[index],true,0.8);
-  }
- }else if(mode==="global"){
-  if(loadedMusic){
-   if(!previewMusic){
-    previewMusic=playBlob(loadedMusic,true,0.35);
-   }else{
-    previewMusic.volume=0.35;
-    if(previewMusic.paused)previewMusic.play().catch(()=>{});
-   }
-  }
+  if(loadedSceneMusic[index])playBlob(loadedSceneMusic[index],true,.8);
+ }else if(mode==="global"&&loadedMusic){
+  previewMusic=playBlob(loadedMusic,true,.35);
  }
 }
 
-function sleep(ms){
- return new Promise(resolve=>setTimeout(resolve,ms));
-}
+function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
 
 async function previewProject(){
  if(!project||!scenes.length){
-  alert("Load a project first.");
-  return;
+  alert("Load a project first.");return;
  }
-
  stopPreview();
-
  previewRunning=true;
  const token=++previewToken;
-
  $("previewBtn").disabled=true;
  $("stopPreviewBtn").disabled=false;
-
  clearPreviewAudio();
  previewImage=null;
-
- if(previewMusic){
-  previewMusic=null;
- }
-
- $("previewStatus").textContent="Starting preview...";
 
  for(let i=0;i<scenes.length;i++){
   if(!previewRunning||token!==previewToken)break;
 
   clearPreviewAudio();
-
   const s=scenes[i];
   const duration=Math.max(1,Number(s.duration)||5);
 
   drawScene(i);
-
   $("previewStatus").textContent=
   "▶ Playing Scene "+(i+1)+" of "+scenes.length+
   " | Duration: "+duration+" seconds";
 
-  // Scene-wise or global music
   await previewSceneMusic(i);
 
-  // Uploaded voice audio for this scene
   if(loadedVoices[i]){
-   const voice=playBlob(loadedVoices[i],false,1);
-   if(voice){
-    voice.onended=()=>{};
-   }
+   playBlob(loadedVoices[i],false,1);
   }
 
-  // Keep the scene visible for its complete duration
   const start=Date.now();
   while(Date.now()-start<duration*1000){
    if(!previewRunning||token!==previewToken)break;
-
-   // Refresh video frames on canvas
-   if(loadedMedia[i]?.type?.startsWith("video/")){
-    drawScene(i);
-   }
-
+   if(loadedMedia[i]?.type?.startsWith("video/"))drawScene(i);
    await sleep(100);
   }
  }
@@ -526,30 +465,20 @@ function stopPreview(){
  previewRunning=false;
  previewToken++;
  clearPreviewAudio();
-
  $("previewBtn").disabled=false;
  $("stopPreviewBtn").disabled=true;
-
- if($("previewStatus")){
-  $("previewStatus").textContent="Preview stopped.";
- }
+ if($("previewStatus"))$("previewStatus").textContent="Preview stopped.";
 }
 
 function supportedMime(){
  if(!window.MediaRecorder)return "";
- const types=[
-  "video/webm;codecs=vp9,opus",
-  "video/webm;codecs=vp8,opus",
-  "video/webm"
- ];
+ const types=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
  return types.find(t=>MediaRecorder.isTypeSupported(t))||"";
 }
 
 function loadImage(blob){
  return new Promise(resolve=>{
-  if(!blob||!blob.type.startsWith("image/")){
-   resolve(null);return;
-  }
+  if(!blob||!blob.type.startsWith("image/")){resolve(null);return}
   const img=new Image();
   const url=URL.createObjectURL(blob);
   img.onload=()=>resolve(img);
@@ -560,15 +489,10 @@ function loadImage(blob){
 
 function loadVideo(blob){
  return new Promise(resolve=>{
-  if(!blob||!blob.type.startsWith("video/")){
-   resolve(null);return;
-  }
+  if(!blob||!blob.type.startsWith("video/")){resolve(null);return}
   const v=document.createElement("video");
   const url=URL.createObjectURL(blob);
-  v.src=url;
-  v.muted=true;
-  v.playsInline=true;
-  v.preload="auto";
+  v.src=url;v.muted=true;v.playsInline=true;v.preload="auto";
   v.onloadeddata=()=>resolve({video:v,url});
   v.onerror=()=>resolve(null);
   v.load();
@@ -577,7 +501,6 @@ function loadVideo(blob){
 
 function drawExportFrame(ctx,w,h,scene,asset){
  drawBackground(ctx,w,h);
-
  if(asset?.image)drawFit(ctx,asset.image,w,h);
  if(asset?.video&&asset.video.readyState>=2)drawFit(ctx,asset.video,w,h);
 
@@ -587,11 +510,9 @@ function drawExportFrame(ctx,w,h,scene,asset){
   ctx.fillStyle="#fff";
   ctx.textAlign="center";
   ctx.font="bold "+Math.max(24,Math.round(w*.035))+"px Arial";
-
-  const lines=wrapText(ctx,scene.visual||"UAAA AI Studio",0,0,w*.82,Math.max(32,Math.round(w*.045)));
   const lineHeight=Math.max(32,Math.round(w*.045));
+  const lines=wrapText(ctx,scene.visual||"UAAA AI Studio",0,0,w*.82,lineHeight);
   const startY=(h-lines.length*lineHeight)/2;
-
   lines.forEach((line,i)=>ctx.fillText(line,w/2,startY+i*lineHeight));
  }
 
@@ -599,57 +520,38 @@ function drawExportFrame(ctx,w,h,scene,asset){
   const fontSize=Math.max(24,Math.round(w*.032));
   ctx.font="bold "+fontSize+"px Arial";
   ctx.textAlign="center";
-
-  const lines=wrapText(ctx,scene.subtitle,0,0,w*.88,fontSize*1.3);
   const lineHeight=fontSize*1.3;
+  const lines=wrapText(ctx,scene.subtitle,0,0,w*.88,lineHeight);
   const boxHeight=lines.length*lineHeight+24;
   const y=h*.84;
-
   ctx.fillStyle="rgba(0,0,0,.58)";
   ctx.fillRect(w*.04,y-boxHeight+lineHeight*.2,w*.92,boxHeight);
   ctx.fillStyle="#fff";
-
-  lines.forEach((line,i)=>{
-   ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight);
-  });
+  lines.forEach((line,i)=>ctx.fillText(line,w/2,y-(lines.length-1-i)*lineHeight));
  }
 }
 
 async function startExport(){
- if(!project||!scenes.length){
-  alert("Load a project first.");
-  return;
- }
+ if(!project||!scenes.length){alert("Load a project first.");return}
  if(exporting)return;
-
  stopPreview();
 
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){
-  alert("Your browser does not support video export. Please try updated Chrome.");
-  return;
+  alert("Your browser does not support video export. Please try updated Chrome.");return;
  }
 
  const mime=supportedMime();
- if(!mime){
-  alert("WebM recording is not supported.");
-  return;
- }
+ if(!mime){alert("WebM recording is not supported.");return}
 
  exporting=true;
  cancelRequested=false;
-
  $("exportBtn").disabled=true;
  $("cancelBtn").disabled=false;
  $("progress").value=0;
  $("exportStatus").textContent="Preparing export...";
 
- let audioContext=null;
- let recorder=null;
- let stream=null;
- let raf=0;
- let audioSources=[];
- let videoAssets=[];
- let objectURLs=[];
+ let audioContext=null,recorder=null,stream=null,raf=0;
+ let audioSources=[],videoAssets=[],objectURLs=[];
 
  try{
   const canvas=setupCanvas();
@@ -674,19 +576,15 @@ async function startExport(){
   if(loadedMusic){
    const buffer=await audioContext.decodeAudioData(await loadedMusic.arrayBuffer());
    const src=audioContext.createBufferSource();
-   src.buffer=buffer;
-   src.loop=true;
-   src.connect(globalGain);
-   src.start(startAt);
+   src.buffer=buffer;src.loop=true;
+   src.connect(globalGain);src.start(startAt);
    audioSources.push(src);
   }
 
   const assets=[];
-
   for(let i=0;i<scenes.length;i++){
    const blob=loadedMedia[i];
    let asset=null;
-
    if(blob?.type?.startsWith("image/")){
     const img=await loadImage(blob);
     if(img)asset={image:img};
@@ -709,51 +607,38 @@ async function startExport(){
    const sceneStart=startAt+offset;
    const sceneEnd=sceneStart+duration;
    const mode=s.musicMode||"global";
+   const hasVoice=!!loadedVoices[i];
 
    globalGain.gain.setValueAtTime(
-    mode==="global"&&loadedMusic?1:0,
-    sceneStart
+    mode==="global"&&loadedMusic?1:0,sceneStart
    );
 
    if(mode==="scene"&&loadedSceneMusic[i]){
     const b=await audioContext.decodeAudioData(await loadedSceneMusic[i].arrayBuffer());
     const src=audioContext.createBufferSource();
     const gain=audioContext.createGain();
-
-    src.buffer=b;
-    src.loop=true;
-    src.connect(gain);
-    gain.connect(master);
-    src.start(sceneStart);
-    src.stop(sceneEnd);
+    src.buffer=b;src.loop=true;
+    src.connect(gain);gain.connect(master);
+    src.start(sceneStart);src.stop(sceneEnd);
     audioSources.push(src);
    }
 
-   if(loadedVoices[i]){
+   if(hasVoice){
     try{
      const voiceBuffer=await audioContext.decodeAudioData(await loadedVoices[i].arrayBuffer());
      const voiceSource=audioContext.createBufferSource();
      const voiceGain=audioContext.createGain();
-
      voiceSource.buffer=voiceBuffer;
-     voiceSource.connect(voiceGain);
-     voiceGain.connect(master);
-
+     voiceSource.connect(voiceGain);voiceGain.connect(master);
      voiceSource.start(sceneStart);
-
-     // Stop voice at the end of its own scene
      voiceSource.stop(sceneEnd);
-
      audioSources.push(voiceSource);
 
-     // Reduce background music while voice is playing
-     if(mode==="global"&&$("musicDucking").checked){
+     if(mode==="global"&&loadedMusic&&$("musicDucking").checked){
       globalGain.gain.setValueAtTime(.12,sceneStart);
       globalGain.gain.setValueAtTime(1,Math.min(sceneEnd,sceneStart+voiceBuffer.duration));
      }
-    }catch(e){
-     console.log("Voice audio error",e);
-    }
+    }catch(e){console.log("Voice audio error",e)}
    }
 
    offset+=duration;
@@ -782,7 +667,6 @@ async function startExport(){
   });
 
   recorder.start(1000);
-
   $("exportStatus").textContent="🔴 Recording started...";
 
   let lastScene=-1;
@@ -794,46 +678,30 @@ async function startExport(){
   }
 
   function renderFrame(){
-   if(cancelRequested){
-    finishRecording();
-    return;
-   }
+   if(cancelRequested){finishRecording();return}
 
    const elapsed=performance.now()-exportStart;
-   let acc=0;
-   let idx=scenes.length-1;
+   let acc=0,idx=scenes.length-1;
 
    for(let i=0;i<scenes.length;i++){
     const dur=Math.max(1,Number(scenes[i].duration)||5)*1000;
-    if(elapsed<acc+dur){
-     idx=i;
-     break;
-    }
+    if(elapsed<acc+dur){idx=i;break}
     acc+=dur;
    }
 
    if(idx!==lastScene){
-    if(lastScene>=0&&assets[lastScene]?.video){
-     assets[lastScene].video.pause();
-    }
-
+    if(lastScene>=0&&assets[lastScene]?.video)assets[lastScene].video.pause();
     lastScene=idx;
-
     const v=assets[idx]?.video;
-    if(v){
-     v.currentTime=0;
-     v.play().catch(()=>{});
-    }
+    if(v){v.currentTime=0;v.play().catch(()=>{})}
    }
 
    drawExportFrame(ctx,canvas.width,canvas.height,scenes[idx],assets[idx]);
 
    const percent=Math.min(100,(elapsed/totalMs)*100);
    $("progress").value=percent;
-
    $("exportStatus").textContent=
-   "Exporting Scene "+(idx+1)+" of "+scenes.length+
-   " – "+Math.round(percent)+"%";
+   "Exporting Scene "+(idx+1)+" of "+scenes.length+" – "+Math.round(percent)+"%";
 
    if(elapsed<totalMs&&!cancelRequested){
     raf=requestAnimationFrame(renderFrame);
@@ -853,21 +721,16 @@ async function startExport(){
 
    const url=URL.createObjectURL(blob);
    const a=document.createElement("a");
-
    a.href=url;
-   a.download=(project.name||project.title||"UAAA-Video")
-   .replace(/[^\w\-]+/g,"_")+".webm";
-
+   a.download=(project.name||project.title||"UAAA-Video").replace(/[^\w\-]+/g,"_")+".webm";
    document.body.appendChild(a);
    a.click();
    a.remove();
-
    setTimeout(()=>URL.revokeObjectURL(url),60000);
 
    $("progress").value=100;
    $("exportStatus").textContent=
-   "✅ Export completed! File size: "+
-   (blob.size/1024/1024).toFixed(2)+" MB";
+   "✅ Export completed! File size: "+(blob.size/1024/1024).toFixed(2)+" MB";
   }
 
  }catch(error){
@@ -875,27 +738,14 @@ async function startExport(){
   alert("Export failed: "+(error.message||"Please try again."));
  }finally{
   cancelAnimationFrame(raf);
-
   if(recorder&&recorder.state!=="inactive"){
    try{recorder.stop()}catch(e){}
   }
-
   if(stream)stream.getTracks().forEach(t=>t.stop());
-
-  audioSources.forEach(s=>{
-   try{s.stop()}catch(e){}
-  });
-
-  videoAssets.forEach(v=>{
-   try{v.pause();v.src=""}catch(e){}
-  });
-
+  audioSources.forEach(s=>{try{s.stop()}catch(e){}});
+  videoAssets.forEach(v=>{try{v.pause();v.src=""}catch(e){}});
   objectURLs.forEach(u=>URL.revokeObjectURL(u));
-
-  if(audioContext){
-   try{await audioContext.close()}catch(e){}
-  }
-
+  if(audioContext){try{await audioContext.close()}catch(e){}}
   exporting=false;
   $("exportBtn").disabled=false;
   $("cancelBtn").disabled=true;
